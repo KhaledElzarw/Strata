@@ -3791,6 +3791,34 @@ constexpr Il1Arch kIl1Arch[] = {
     {86, kIl1Rows_86, sizeof(kIl1Rows_86) / sizeof(Il1Rows)},
     {89, kIl1Rows_89, sizeof(kIl1Rows_89) / sizeof(Il1Rows)},   // Ada: the RTX 4070 and 4080 agree
 };
+// sm86 lab (STRATA_MMVQ_IL_3090=1, opt-in): an RTX 3090's own tables, in place of the A4000's on sm_86.  Read off three
+// mmvq_il_parity --bench --emit-table runs on the card (each arm's median over the runs, strata-lab/iltable.py), the
+// same 3% rule, over the shapes SC117 IQ3_XXS runs with each type (attn_k/v 512, shared-expert gate/up 640, attn_gate
+// 6144, attn_qkv 10240, attn_q 12288, the Q5_K heads 248320 and 106299); a class the model never runs takes the plain
+// rule.  E.g. IQ4_XS 2560x10240 at 6 columns 50.7 -> 33.4 us, Q6_K 2560x10240 at 7 columns 0.55 of native_mmvq's time.
+// Every choice is bitwise native_mmvq's output (mmvq_il_parity, T 1-8), so the tables are only speed.
+constexpr IlRows kIlRows_3090[] = {
+    {23, {{0, 4, 2, 4, 2}, {0, 4, 2, 1, 1}, {0, 4, 2, 2, 2}}},   // IQ4_XS
+    {12, {{0, 2, 2, 4, 4}, {0, 2, 2, 1, 1}, {0, 2, 1, 2, 2}}},   // Q4_K
+    {13, {{4, 0, 1, 4, 4}, {4, 2, 1, 2, 4}, {0, 2, 2, 2, 2}}},   // Q5_K
+    {14, {{1, 0, 0, 1, 1}, {1, 0, 1, 1, 1}, {1, 4, 2, 1, 2}}},   // Q6_K
+    {11, {{0, 2, 2, 2, 2}, {0, 4, 1, 1, 1}, {0, 4, 1, 2, 2}}},   // Q3_K
+};
+constexpr IlRows58 kIlRows58_3090[] = {   // 4 = 2 rows a warp here (launch_il_rows)
+    {23, {{0, 2, 2, 2, 2}, {0, 2, 2, 2, 2}, {0, 2, 2, 2, 2}, {0, 2, 1, 1, 1}}},   // IQ4_XS
+    {12, {{0, 2, 2, 2, 2}, {0, 0, 2, 4, 4}, {0, 2, 2, 4, 4}, {0, 1, 2, 2, 2}}},   // Q4_K
+    {13, {{0, 2, 2, 2, 4}, {0, 1, 2, 4, 4}, {0, 4, 4, 2, 4}, {0, 1, 1, 2, 4}}},   // Q5_K
+    {14, {{0, 2, 4, 2, 2}, {0, 4, 2, 2, 2}, {0, 2, 2, 2, 2}, {0, 4, 4, 4, 4}}},   // Q6_K
+    {11, {{0, 4, 2, 2, 2}, {0, 4, 1, 1, 1}, {0, 4, 1, 1, 1}, {0, 4, 2, 4, 4}}},   // Q3_K
+};
+constexpr Il1Rows kIl1Rows_3090[] = {
+    {12, {0, 0, 4, 0, 0}},   // Q4_K: 2560x6144 at one column 0.89 of native_mmvq's time
+    {11, {0, 1, 1, 1, 1}},   // Q3_K
+};
+bool il_3090_on() {
+    static const bool on = [] { const char* v = std::getenv("STRATA_MMVQ_IL_3090"); return v != nullptr && std::atoi(v) != 0; }();
+    return on;
+}
 bool il_env_on(const char* name) {
     const char* v = std::getenv(name);
     return v == nullptr || v[0] != '0';
@@ -3859,6 +3887,11 @@ int native_mmvq_il_rows_for(int cc, int type, int ncols, int n_out) {
         static const bool wide = il_env_on("STRATA_MMVQ_IL_WIDE");
         if (!wide) return 0;
         if (type == 11 && !il_q3k_on()) return 0;
+        if (cc == 86 && il_3090_on()) {   // sm86 lab: the 3090's table
+            for (const IlRows58& r : kIlRows58_3090)
+                if (r.type == type) return r.r[ncols - 5][cls];
+            return 0;
+        }
         for (const Il58Arch& a : kIl58Arch)
             if (a.cc == cc)
                 for (size_t i = 0; i < a.n; ++i)
@@ -3869,6 +3902,11 @@ int native_mmvq_il_rows_for(int cc, int type, int ncols, int n_out) {
         if (e.type == type && e.ncols == ncols) return e.r[cls];
     if (ncols == 1) {   // 143-dense: one column (the plain q8_1 blocks, no interleaved copy); STRATA_MMVQ_IL_T1=0 turns it off
         if (!il_t1_on()) return 0;
+        if (cc == 86 && il_3090_on()) {   // sm86 lab: the 3090's table
+            for (const Il1Rows& r : kIl1Rows_3090)
+                if (r.type == type) return r.r[cls];
+            return 0;
+        }
         for (const Il1Arch& a : kIl1Arch)
             if (a.cc == cc && (cc != 89 || il_89_opt_in()))
                 for (size_t i = 0; i < a.n; ++i)
@@ -3876,6 +3914,11 @@ int native_mmvq_il_rows_for(int cc, int type, int ncols, int n_out) {
         return 0;
     }
     if (type == 11 && !il_q3k_on()) return 0;   // STRATA_MMVQ_IL_Q3K=0: Q3_K keeps native_mmvq's kernels
+    if (cc == 86 && il_3090_on()) {   // sm86 lab: the 3090's table
+        for (const IlRows& r : kIlRows_3090)
+            if (r.type == type) return r.r[ncols - 2][cls];
+        return 0;
+    }
     const IlRows* t = kIlRowsShared;
     size_t n = sizeof(kIlRowsShared) / sizeof(IlRows);
     static const bool own120 = il_env_on("STRATA_MMVQ_IL_120");   // 147-verify: =0 gives a big 12.0 card the shared table again
