@@ -6207,6 +6207,29 @@ int exp_mode() {
 #endif
 }
 #endif
+// sm86 lab: STRATA_EXP_MODE=9 (opt-in) picks the layout per FORMAT and per phase instead of one for the whole call.
+// Read off native_expert_bench on an RTX 3090 (all 48 layers of SC117 IQ3_XXS, groups x entries 16x1 / 24x2 / 32x3,
+// every layer bitwise equal to mode 0): gate/up IQ3_S takes mode 8 (0.70-0.79 of mode 0's time), IQ2_S 0.90-0.94,
+// IQ2_XXS 0.87-0.96, IQ3_XXS 0.94-0.95; IQ2_XS keeps mode 0 (8: 1.01-1.07); down Q2_0 takes mode 8's LDS rows
+// (0.80-0.84), IQ4_NL keeps mode 0 (8: 1.14-1.34).  Every layout is bitwise mode 0's (the bench checks each call), so
+// mixing them per phase is only speed.  STRATA_EXP9_GU / STRATA_EXP9_DOWN="type:mode,..." override single formats.
+static int exp9_parse(const char* env, int type, int dflt) {
+    if (env == nullptr) return dflt;
+    for (const char* q = env; *q;) {
+        int t = 0, m = 0, used = 0;
+        if (std::sscanf(q, "%d:%d%n", &t, &m, &used) != 2) break;
+        if (t == type) return m;
+        q += used;
+        while (*q == ',' || *q == ' ') ++q;
+    }
+    return dflt;
+}
+static int exp9_mode(bool down, int type) {
+    static const char* gu_env = std::getenv("STRATA_EXP9_GU");
+    static const char* dn_env = std::getenv("STRATA_EXP9_DOWN");
+    if (down) return exp9_parse(dn_env, type, type == 42 ? 8 : 0);
+    return exp9_parse(gu_env, type, (type == 21 || type == 22 || type == 16 || type == 18) ? 8 : 0);
+}
 int g_exp_phase = 0;   // the bench: 0 all, 1 gate/up + swiglu + quantize only, 2 down only, 3 gate/up only
 #if STRATA_EXP_LAYOUTS && !defined(__HIPCC__)
 // The down projection's mode on Turing's default: mode 4 is slower than the CUDA layout once groups have 3+ entries
@@ -6364,7 +6387,8 @@ void native_expert_grouped(const NativeExpertLayout& L, const unsigned long long
 #else
     // CUDA: the AMD layouts launch a block row per possible group, so a call that strides (a verify window's PCIe
     // call, grid_groups 1..cap) keeps the CUDA layout: V100, 0 groups 11.3 vs 6.5 us, 1 group of 2 29.6 vs 21.3
-    const int em0 = (grid_groups > 0 && grid_groups < cap_groups) ? 0 : exp_mode();
+    const int em_call = (grid_groups > 0 && grid_groups < cap_groups) ? 0 : exp_mode();
+    const int em0 = em_call == 9 ? exp9_mode(false, L.gu_type) : em_call;   // sm86 lab: per format (exp9_mode)
 #endif
 #endif
 #if STRATA_EXP_LAYOUTS
@@ -6494,7 +6518,11 @@ void native_expert_grouped(const NativeExpertLayout& L, const unsigned long long
     }
 #endif
 #if STRATA_EXP_LAYOUTS
+#if defined(STRATA_HIP_GFX906)
     const int em0d = sm75_down_em(em0, cap_groups);
+#else
+    const int em0d = em_call == 9 ? exp9_mode(true, L.d_type) : sm75_down_em(em0, cap_groups);   // sm86 lab: per format
+#endif
     int dev_d = 0;
     cudaGetDevice(&dev_d);
     // gfx1151: the LDS down kernel is slower than the CUDA layout for IQ4_NL (86 vs 63 us, 24 groups) and faster for Q2_0 (-18%)
