@@ -765,6 +765,14 @@ void fetch_blobs(const unsigned long long* src, const int32_t* n, uint8_t* dst, 
 void fetch_blobs(const unsigned long long* src, const int32_t* n, uint8_t* dst, int64_t blob_bytes, int cap, void* stream) {
     fetch_blobs(src, n, dst, blob_bytes, cap, stream, nullptr);
 }
+void fetch_blobs_grid(const unsigned long long* src, const int32_t* n, uint8_t* dst, int64_t blob_bytes, int cap, void* stream,
+                      const unsigned long long* dst2, int grid) {
+    if (cap <= 0) return;
+    if (blob_bytes % 16 != 0) { std::fprintf(stderr, "fetch_blobs: blob size must be a multiple of 16\n"); std::exit(1); }
+    fetch_blobs_kernel<<<grid > 0 ? grid : 48 * 8, 256, 0, (cudaStream_t) stream>>>(src, n, (uint4*) dst,
+                                                                                    (long long) (blob_bytes / 16), dst2);
+    check("fetch_blobs");
+}
 
 void res_patch(int32_t* table, const int32_t* pairs, int n, void* stream) {
     if (n <= 0) return;

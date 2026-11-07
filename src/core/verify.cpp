@@ -758,6 +758,11 @@ Verifier::~Verifier() {
     if (df_fork_) cudaEventDestroy(df_fork_);
     for (cudaEvent_t e : df_join_)
         if (e) cudaEventDestroy(e);
+    if (fetch_cs_) cudaStreamDestroy(fetch_cs_);
+    for (cudaEvent_t e : fetch_fork_)
+        if (e) cudaEventDestroy(e);
+    for (cudaEvent_t e : fetch_join_)
+        if (e) cudaEventDestroy(e);
     if (arena_) cudaFree(arena_);
     if (hcount_d_) cudaFree(hcount_d_);
     void* hosts[] = {h_tok_, h_step_, h_pos_, h_commit_, h_ple_, h_out_, h_x_, h_ids_, h_w_, h_seq_, h_flag_, h_ymiss_,
@@ -1253,6 +1258,25 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
                       cudaEventCreateWithFlags(&df_join_[i], cudaEventDisableTiming) == cudaSuccess;
             if (!okb) { cudaGetLastError(); df_branch_ = false; }
         }
+    }
+    {   // sm86 lab STRATA_FETCH_FORK=1 (opt-in): the PCIe share's copy kernel on fetch_cs_ beside the VRAM experts (see post);
+        // STRATA_FETCH_FORK_GRID: its blocks (default 48).  Off with STRATA_ADAPT_FETCH (its admissions write VRAM slots).
+        const char* v = std::getenv("STRATA_FETCH_FORK");
+        const char* af = std::getenv("STRATA_ADAPT_FETCH");
+        fetch_fork_on_ = v != nullptr && std::atoi(v) != 0 && !(af != nullptr && std::atoi(af) != 0);
+        if (const char* gv = std::getenv("STRATA_FETCH_FORK_GRID")) fetch_fork_grid_ = std::atoi(gv) > 0 ? std::atoi(gv) : 48;
+        if (fetch_fork_on_ && fetch_cs_ == nullptr) {
+            // (STRATA_GRAPH_PRIO=1: the device's highest priority, so the copy's blocks are dispatched ahead of the VRAM
+            // experts' queued ones)
+            bool okf = make_stream(&fetch_cs_, gp_hi) == cudaSuccess;
+            for (int i = 0; i < 2 && okf; ++i)
+                okf = cudaEventCreateWithFlags(&fetch_fork_[i], cudaEventDisableTiming) == cudaSuccess &&
+                      cudaEventCreateWithFlags(&fetch_join_[i], cudaEventDisableTiming) == cudaSuccess;
+            if (!okf) { cudaGetLastError(); fetch_fork_on_ = false; }
+        }
+        if (fetch_fork_on_)
+            std::fprintf(stderr, "strata verify: STRATA_FETCH_FORK=1: the PCIe share's copy runs beside the VRAM experts (%d blocks)\n",
+                         fetch_fork_grid_);
     }
     // Check whether 100% of experts across [lb_, le_) are resident in this stage's VRAM cache.
     // When true, every layer plans on device and writes directly into parts_ without any CPU doorbells,
@@ -2402,18 +2426,39 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 }
             }
             stamp(l, 19, grp);
-            grouped(p_ptr, p_start, p_counts, 0, hit_out, true);
-            stamp(l, 20, grp);
-            if (device_plan_) wait_flag_ge_or(m_flagB_, ring, skip_ + grp, cs);
-            else if (m_bal_ != nullptr)   // set_pcie_balance: the PCIe part starts
-                wait_flag_ge_stamped(m_flagB_, ring, m_bal_ + ((l - lb_) * 2 + grp) * 4 + 1, nullptr, cs);
-            else wait_flag_ge(m_flagB_, ring, cs);                 // the PCIe share is in staging (DMA) or mapped
-            if (sink_.pcie_mode == 2) {                            // stage it with a copy kernel, then point at staging
+            // sm86 lab STRATA_FETCH_FORK=1: pcie_mode 2's copy of the PCIe share into staging runs on fetch_cs_ beside the VRAM
+            // experts (it used to start after them) and is joined before the PCIe groups read staging.  The same bytes and
+            // kernels on the same inputs: the same bits.  The plan (pl) is on the device by now; the copy reads only its
+            // PCIe part, and rebase_ptrs rewrites p_ptr2, which only the PCIe groups read.  Not with the device plan,
+            // set_pcie_balance or a batch window.  Under the stage profiler "waitB" is then the wait for the copy's join:
+            // the part of the copy the VRAM experts did not hide.
+            const bool ffork = fetch_fork_on_ && sink_.pcie_mode == 2 && !device_plan_ && m_bal_ == nullptr &&
+                               !batch_rec_ && fetch_cs_ != nullptr;
+            auto fetch_share = [&](cudaStream_t s, int grid) {   // stage the share with a copy kernel, then point at staging
                 const int64_t per = G == 2 ? kStagingBlobs / 2 : kStagingBlobs;
                 uint8_t* stage = staging_ + (size_t) (grp * per) * lay.max_blob;
                 const unsigned long long* p_dst2 = (const unsigned long long*) (pl + dst2_off_);   // STRATA_ADAPT_FETCH
-                fetch_blobs(p_ptr2, p_counts + 2, stage, (int64_t) lay.blob_bytes(l), (int) per, cs, p_dst2);
-                rebase_ptrs((unsigned long long*) p_ptr2, p_counts + 2, stage, (int64_t) lay.blob_bytes(l), cs, p_dst2);
+                if (grid > 0) fetch_blobs_grid(p_ptr2, p_counts + 2, stage, (int64_t) lay.blob_bytes(l), (int) per, s, p_dst2, grid);
+                else fetch_blobs(p_ptr2, p_counts + 2, stage, (int64_t) lay.blob_bytes(l), (int) per, s, p_dst2);
+                rebase_ptrs((unsigned long long*) p_ptr2, p_counts + 2, stage, (int64_t) lay.blob_bytes(l), s, p_dst2);
+            };
+            if (ffork) {
+                cudaEventRecord(fetch_fork_[grp], cs);
+                cudaStreamWaitEvent(fetch_cs_, fetch_fork_[grp], 0);
+                wait_flag_ge(m_flagB_, ring, fetch_cs_);           // the PCIe share is mapped
+                fetch_share(fetch_cs_, fetch_fork_grid_);
+                cudaEventRecord(fetch_join_[grp], fetch_cs_);
+            }
+            grouped(p_ptr, p_start, p_counts, 0, hit_out, true);
+            stamp(l, 20, grp);
+            if (ffork) {
+                cudaStreamWaitEvent(cs, fetch_join_[grp], 0);
+            } else {
+                if (device_plan_) wait_flag_ge_or(m_flagB_, ring, skip_ + grp, cs);
+                else if (m_bal_ != nullptr)   // set_pcie_balance: the PCIe part starts
+                    wait_flag_ge_stamped(m_flagB_, ring, m_bal_ + ((l - lb_) * 2 + grp) * 4 + 1, nullptr, cs);
+                else wait_flag_ge(m_flagB_, ring, cs);                 // the PCIe share is in staging (DMA) or mapped
+                if (sink_.pcie_mode == 2) fetch_share(cs, 0);
             }
             stamp(l, 21, grp);
             // the PCIe share is pcie_frac of the misses: a few groups when the cache is cold, usually none (always none at
