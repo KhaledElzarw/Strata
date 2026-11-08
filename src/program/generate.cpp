@@ -18113,11 +18113,15 @@ int main(int argc, char** argv) {
             struct DecSnap {
                 double wait, pool, host, plan, actq, jobs, run;
                 int64_t misses, entries, hits, pcie;
+                double pgu, pq, pdn;   // sm86 lab: the CPU pool's gate/up, host quantize and down phases (ms, summed)
+                double pdag;           // sm86 lab STRATA_POOL_DAG=1: the single gate/up + quantize + down batches
             };
             auto dec_snap = [&]() {
+                const strata::kernels::cpu::ExpertPool* pp = drive.d.pool;
                 return DecSnap{ver.ms_wait, ver.ms_pool, ver.ms_host, drive.d.ms_plan, drive.d.ms_actq, drive.d.ms_jobs,
                                drive.d.ms_run, drive.d.multi_misses, drive.d.multi_entries, drive.d.cache_hits,
-                               drive.d.pcie_experts};
+                               drive.d.pcie_experts, pp ? pp->ms_multi_gu : 0.0, pp ? pp->ms_multi_q : 0.0,
+                               pp ? pp->ms_multi_down : 0.0, pp ? pp->ms_multi_dag : 0.0};
             };
             const DecSnap ds0 = dec_snap();
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
@@ -19404,6 +19408,14 @@ int main(int argc, char** argv) {
                                  (d1.entries - ds0.entries) / (w * L), (d1.hits - ds0.hits) / (w * L), (d1.pcie - ds0.pcie) / (w * L),
                                  dt_adapt_wait / w, dt_adapt_join / w, (double) ((ajob ? a_swapped : adapt_nswaps) - dt_sw0) / w);
                 }
+                if (drive.d.pool != nullptr)   // sm86 lab: the CPU share's three phases (each run_phase holds its two re-park waits)
+                    std::fprintf(stderr, "strata decode pool: gate/up %.3f  quantize %.3f  down %.3f ms/window; per layer %.1f / %.1f / %.1f us\n",
+                                 (d1.pgu - ds0.pgu) / w, (d1.pq - ds0.pq) / w, (d1.pdn - ds0.pdn) / w,
+                                 1000.0 * (d1.pgu - ds0.pgu) / (w * L), 1000.0 * (d1.pq - ds0.pq) / (w * L),
+                                 1000.0 * (d1.pdn - ds0.pdn) / (w * L));
+                if (drive.d.pool != nullptr && d1.pdag > ds0.pdag)
+                    std::fprintf(stderr, "strata decode pool dag: %.3f ms/window; per layer %.1f us\n", (d1.pdag - ds0.pdag) / w,
+                                 1000.0 * (d1.pdag - ds0.pdag) / (w * L));
                 if (aov)
                     std::fprintf(stderr, "strata decode adapt overlap: %lld windows took swaps still landing, a layer waited %.2f ms in all so far\n",
                                  (long long) aov_flips, ver.ms_gate);

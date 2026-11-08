@@ -252,6 +252,8 @@ public:
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
+    /// sm86 lab STRATA_POOL_DAG=1: the native layers' single gate/up + quantize + down batches, accumulated ms.
+    double ms_multi_dag = 0;
     int64_t multi_bytes = 0;
 
     /// Total `_mm_pause` iterations spent waiting, over all workers, is no longer counted - see the note on the
@@ -369,6 +371,22 @@ private:
     const NativeFmt* nfmt_ = nullptr;
     NativeArithmetic narithmetic_ = NativeArithmetic::Default;
     std::vector<SplitBufMulti> split_multi_;
+    /// One expert's rows [r0, r1) of a native phase (5 = gate/up + SwiGLU into its split buffer, 6 = down rows).
+    void native_rows(int mode, int e, int r0, int r1);
+    // sm86 lab STRATA_POOL_DAG=1 (docs/decisions/0003): mode 7 = ONE batch per native layer, every expert's gate/up
+    // tasks (ids [0, dag_gu_tasks_), expert-major) then its down tasks (expert-major).  The worker whose gate/up task is
+    // the expert's last (`gu_left` reaches 0, acq_rel: it has every other task's rows) quantizes that expert's
+    // intermediate with the host loop's own calls, then release-stores 1 in `ready` (cleared before the batch); a down task acquires
+    // it (pausing until then: every gate/up id is below every down id, so the expert's gate/up tasks are all claimed by
+    // threads that never wait).  Rows are cut on multiples of 16 (64 B of fp32 outputs).  Off: none of this is touched.
+    struct alignas(64) DagExpert {
+        std::atomic<uint32_t> gu_left{0};
+        alignas(64) std::atomic<uint32_t> ready{0};
+    };
+    std::unique_ptr<DagExpert[]> dag_;
+    int dag_gu_tasks_ = 0;
+    int dag_gu_per_ = 1, dag_dn_per_ = 1;
+    void dag_task(int i);
     // STRATA_NUMA_SPLIT=1 (opt-in, Linux, exactly 2 nodes): in the native row phases (modes 5/6) every expert's rows
     // are cut into one slice per NUMA node (slice k = rows [per*k/2, per*(k+1)/2) of the gate/up or down matrix, the
     // part the resident complement places on node k in step B), and each node's threads claim and count on their own
