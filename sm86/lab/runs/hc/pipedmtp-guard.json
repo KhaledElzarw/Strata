@@ -1,0 +1,547 @@
+[
+ {
+  "arm": "",
+  "rc": 0,
+  "hashes": {
+   "1/0/0": "9a9ef2006c1856b4",
+   "1/0/1": "ae6f39a4fef3a2dd",
+   "1/1/0": "0ddd21ec77b8837d",
+   "1/1/1": "b23b31a1ceea79ce",
+   "2/0/0": "381d03f2bae44f8e",
+   "2/0/1": "c660ca3022f3ed4b",
+   "2/1/0": "3fb183ab45eb6a1a",
+   "2/1/1": "ba48430908e085be",
+   "3/0/0": "6d9d766cff190352",
+   "3/0/1": "cfeb3c5650dced1f",
+   "3/1/0": "57b2d3e2f515405e",
+   "3/1/1": "5e70070e18362152",
+   "4/0/0": "05a2e0f4e2bd09b0",
+   "4/0/1": "bd12c293cf180e78",
+   "4/1/0": "458262cbeb48fe95",
+   "4/1/1": "320297f9e5943262",
+   "5/0/0": "9f04bcbdfc56f277",
+   "5/0/1": "2ccfc8f720390cb3",
+   "5/1/0": "1904415d5aed73db",
+   "5/1/1": "35d080c2abf76272",
+   "6/0/0": "49d9a31afd94a6a0",
+   "6/0/1": "63aa0ad9c13d86e2",
+   "6/1/0": "bec667cf6654d726",
+   "6/1/1": "10df575f8bc4f29f",
+   "7/0/0": "77c91c500ef3a246",
+   "7/0/1": "4580dbce469fbc90",
+   "7/1/0": "82aff374c19c1e3c",
+   "7/1/1": "c0516360f21f91cc",
+   "8/0/0": "ba24ebf41f707fc1",
+   "8/0/1": "9ce174f1b4aaa21a",
+   "8/1/0": "4198353329d31a61",
+   "8/1/1": "bd597fad3a221832"
+  },
+  "cold": {
+   "1": [
+    {
+     "read": 31.7,
+     "norm": 7.2,
+     "down": 14.3,
+     "up": 17.4
+    }
+   ],
+   "2": [
+    {
+     "read": 39.4,
+     "norm": 7.2,
+     "down": 18.4,
+     "up": 19.5
+    }
+   ],
+   "3": [
+    {
+     "read": 44.4,
+     "norm": 7.2,
+     "down": 21.5,
+     "up": 21.5
+    }
+   ],
+   "4": [
+    {
+     "read": 48.7,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 22.5
+    }
+   ],
+   "5": [
+    {
+     "read": 53.9,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 25.6
+    }
+   ],
+   "6": [
+    {
+     "read": 57.7,
+     "norm": 7.2,
+     "down": 27.6,
+     "up": 27.6
+    }
+   ],
+   "7": [
+    {
+     "read": 67.3,
+     "norm": 7.2,
+     "down": 33.8,
+     "up": 31.7
+    }
+   ],
+   "8": [
+    {
+     "read": 71.8,
+     "norm": 7.2,
+     "down": 37.9,
+     "up": 33.8
+    }
+   ]
+  },
+  "persist": {},
+  "bw": [],
+  "res": [],
+  "prof": [],
+  "tail": "6 up  25.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 5 | read   49.6 us (events) | stamps median: norm   7.2 down  24.6 up  22.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 5 | read   40.4 us (events) | stamps median: norm   2.0 down  19.5 up  23.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 6 | read   57.7 us (events) | stamps median: norm   7.2 down  27.6 up  27.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 6 | read   54.8 us (events) | stamps median: norm   7.2 down  27.6 up  24.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 6 | read   46.5 us (events) | stamps median: norm   2.0 down  21.5 up  27.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 7 | read   67.3 us (events) | stamps median: norm   7.2 down  33.8 up  31.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 7 | read   62.4 us (events) | stamps median: norm   7.2 down  33.8 up  26.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 7 | read   50.3 us (events) | stamps median: norm   2.0 down  24.6 up  30.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 8 | read   71.8 us (events) | stamps median: norm   7.2 down  37.9 up  33.8 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 8 | read   68.9 us (events) | stamps median: norm   7.2 down  37.9 up  28.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 8 | read   62.8 us (events) | stamps median: norm   2.0 down  28.7 up  31.7 us (incl. a stamp kernel each)\nfused_gr_bench: 0 differing\n"
+ },
+ {
+  "arm": "STRATA_GR_DOWN86=1;STRATA_GR_UP_WIDE=1;STRATA_GR_UP_HYB=3;STRATA_GR_XN=1;STRATA_GR_UP_PL=1;STRATA_GR_D87=8",
+  "rc": 0,
+  "hashes": {
+   "1/0/0": "9a9ef2006c1856b4",
+   "1/0/1": "ae6f39a4fef3a2dd",
+   "1/1/0": "0ddd21ec77b8837d",
+   "1/1/1": "b23b31a1ceea79ce",
+   "2/0/0": "381d03f2bae44f8e",
+   "2/0/1": "c660ca3022f3ed4b",
+   "2/1/0": "3fb183ab45eb6a1a",
+   "2/1/1": "ba48430908e085be",
+   "3/0/0": "6d9d766cff190352",
+   "3/0/1": "cfeb3c5650dced1f",
+   "3/1/0": "57b2d3e2f515405e",
+   "3/1/1": "5e70070e18362152",
+   "4/0/0": "05a2e0f4e2bd09b0",
+   "4/0/1": "bd12c293cf180e78",
+   "4/1/0": "458262cbeb48fe95",
+   "4/1/1": "320297f9e5943262",
+   "5/0/0": "9f04bcbdfc56f277",
+   "5/0/1": "2ccfc8f720390cb3",
+   "5/1/0": "1904415d5aed73db",
+   "5/1/1": "35d080c2abf76272",
+   "6/0/0": "49d9a31afd94a6a0",
+   "6/0/1": "63aa0ad9c13d86e2",
+   "6/1/0": "bec667cf6654d726",
+   "6/1/1": "10df575f8bc4f29f",
+   "7/0/0": "77c91c500ef3a246",
+   "7/0/1": "4580dbce469fbc90",
+   "7/1/0": "82aff374c19c1e3c",
+   "7/1/1": "c0516360f21f91cc",
+   "8/0/0": "ba24ebf41f707fc1",
+   "8/0/1": "9ce174f1b4aaa21a",
+   "8/1/0": "4198353329d31a61",
+   "8/1/1": "bd597fad3a221832"
+  },
+  "cold": {
+   "1": [
+    {
+     "read": 31.1,
+     "norm": 7.2,
+     "down": 15.4,
+     "up": 14.3
+    }
+   ],
+   "2": [
+    {
+     "read": 34.0,
+     "norm": 7.2,
+     "down": 16.4,
+     "up": 15.4
+    }
+   ],
+   "3": [
+    {
+     "read": 37.7,
+     "norm": 7.2,
+     "down": 16.4,
+     "up": 15.4
+    }
+   ],
+   "4": [
+    {
+     "read": 36.4,
+     "norm": 7.2,
+     "down": 17.4,
+     "up": 16.4
+    }
+   ],
+   "5": [
+    {
+     "read": 41.9,
+     "norm": 7.2,
+     "down": 20.5,
+     "up": 17.4
+    }
+   ],
+   "6": [
+    {
+     "read": 42.5,
+     "norm": 7.2,
+     "down": 21.5,
+     "up": 18.4
+    }
+   ],
+   "7": [
+    {
+     "read": 45.4,
+     "norm": 7.2,
+     "down": 22.5,
+     "up": 18.4
+    }
+   ],
+   "8": [
+    {
+     "read": 47.1,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 20.5
+    }
+   ]
+  },
+  "persist": {},
+  "bw": [],
+  "res": [],
+  "prof": [],
+  "tail": "5 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 5 | read   41.1 us (events) | stamps median: norm   7.2 down  20.5 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 5 | read   40.7 us (events) | stamps median: norm   2.0 down  19.5 up  23.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 6 | read   42.5 us (events) | stamps median: norm   7.2 down  21.5 up  18.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 6 | read   43.5 us (events) | stamps median: norm   7.2 down  21.5 up  18.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 6 | read   48.0 us (events) | stamps median: norm   2.0 down  21.5 up  27.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 7 | read   45.4 us (events) | stamps median: norm   7.2 down  22.5 up  18.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 7 | read   43.9 us (events) | stamps median: norm   7.2 down  22.5 up  18.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 7 | read   53.5 us (events) | stamps median: norm   2.0 down  24.6 up  30.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 8 | read   47.1 us (events) | stamps median: norm   7.2 down  24.6 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 8 | read   47.1 us (events) | stamps median: norm   7.2 down  24.6 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 8 | read   58.3 us (events) | stamps median: norm   2.0 down  28.7 up  31.7 us (incl. a stamp kernel each)\nfused_gr_bench: 0 differing\n"
+ },
+ {
+  "arm": "STRATA_GR_DOWN86=1;STRATA_GR_UP_WIDE=1;STRATA_GR_UP_HYB=3;STRATA_GR_XN=1;STRATA_GR_UP_PL=1;STRATA_GR_D87=8;STRATA_PIPED_MTP=true",
+  "rc": 0,
+  "hashes": {
+   "1/0/0": "9a9ef2006c1856b4",
+   "1/0/1": "ae6f39a4fef3a2dd",
+   "1/1/0": "0ddd21ec77b8837d",
+   "1/1/1": "b23b31a1ceea79ce",
+   "2/0/0": "381d03f2bae44f8e",
+   "2/0/1": "c660ca3022f3ed4b",
+   "2/1/0": "3fb183ab45eb6a1a",
+   "2/1/1": "ba48430908e085be",
+   "3/0/0": "6d9d766cff190352",
+   "3/0/1": "cfeb3c5650dced1f",
+   "3/1/0": "57b2d3e2f515405e",
+   "3/1/1": "5e70070e18362152",
+   "4/0/0": "05a2e0f4e2bd09b0",
+   "4/0/1": "bd12c293cf180e78",
+   "4/1/0": "458262cbeb48fe95",
+   "4/1/1": "320297f9e5943262",
+   "5/0/0": "9f04bcbdfc56f277",
+   "5/0/1": "2ccfc8f720390cb3",
+   "5/1/0": "1904415d5aed73db",
+   "5/1/1": "35d080c2abf76272",
+   "6/0/0": "49d9a31afd94a6a0",
+   "6/0/1": "63aa0ad9c13d86e2",
+   "6/1/0": "bec667cf6654d726",
+   "6/1/1": "10df575f8bc4f29f",
+   "7/0/0": "77c91c500ef3a246",
+   "7/0/1": "4580dbce469fbc90",
+   "7/1/0": "82aff374c19c1e3c",
+   "7/1/1": "c0516360f21f91cc",
+   "8/0/0": "ba24ebf41f707fc1",
+   "8/0/1": "9ce174f1b4aaa21a",
+   "8/1/0": "4198353329d31a61",
+   "8/1/1": "bd597fad3a221832"
+  },
+  "cold": {
+   "1": [
+    {
+     "read": 29.4,
+     "norm": 7.2,
+     "down": 14.3,
+     "up": 14.3
+    }
+   ],
+   "2": [
+    {
+     "read": 37.6,
+     "norm": 7.2,
+     "down": 18.4,
+     "up": 15.4
+    }
+   ],
+   "3": [
+    {
+     "read": 41.6,
+     "norm": 7.2,
+     "down": 21.5,
+     "up": 16.4
+    }
+   ],
+   "4": [
+    {
+     "read": 45.6,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 16.4
+    }
+   ],
+   "5": [
+    {
+     "read": 46.5,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 17.4
+    }
+   ],
+   "6": [
+    {
+     "read": 52.0,
+     "norm": 7.2,
+     "down": 28.7,
+     "up": 17.4
+    }
+   ],
+   "7": [
+    {
+     "read": 58.8,
+     "norm": 7.2,
+     "down": 33.8,
+     "up": 19.5
+    }
+   ],
+   "8": [
+    {
+     "read": 68.4,
+     "norm": 7.2,
+     "down": 37.9,
+     "up": 20.5
+    }
+   ]
+  },
+  "persist": {},
+  "bw": [],
+  "res": [],
+  "prof": [],
+  "tail": "6 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 5 | read   45.6 us (events) | stamps median: norm   7.2 down  24.6 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 5 | read   43.3 us (events) | stamps median: norm   2.0 down  19.5 up  24.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 6 | read   52.0 us (events) | stamps median: norm   7.2 down  28.7 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 6 | read   50.4 us (events) | stamps median: norm   7.2 down  28.7 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 6 | read   49.0 us (events) | stamps median: norm   2.0 down  22.5 up  27.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 7 | read   58.8 us (events) | stamps median: norm   7.2 down  33.8 up  19.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 7 | read   55.7 us (events) | stamps median: norm   7.2 down  33.8 up  19.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 7 | read   55.7 us (events) | stamps median: norm   2.0 down  24.6 up  30.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 8 | read   68.4 us (events) | stamps median: norm   7.2 down  37.9 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 8 | read   63.2 us (events) | stamps median: norm   7.2 down  37.9 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 8 | read   60.6 us (events) | stamps median: norm   2.0 down  28.7 up  32.8 us (incl. a stamp kernel each)\nfused_gr_bench: 0 differing\n"
+ },
+ {
+  "arm": "STRATA_GR_DOWN86=1;STRATA_GR_UP_WIDE=1;STRATA_GR_UP_HYB=3;STRATA_GR_XN=1;STRATA_GR_UP_PL=1;STRATA_GR_D87=8;STRATA_PIPED_MTP=0",
+  "rc": 0,
+  "hashes": {
+   "1/0/0": "9a9ef2006c1856b4",
+   "1/0/1": "ae6f39a4fef3a2dd",
+   "1/1/0": "0ddd21ec77b8837d",
+   "1/1/1": "b23b31a1ceea79ce",
+   "2/0/0": "381d03f2bae44f8e",
+   "2/0/1": "c660ca3022f3ed4b",
+   "2/1/0": "3fb183ab45eb6a1a",
+   "2/1/1": "ba48430908e085be",
+   "3/0/0": "6d9d766cff190352",
+   "3/0/1": "cfeb3c5650dced1f",
+   "3/1/0": "57b2d3e2f515405e",
+   "3/1/1": "5e70070e18362152",
+   "4/0/0": "05a2e0f4e2bd09b0",
+   "4/0/1": "bd12c293cf180e78",
+   "4/1/0": "458262cbeb48fe95",
+   "4/1/1": "320297f9e5943262",
+   "5/0/0": "9f04bcbdfc56f277",
+   "5/0/1": "2ccfc8f720390cb3",
+   "5/1/0": "1904415d5aed73db",
+   "5/1/1": "35d080c2abf76272",
+   "6/0/0": "49d9a31afd94a6a0",
+   "6/0/1": "63aa0ad9c13d86e2",
+   "6/1/0": "bec667cf6654d726",
+   "6/1/1": "10df575f8bc4f29f",
+   "7/0/0": "77c91c500ef3a246",
+   "7/0/1": "4580dbce469fbc90",
+   "7/1/0": "82aff374c19c1e3c",
+   "7/1/1": "c0516360f21f91cc",
+   "8/0/0": "ba24ebf41f707fc1",
+   "8/0/1": "9ce174f1b4aaa21a",
+   "8/1/0": "4198353329d31a61",
+   "8/1/1": "bd597fad3a221832"
+  },
+  "cold": {
+   "1": [
+    {
+     "read": 31.2,
+     "norm": 7.2,
+     "down": 16.4,
+     "up": 14.3
+    }
+   ],
+   "2": [
+    {
+     "read": 36.3,
+     "norm": 7.2,
+     "down": 16.4,
+     "up": 15.4
+    }
+   ],
+   "3": [
+    {
+     "read": 34.2,
+     "norm": 7.2,
+     "down": 17.4,
+     "up": 15.4
+    }
+   ],
+   "4": [
+    {
+     "read": 35.1,
+     "norm": 7.2,
+     "down": 17.4,
+     "up": 16.4
+    }
+   ],
+   "5": [
+    {
+     "read": 43.4,
+     "norm": 7.2,
+     "down": 20.5,
+     "up": 17.4
+    }
+   ],
+   "6": [
+    {
+     "read": 40.6,
+     "norm": 7.2,
+     "down": 21.5,
+     "up": 18.4
+    }
+   ],
+   "7": [
+    {
+     "read": 45.9,
+     "norm": 7.2,
+     "down": 22.5,
+     "up": 19.5
+    }
+   ],
+   "8": [
+    {
+     "read": 45.6,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 20.5
+    }
+   ]
+  },
+  "persist": {},
+  "bw": [],
+  "res": [],
+  "prof": [],
+  "tail": "5 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 5 | read   45.5 us (events) | stamps median: norm   7.2 down  19.5 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 5 | read   43.2 us (events) | stamps median: norm   2.0 down  19.5 up  24.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 6 | read   40.6 us (events) | stamps median: norm   7.2 down  21.5 up  18.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 6 | read   42.0 us (events) | stamps median: norm   7.2 down  21.5 up  18.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 6 | read   49.4 us (events) | stamps median: norm   2.0 down  21.5 up  27.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 7 | read   45.9 us (events) | stamps median: norm   7.2 down  22.5 up  19.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 7 | read   44.5 us (events) | stamps median: norm   7.2 down  22.5 up  19.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 7 | read   54.6 us (events) | stamps median: norm   2.0 down  24.6 up  30.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 8 | read   45.6 us (events) | stamps median: norm   7.2 down  24.6 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 8 | read   48.1 us (events) | stamps median: norm   7.2 down  24.6 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 8 | read   60.9 us (events) | stamps median: norm   2.0 down  28.7 up  32.8 us (incl. a stamp kernel each)\nfused_gr_bench: 0 differing\n"
+ },
+ {
+  "arm": "STRATA_GR_DOWN86=1;STRATA_GR_UP_WIDE=1;STRATA_GR_UP_HYB=3;STRATA_GR_XN=1;STRATA_GR_UP_PL=1;STRATA_GR_D87=8;STRATA_PIPED_CONCURRENT=1",
+  "rc": 0,
+  "hashes": {
+   "1/0/0": "9a9ef2006c1856b4",
+   "1/0/1": "ae6f39a4fef3a2dd",
+   "1/1/0": "0ddd21ec77b8837d",
+   "1/1/1": "b23b31a1ceea79ce",
+   "2/0/0": "381d03f2bae44f8e",
+   "2/0/1": "c660ca3022f3ed4b",
+   "2/1/0": "3fb183ab45eb6a1a",
+   "2/1/1": "ba48430908e085be",
+   "3/0/0": "6d9d766cff190352",
+   "3/0/1": "cfeb3c5650dced1f",
+   "3/1/0": "57b2d3e2f515405e",
+   "3/1/1": "5e70070e18362152",
+   "4/0/0": "05a2e0f4e2bd09b0",
+   "4/0/1": "bd12c293cf180e78",
+   "4/1/0": "458262cbeb48fe95",
+   "4/1/1": "320297f9e5943262",
+   "5/0/0": "9f04bcbdfc56f277",
+   "5/0/1": "2ccfc8f720390cb3",
+   "5/1/0": "1904415d5aed73db",
+   "5/1/1": "35d080c2abf76272",
+   "6/0/0": "49d9a31afd94a6a0",
+   "6/0/1": "63aa0ad9c13d86e2",
+   "6/1/0": "bec667cf6654d726",
+   "6/1/1": "10df575f8bc4f29f",
+   "7/0/0": "77c91c500ef3a246",
+   "7/0/1": "4580dbce469fbc90",
+   "7/1/0": "82aff374c19c1e3c",
+   "7/1/1": "c0516360f21f91cc",
+   "8/0/0": "ba24ebf41f707fc1",
+   "8/0/1": "9ce174f1b4aaa21a",
+   "8/1/0": "4198353329d31a61",
+   "8/1/1": "bd597fad3a221832"
+  },
+  "cold": {
+   "1": [
+    {
+     "read": 33.3,
+     "norm": 7.2,
+     "down": 14.3,
+     "up": 14.3
+    }
+   ],
+   "2": [
+    {
+     "read": 45.3,
+     "norm": 25.6,
+     "down": 23.6,
+     "up": 18.4
+    }
+   ],
+   "3": [
+    {
+     "read": 41.7,
+     "norm": 7.2,
+     "down": 21.5,
+     "up": 15.4
+    }
+   ],
+   "4": [
+    {
+     "read": 45.6,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 16.4
+    }
+   ],
+   "5": [
+    {
+     "read": 42.5,
+     "norm": 7.2,
+     "down": 24.6,
+     "up": 17.4
+    }
+   ],
+   "6": [
+    {
+     "read": 50.7,
+     "norm": 7.2,
+     "down": 28.7,
+     "up": 17.4
+    }
+   ],
+   "7": [
+    {
+     "read": 57.5,
+     "norm": 7.2,
+     "down": 33.8,
+     "up": 19.5
+    }
+   ],
+   "8": [
+    {
+     "read": 62.6,
+     "norm": 7.2,
+     "down": 37.9,
+     "up": 20.5
+    }
+   ]
+  },
+  "persist": {},
+  "bw": [],
+  "res": [],
+  "prof": [],
+  "tail": "6 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 5 | read   42.3 us (events) | stamps median: norm   7.2 down  24.6 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 5 | read   43.0 us (events) | stamps median: norm   2.0 down  19.5 up  23.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 6 | read   50.7 us (events) | stamps median: norm   7.2 down  28.7 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 6 | read   47.1 us (events) | stamps median: norm   7.2 down  28.7 up  17.4 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 6 | read   49.6 us (events) | stamps median: norm   2.0 down  21.5 up  27.6 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 7 | read   57.5 us (events) | stamps median: norm   7.2 down  33.8 up  19.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 7 | read   56.7 us (events) | stamps median: norm   7.2 down  33.8 up  19.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 7 | read   54.4 us (events) | stamps median: norm   2.0 down  24.6 up  30.7 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 0 T 8 | read   62.6 us (events) | stamps median: norm   7.2 down  37.9 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 1 T 8 | read   64.0 us (events) | stamps median: norm   7.2 down  37.9 up  20.5 us (incl. a stamp kernel each)\nCOLD(40 sets) fast 2 T 8 | read   64.2 us (events) | stamps median: norm   2.0 down  28.7 up  32.8 us (incl. a stamp kernel each)\nfused_gr_bench: 0 differing\n"
+ }
+]

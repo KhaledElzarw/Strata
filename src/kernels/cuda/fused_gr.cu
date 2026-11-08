@@ -2152,17 +2152,23 @@ int gr_down_nw() {
     return nw;
 }
 
+// Can two HC reads of one device run at once?  STRATA_PIPED_CONCURRENT (on by atoi) and STRATA_PIPED_MTP (on when set, not
+// empty and not starting with '0': generate.cpp) can, so the kernels with one-per-device scratch (DOWN82, DOWN86, RES) stay
+// off for any value either switch could take as on.
+static bool gr_two_reads_possible() {
+    for (const char* k : {"STRATA_PIPED_CONCURRENT", "STRATA_PIPED_MTP"}) {
+        const char* p = std::getenv(k);
+        if (p != nullptr && ((p[0] != '\0' && p[0] != '0') || std::atoi(p) != 0)) return true;
+    }
+    return false;
+}
+
 // STRATA_GR_DOWN82=1 (opt-in): gr_down82_kernel for the staged bf16 down projection.  Its combine scratch is one per device,
-// so it stays off with the switches that can run two reads at once (STRATA_PIPED_CONCURRENT, STRATA_PIPED_MTP).
+// so it stays off with the switches that can run two reads at once (gr_two_reads_possible).
 bool gr_down82_on() {
     static const bool on = [] {
         const char* v = std::getenv("STRATA_GR_DOWN82");
-        if (v == nullptr || std::atoi(v) == 0) return false;
-        for (const char* k : {"STRATA_PIPED_CONCURRENT", "STRATA_PIPED_MTP"}) {
-            const char* p = std::getenv(k);
-            if (p != nullptr && std::atoi(p) != 0) return false;
-        }
-        return true;
+        return v != nullptr && std::atoi(v) != 0 && !gr_two_reads_possible();
     }();
     return on;
 }
@@ -2172,12 +2178,7 @@ bool gr_down82_on() {
 bool gr_down86_on() {
     static const bool on = [] {
         const char* v = std::getenv("STRATA_GR_DOWN86");
-        if (v == nullptr || std::atoi(v) == 0) return false;
-        for (const char* k : {"STRATA_PIPED_CONCURRENT", "STRATA_PIPED_MTP"}) {
-            const char* p = std::getenv(k);
-            if (p != nullptr && std::atoi(p) != 0) return false;
-        }
-        return true;
+        return v != nullptr && std::atoi(v) != 0 && !gr_two_reads_possible();
     }();
     return on;
 }
@@ -2670,17 +2671,11 @@ __global__ void __launch_bounds__(RES_THREADS, 1) gr_res_kernel(GrMulti m, int p
     }
 }
 // STRATA_GR_RES=1: DOWN86's one-per-device scratch (g_d82_part, g_d82_cnt) and its own counters (g_res_ctr), so it stays
-// off with the switches that can run two reads of a device at once, as DOWN82 / DOWN86 - for any value generate.cpp could
-// take as on (STRATA_PIPED_CONCURRENT by atoi, STRATA_PIPED_MTP by "set, not empty, not starting with '0'")
+// off with the switches that can run two reads of a device at once (gr_two_reads_possible), as DOWN82 / DOWN86
 bool gr_res_on() {
     static const bool on = [] {
         const char* v = std::getenv("STRATA_GR_RES");
-        if (v == nullptr || std::atoi(v) == 0) return false;
-        for (const char* k : {"STRATA_PIPED_CONCURRENT", "STRATA_PIPED_MTP"}) {
-            const char* p = std::getenv(k);
-            if (p != nullptr && ((p[0] != '\0' && p[0] != '0') || std::atoi(p) != 0)) return false;
-        }
-        return true;
+        return v != nullptr && std::atoi(v) != 0 && !gr_two_reads_possible();
     }();
     return on;
 }

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -897,6 +898,31 @@ class Pins(unittest.TestCase):
         self.assertEqual(drafting.set_of("Qwen3.8-Flash-Next-IQ3_S"), "iq3_s")
         self.assertEqual(drafting.set_of(None), "")
         self.assertTrue(drafting.supported_model(V31), "the v31 name passes the supported-model pattern")
+
+
+class DraftPackKey(Base):
+    """sm86-decode: STRATA_DRAFT_PACK, else a config's "draft_pack", starts DFlash2 with exactly that pack, for that apply() call only."""
+
+    def setUp(self):
+        super().setUp()
+        self.put_tuned()
+        self.put_stock()
+        self.a, self.b = self.root / "a.pack", self.root / "b.pack"
+        self.a.write_bytes(b"a")
+        self.b.write_bytes(b"b")
+        env = mock.patch.dict(os.environ)
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop("STRATA_DRAFT_PACK", None)
+
+    def test_each_config_gets_its_own_pack_and_none_stays_behind(self):
+        seen = [flag(self.apply(self.cfg(Q4, **extra))[1], "--draft-model") for extra in ({"draft_pack": str(self.a)}, {"draft_pack": str(self.b)}, {})]
+        self.assertEqual(seen, [str(self.a), str(self.b), str(drafting.tuned_path(self.data))])
+        self.assertNotIn("STRATA_DRAFT_PACK", os.environ)
+
+    def test_the_environment_wins_over_the_config(self):
+        os.environ["STRATA_DRAFT_PACK"] = str(self.b)
+        self.assertEqual(flag(self.apply(self.cfg(Q4, draft_pack=str(self.a)))[1], "--draft-model"), str(self.b))
 
 
 if __name__ == "__main__":
