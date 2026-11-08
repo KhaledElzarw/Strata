@@ -30,6 +30,11 @@ Strata's setup (`<checkout>/strata-iq3_xxs.json`, the base every A/B arm starts 
 | `train_profile.py`, `xstest.py`, `dl_sc117.py` | An expert-profile trainer (no gain), the abliteration spot check (10 XSTest-style prompts), and the model download with `sc117-expected-sha256.txt`. |
 | `build-engine.bat` | Builds `strata.exe` and the parity and bench tools for sm_86 only. |
 | `bwbench.cpp` | DRAM read bandwidth, steady and in per-layer bursts like the CPU expert pool's, on pinned threads (`runs/bw`). |
+| `pool_replay_bench.cpp` | The CPU expert pool on a recorded decode, no GPU: a `STRATA_ROUTE_DUMP` file's CPU jobs through the engine's own `ExpertPool` (each layer's real formats, cold DRAM, 230 us between layers), with an output hash for bit-identity (`runs/cpu`; built by `build-engine.bat pool_replay_bench`). `replay_rounds.sh` runs arms in interleaved rounds and prints the medians. |
+| `kq_pinned.ps1` | `kq_cpu_bench` (the CPU expert kernels per format, from DRAM or cache-resident) with one thread per physical core, as the pool runs. |
+| `routestats.py` | Routing statistics from a `STRATA_ROUTE_DUMP` file: CPU misses and bytes per layer-window, and how often a layer's misses repeat from earlier windows (`runs/route`). |
+| `ab_clean.py` | `ab.py`'s paired statistics without the turns another GPU program overlapped (the machine is shared): `python ab_clean.py runs/ab/NAME.json runs/ab/NAME-pmon.log --pmon 5`, from a per-process GPU log written beside the A/B (the logging commands are in its docstring). |
+| `router_trace.py` | The router chain of every MoE layer in an Nsight `cuda_gpu_trace` CSV: gaps, the BF16 GEMVs by grid and token count, the top-10 and the doorbell (`runs/nsys/q3_router.txt`). |
 
 The shell scripts (`hc*.sh`, `sweep*.sh`, `fc*.sh`, `expbench10*.sh`, `chain1.sh`, `hcfix.sh`) are the exact
 experiment drivers as they ran, so they name the original machine's paths (`/c/src/Strata` and
@@ -45,9 +50,12 @@ experiment drivers as they ran, so they name the original machine's paths (`/c/s
 | `runs/cold` | Cold prompt throughput (`q3.jsonl`, `q3pt.jsonl`). |
 | `runs/hc`, `runs/id` | HC kernel parity logs and the whole-engine identity summaries (`sweep*.out`). |
 | `runs/fc` | Phase 1's token-forcing results. |
-| `runs/nsys` | The Nsight analyses (`*_an.txt`, `q3_conc.txt`, `q3_layers.txt`, `q3_gaps.txt`) and kernel summaries. |
+| `runs/nsys` | The Nsight analyses (`*_an.txt`, `q3_conc.txt`, `q3_layers.txt`, `q3_gaps.txt`, `q3_router.txt`) and kernel summaries. |
+| `runs/bell` | Issue #3's router chain: `route_bell_parity` and `router_chain_bench` output per switch and token count. |
 | `runs/exp` | Expert-kernel bench logs. |
 | `runs/bw` | DRAM read bandwidth from `bwbench.cpp`. |
+| `runs/cpu` | CPU expert kernel and pool timings for issue #2: `kq_cpu_bench` pinned and cache-resident runs, `cpu_dispatch_dump` hashes, and the interleaved `pool_replay_bench` rounds. |
+| `runs/route` | `routestats.py` on the route dump of one 57-turn replay (the dump itself, 87 MB, is not published). |
 | `council/ceiling` | The question put to three outside models about the speed ceiling, and their answers. |
 
 The experiments, in order: `e1`-`e8` (phase 1: drafter, expert cache, prefill chunk, draft confidence, stock

@@ -82,6 +82,7 @@ steps. Every number here comes from [`sm86/assets/results.json`](sm86/assets/res
 |---|---|---|
 | `STRATA_GR_RES=1` | the whole HC read as one cooperative resident kernel (exact) | +0.6% (−1.1 to +2.2): neutral, though about 4 µs faster per read alone. [Decision 0004](docs/decisions/0004-sm86-hc-resident-read.md) |
 | `STRATA_POOL_DAG=1` | the CPU expert pool as one batch per layer (exact) | −0.3% (−1.9 to +1.5): neutral. [Decision 0003](docs/decisions/0003-sm86-cpu-expert-pool-dataflow.md) |
+| `STRATA_POOL_DAG=2` + `STRATA_SMALL_UNR=3` + `STRATA_ROUTE_BELL=2` | the CPU pool's down tasks in gate/up completion order, upstream's constant-trip read for the router GEMV, and the router's top-10 and doorbell in one launch (all exact) | +1.1% (−0.3 to +2.5), measured as one bundle: below the bar, though each is faster alone (pool 7.9% in its replay bench, the fused launch 1.0–1.8 µs a layer, the GEMV unroll 0.4–1.5 µs at 1–4 tokens). Decisions [0005](docs/decisions/0005-sm86-cpu-pool-bandwidth.md) and [0006](docs/decisions/0006-sm86-router-chain.md) |
 | Windows large pages | 2 MiB pages for the 40 GiB CPU expert arena | +0.7%, within noise |
 | `STRATA_HC_PERSIST=1` | one persistent HC kernel (rounding-level) | 0.5% slower |
 | PCIe share 0.5–0.6 | more of the missed experts copied to the GPU | 8–12% slower: the CPU and PCIe read the same DDR5 |
@@ -185,7 +186,7 @@ All are environment variables (or entries in a config's `env` block). **Fork** m
 
 Arguments in the config: `--expert-cache` (sized by the launcher), `--conversation-cache-mib 2048`,
 `--conversation-cache-park-gain 8192` and `--draft-conf 0.65`. The reasoning behind each kernel is in
-[`docs/decisions`](docs/decisions/) (0001 to 0004).
+[`docs/decisions`](docs/decisions/) (0001 to 0006).
 
 ## Quality: bit-identical
 
@@ -219,7 +220,8 @@ Everything that produced these numbers is in [`sm86/lab`](sm86/lab), with its ra
 | | |
 |---|---|
 | [`ab.py`](sm86/lab/ab.py) | interleaved A/B of engine settings on the recorded turns (`python ab.py runs/ab/exp-tier5.json`; summarize with `python ab.py --summary runs/ab/tier5.json`) |
-| [`replay.py`](sm86/lab/replay.py) | replays the recorded requests against a running server |
+| [`replay.py`](sm86/lab/replay.py) | replays the recorded requests against a running server; with `--gpu-gate` (an experiment's `"gpu_gate"`) each timed request first waits until no other program has used the GPU for 30 s |
+| [`ab_clean.py`](sm86/lab/ab_clean.py) | `ab.py`'s statistics without the turns another program on the GPU overlapped, from a per-process GPU log kept beside the A/B (this machine is shared) |
 | [`runs/replayset/hermes-v1`](sm86/lab/runs/replayset/hermes-v1) | the 57 recorded turns: six synthetic coding tasks ([`make_tasks.py`](sm86/lab/make_tasks.py)) solved by a local agent |
 | [`idcheck.py`](sm86/lab/idcheck.py), [`hcbench.py`](sm86/lab/hcbench.py) | the whole-engine forced-decode check and the HC kernel parity sweep |
 | [`coldbench.py`](sm86/lab/coldbench.py), [`nsysconc.py`](sm86/lab/nsysconc.py) | cold prompt throughput, and the Nsight timeline analysis |
@@ -246,6 +248,11 @@ ms), the HC and dense projections (1–2 ms), one kernel for router, top-k and d
 linear-attention kernels (about 0.5 ms) and the drafter (about 0.4 ms). The full answers are in
 [`sm86/lab/council/ceiling`](sm86/lab/council/ceiling). Each idea is an [issue](https://github.com/KhaledElzarw/Strata/issues)
 with its evidence and estimate.
+
+Two have since been measured, and both came in under their estimates. The router's three kernels already ran back to
+back, so one launch saves 0.05–0.09 ms a window, not 0.5 (decision 0006). The CPU pool's new task order saves 0.41 ms
+of pool time a window in its replay bench (decision 0005). On real turns the two together, with the router GEMV
+unroll, gained 1.1% (−0.3 to +2.5), below the 2% bar, so they stay off.
 
 ## License and credits
 

@@ -1,0 +1,256 @@
+loading the model (the first start takes a minute or two) ...
+[strata] drafting: DFlash2 alone (--draft dflash2, --draft-conf 0.65)
+[strata] starting the engine: reading the model's weights ...
+[strata] still starting (20 s) - please wait ...
+[strata] loading the experts into RAM (about 47 GB) and locking part of them for the GPU.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the server says when it is ready.
+[strata] experts loaded: 39.97 GiB at 5.12 GiB/s (38 s so far)
+[strata] filling the GPU's expert cache (9504 experts, 15.40 GiB of VRAM) ...
+[strata] almost ready ...
+ready: http://127.0.0.1:19100/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 262144 tokens)
+       open http://127.0.0.1:19100/ in a browser to chat; close this window to stop the model
+[strata] done: 32 tokens in 0 s (142.0 tok/s) (length, cancel=False), expert cache 80.3% hit (+1.1% of the routed experts over PCIe)
+[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in strata-<model>.json for every request) leaves room to answer
+[strata] reading the prompt: 5,953 of 6,310 tokens, 2 s so far
+[strata] writing a tool call: terminal: 60 of max 255826 tokens, 140.8 tok/s, 3 s
+[strata] done: 95 tokens in 3 s (148.6 tok/s) (stop, cancel=False), expert cache 80.3% hit (+1.6% of the routed experts over PCIe)
+[strata] writing a tool call: read_file: 32 of max 255250 tokens, 128.0 tok/s, 1 s
+[strata] done: 79 tokens in 1 s (173.9 tok/s) (stop, cancel=False), expert cache 85.1% hit (+1.4% of the routed experts over PCIe)
+[strata] reading the prompt: 8,273 of 8,278 tokens, 1 s so far
+[strata] thinking: 132 of budget 190394 (max 253858) tokens, 141.9 tok/s, 2 s
+[strata] thinking: 257 of budget 190394 (max 253858) tokens, 132.7 tok/s, 3 s
+[strata] thinking: 381 of budget 190394 (max 253858) tokens, 129.6 tok/s, 4 s
+[strata] thinking: 522 of budget 190394 (max 253858) tokens, 132.5 tok/s, 5 s
+[strata] thinking: 751 of budget 190394 (max 253858) tokens, 151.7 tok/s, 6 s
+[strata] thinking: 994 of budget 190394 (max 253858) tokens, 166.9 tok/s, 7 s
+[strata] thinking: 1125 of budget 190394 (max 253858) tokens, 161.6 tok/s, 8 s
+[strata] thinking: 1266 of budget 190394 (max 253858) tokens, 158.9 tok/s, 9 s
+[strata] thinking: 1405 of budget 190394 (max 253858) tokens, 156.5 tok/s, 10 s
+[strata] writing a tool call: write_file: 1564 of max 253858 tokens, 156.5 tok/s, 11 s
+[strata] writing a tool call: write_file: 1789 of max 253858 tokens, 162.5 tok/s, 12 s
+[strata] done: 1975 tokens in 13 s (167.9 tok/s) (stop, cancel=False), expert cache 91.5% hit (+0.6% of the routed experts over PCIe)
+[strata] reading the prompt: 9,811 of 9,816 tokens, 1 s so far
+[strata] done: 95 tokens in 2 s (153.5 tok/s) (stop, cancel=False), expert cache 76.9% hit (+2.2% of the routed experts over PCIe)
+[strata] writing a tool call: write_file: 86 of max 252080 tokens, 193.7 tok/s, 1 s
+[strata] writing a tool call: write_file: 341 of max 252080 tokens, 235.1 tok/s, 2 s
+[strata] done: 566 tokens in 3 s (244.1 tok/s) (stop, cancel=False), expert cache 88.8% hit (+0.9% of the routed experts over PCIe)
+[strata] thinking: 54 of budget 188532 (max 251376) tokens, 99.7 tok/s, 1 s
+[strata] done: 130 tokens in 1 s (141.6 tok/s) (stop, cancel=False), expert cache 78.6% hit (+1.9% of the routed experts over PCIe)
+[strata] answering: 43 of max 251035 tokens, 145.7 tok/s, 1 s
+[strata] answering: 168 of max 251035 tokens, 128.1 tok/s, 2 s
+[strata] done: 282 tokens in 3 s (142.7 tok/s) (stop, cancel=False), expert cache 88.3% hit (+0.9% of the routed experts over PCIe)
+[strata] response_format json_schema: the Python package jsonschema is not installed, so answers are only checked to be one JSON object (python -m pip install "jsonschema>=4.23,<5")
+[strata] thinking: 36 of budget 196112 (max 261482) tokens, 143.2 tok/s, 1 s
+[strata] done: 148 tokens in 2 s (146.4 tok/s) (stop, cancel=False), expert cache 83.6% hit (+1.1% of the routed experts over PCIe)
+[strata] reading the prompt: 5,950 of 6,082 tokens, 2 s so far
+[strata] done: 77 tokens in 3 s (170.7 tok/s) (stop, cancel=False), expert cache 83.0% hit (+1.3% of the routed experts over PCIe)
+[strata] thinking: 26 of budget 191625 (max 255500) tokens, 104.0 tok/s, 1 s
+[strata] thinking: 173 of budget 191625 (max 255500) tokens, 142.7 tok/s, 2 s
+[strata] writing a tool call: read_file: 328 of max 255500 tokens, 147.1 tok/s, 3 s
+[strata] done: 402 tokens in 3 s (156.5 tok/s) (stop, cancel=False), expert cache 92.4% hit (+0.4% of the routed experts over PCIe)
+[strata] thinking: 20 of budget 190980 (max 254639) tokens, 80.0 tok/s, 1 s
+[strata] thinking: 135 of budget 190980 (max 254639) tokens, 119.5 tok/s, 2 s
+[strata] thinking: 267 of budget 190980 (max 254639) tokens, 124.7 tok/s, 3 s
+[strata] thinking: 399 of budget 190980 (max 254639) tokens, 127.0 tok/s, 4 s
+[strata] thinking: 544 of budget 190980 (max 254639) tokens, 131.0 tok/s, 5 s
+[strata] thinking: 761 of budget 190980 (max 254639) tokens, 147.4 tok/s, 6 s
+[strata] thinking: 898 of budget 190980 (max 254639) tokens, 145.1 tok/s, 7 s
+[strata] writing a tool call: write_file: 1089 of max 254639 tokens, 151.3 tok/s, 8 s
+[strata] done: 1226 tokens in 9 s (158.1 tok/s) (stop, cancel=False), expert cache 92.7% hit (+0.5% of the routed experts over PCIe)
+[strata] reading the prompt: 9,282 of 9,287 tokens, 1 s so far
+[strata] writing a tool call: patch: 165 of max 252849 tokens, 177.4 tok/s, 2 s
+[strata] done: 397 tokens in 3 s (219.2 tok/s) (stop, cancel=False), expert cache 87.5% hit (+1.1% of the routed experts over PCIe)
+[strata] thinking: 10 of budget 188930 (max 251906) tokens, 40.0 tok/s, 1 s
+[strata] writing a tool call: terminal: 149 of max 251906 tokens, 136.4 tok/s, 2 s
+[strata] done: 178 tokens in 2 s (147.7 tok/s) (stop, cancel=False), expert cache 87.4% hit (+0.9% of the routed experts over PCIe)
+[strata] answering: 86 of max 251784 tokens, 147.6 tok/s, 1 s
+[strata] done: 186 tokens in 2 s (146.5 tok/s) (stop, cancel=False), expert cache 90.1% hit (+0.6% of the routed experts over PCIe)
+[strata] thinking: 25 of budget 196230 (max 261640) tokens, 100.0 tok/s, 1 s
+[strata] thinking: 181 of budget 196230 (max 261640) tokens, 148.6 tok/s, 2 s
+[strata] done: 210 tokens in 2 s (146.2 tok/s) (stop, cancel=False), expert cache 88.8% hit (+0.7% of the routed experts over PCIe)
+[strata] reading the prompt: 5,947 of 6,077 tokens, 2 s so far
+[strata] writing a tool call: terminal: 98 of max 256059 tokens, 170.0 tok/s, 3 s
+[strata] done: 132 tokens in 4 s (179.7 tok/s) (stop, cancel=False), expert cache 80.4% hit (+1.8% of the routed experts over PCIe)
+[strata] thinking: 14 of budget 191377 (max 255169) tokens, 56.0 tok/s, 1 s
+[strata] done: 123 tokens in 1 s (212.3 tok/s) (stop, cancel=False), expert cache 88.0% hit (+1.0% of the routed experts over PCIe)
+[strata] thinking: 2 of budget 190509 (max 254012) tokens, 8.0 tok/s, 1 s
+[strata] thinking: 146 of budget 190509 (max 254012) tokens, 143.6 tok/s, 2 s
+[strata] thinking: 279 of budget 190509 (max 254012) tokens, 137.7 tok/s, 3 s
+[strata] thinking: 419 of budget 190509 (max 254012) tokens, 138.0 tok/s, 4 s
+[strata] thinking: 559 of budget 190509 (max 254012) tokens, 138.2 tok/s, 5 s
+[strata] thinking: 758 of budget 190509 (max 254012) tokens, 150.1 tok/s, 6 s
+[strata] thinking: 913 of budget 190509 (max 254012) tokens, 150.8 tok/s, 7 s
+[strata] thinking: 1103 of budget 190509 (max 254012) tokens, 156.1 tok/s, 8 s
+[strata] thinking: 1306 of budget 190509 (max 254012) tokens, 161.8 tok/s, 9 s
+[strata] thinking: 1494 of budget 190509 (max 254012) tokens, 164.7 tok/s, 10 s
+[strata] thinking: 1626 of budget 190509 (max 254012) tokens, 161.5 tok/s, 11 s
+[strata] writing a tool call: write_file: 1760 of max 254012 tokens, 158.9 tok/s, 12 s
+[strata] writing a tool call: write_file: 1985 of max 254012 tokens, 164.2 tok/s, 13 s
+[strata] writing a tool call: write_file: 2217 of max 254012 tokens, 169.3 tok/s, 14 s
+[strata] done: 2227 tokens in 14 s (169.6 tok/s) (stop, cancel=False), expert cache 93.2% hit (+0.4% of the routed experts over PCIe)
+[strata] reading the prompt: 10,414 of 10,419 tokens, 1 s so far
+[strata] done: 125 tokens in 2 s (183.2 tok/s) (stop, cancel=False), expert cache 81.9% hit (+1.7% of the routed experts over PCIe)
+[strata] writing a tool call: terminal: 69 of max 251523 tokens, 145.0 tok/s, 1 s
+[strata] done: 255 tokens in 2 s (173.4 tok/s) (stop, cancel=False), expert cache 90.7% hit (+0.5% of the routed experts over PCIe)
+[strata] writing a tool call: write_file: 74 of max 251095 tokens, 194.3 tok/s, 1 s
+[strata] writing a tool call: write_file: 319 of max 251095 tokens, 228.6 tok/s, 2 s
+[strata] done: 469 tokens in 3 s (226.8 tok/s) (stop, cancel=False), expert cache 94.2% hit (+0.2% of the routed experts over PCIe)
+[strata] thinking: 19 of budget 187948 (max 250597) tokens, 76.0 tok/s, 1 s
+[strata] done: 101 tokens in 1 s (169.8 tok/s) (stop, cancel=False), expert cache 83.7% hit (+1.5% of the routed experts over PCIe)
+[strata] thinking: 55 of budget 187736 (max 250314) tokens, 113.4 tok/s, 1 s
+[strata] done: 171 tokens in 1 s (177.6 tok/s) (stop, cancel=False), expert cache 86.6% hit (+1.1% of the routed experts over PCIe)
+[strata] thinking: 58 of budget 187497 (max 249995) tokens, 142.5 tok/s, 1 s
+[strata] done: 173 tokens in 2 s (167.9 tok/s) (stop, cancel=False), expert cache 88.6% hit (+0.7% of the routed experts over PCIe)
+[strata] answering: 80 of max 249731 tokens, 185.4 tok/s, 1 s
+[strata] answering: 223 of max 249731 tokens, 155.0 tok/s, 2 s
+[strata] done: 316 tokens in 3 s (151.7 tok/s) (stop, cancel=False), expert cache 91.8% hit (+0.3% of the routed experts over PCIe)
+[strata] thinking: 32 of budget 196232 (max 261642) tokens, 110.1 tok/s, 1 s
+[strata] done: 155 tokens in 2 s (130.3 tok/s) (stop, cancel=False), expert cache 86.8% hit (+0.7% of the routed experts over PCIe)
+[strata] reading the prompt: 5,949 of 6,263 tokens, 2 s so far
+[strata] done: 59 tokens in 3 s (161.7 tok/s) (stop, cancel=False), expert cache 85.4% hit (+1.0% of the routed experts over PCIe)
+[strata] reading the prompt: 8,036 of 8,041 tokens, 1 s so far
+[strata] done: 132 tokens in 2 s (185.4 tok/s) (stop, cancel=False), expert cache 82.1% hit (+1.7% of the routed experts over PCIe)
+[strata] thinking: 1 of budget 189641 (max 252854) tokens, 4.0 tok/s, 1 s
+[strata] thinking: 178 of budget 189641 (max 252854) tokens, 175.3 tok/s, 2 s
+[strata] thinking: 323 of budget 189641 (max 252854) tokens, 159.7 tok/s, 3 s
+[strata] thinking: 465 of budget 189641 (max 252854) tokens, 153.2 tok/s, 4 s
+[strata] thinking: 578 of budget 189641 (max 252854) tokens, 142.9 tok/s, 5 s
+[strata] thinking: 711 of budget 189641 (max 252854) tokens, 140.8 tok/s, 6 s
+[strata] thinking: 849 of budget 189641 (max 252854) tokens, 140.3 tok/s, 7 s
+[strata] thinking: 990 of budget 189641 (max 252854) tokens, 140.2 tok/s, 8 s
+[strata] thinking: 1100 of budget 189641 (max 252854) tokens, 136.4 tok/s, 9 s
+[strata] thinking: 1232 of budget 189641 (max 252854) tokens, 135.9 tok/s, 10 s
+[strata] thinking: 1353 of budget 189641 (max 252854) tokens, 134.3 tok/s, 11 s
+[strata] thinking: 1513 of budget 189641 (max 252854) tokens, 136.5 tok/s, 12 s
+[strata] thinking: 1649 of budget 189641 (max 252854) tokens, 136.3 tok/s, 13 s
+[strata] thinking: 1808 of budget 189641 (max 252854) tokens, 137.9 tok/s, 14 s
+[strata] thinking: 1935 of budget 189641 (max 252854) tokens, 137.0 tok/s, 15 s
+[strata] thinking: 2039 of budget 189641 (max 252854) tokens, 134.7 tok/s, 16 s
+[strata] thinking: 2180 of budget 189641 (max 252854) tokens, 135.0 tok/s, 17 s
+[strata] thinking: 2315 of budget 189641 (max 252854) tokens, 135.0 tok/s, 18 s
+[strata] thinking: 2445 of budget 189641 (max 252854) tokens, 134.7 tok/s, 19 s
+[strata] thinking: 2570 of budget 189641 (max 252854) tokens, 134.1 tok/s, 20 s
+[strata] thinking: 2706 of budget 189641 (max 252854) tokens, 134.0 tok/s, 21 s
+[strata] writing a tool call: write_file: 2885 of max 252854 tokens, 136.1 tok/s, 22 s
+[strata] writing a tool call: write_file: 3098 of max 252854 tokens, 139.5 tok/s, 23 s
+[strata] done: 3305 tokens in 24 s (142.8 tok/s) (stop, cancel=False), expert cache 95.0% hit (+0.2% of the routed experts over PCIe)
+[strata] reading the prompt: 12,245 of 12,250 tokens, 2 s so far
+[strata] writing a tool call: write_file: 165 of max 249886 tokens, 191.7 tok/s, 3 s
+[strata] writing a tool call: write_file: 381 of max 249886 tokens, 203.1 tok/s, 4 s
+[strata] writing a tool call: write_file: 625 of max 249886 tokens, 217.0 tok/s, 5 s
+[strata] done: 672 tokens in 5 s (216.5 tok/s) (stop, cancel=False), expert cache 92.2% hit (+0.5% of the routed experts over PCIe)
+[strata] thinking: 6 of budget 186686 (max 248914) tokens, 24.0 tok/s, 1 s
+[strata] thinking: 95 of budget 186686 (max 248914) tokens, 88.1 tok/s, 2 s
+[strata] thinking: 211 of budget 186686 (max 248914) tokens, 101.3 tok/s, 3 s
+[strata] thinking: 342 of budget 186686 (max 248914) tokens, 110.8 tok/s, 4 s
+[strata] writing a tool call: patch: 514 of max 248914 tokens, 125.5 tok/s, 5 s
+[strata] writing a tool call: patch: 728 of max 248914 tokens, 142.2 tok/s, 6 s
+[strata] writing a tool call: patch: 960 of max 248914 tokens, 156.7 tok/s, 7 s
+[strata] done: 1115 tokens in 8 s (164.3 tok/s) (stop, cancel=False), expert cache 84.9% hit (+1.5% of the routed experts over PCIe)
+[strata] writing a tool call: write_file: 77 of max 248536 tokens, 164.0 tok/s, 1 s
+[strata] writing a tool call: write_file: 326 of max 248536 tokens, 219.6 tok/s, 2 s
+[strata] writing a tool call: write_file: 551 of max 248536 tokens, 220.6 tok/s, 3 s
+[strata] done: 775 tokens in 4 s (225.4 tok/s) (stop, cancel=False), expert cache 88.0% hit (+1.0% of the routed experts over PCIe)
+[strata] reading the prompt: 14,771 of 14,776 tokens, 1 s so far
+[strata] thinking: 94 of budget 185520 (max 247360) tokens, 100.9 tok/s, 2 s
+[strata] thinking: 207 of budget 185520 (max 247360) tokens, 106.5 tok/s, 3 s
+[strata] thinking: 339 of budget 185520 (max 247360) tokens, 114.6 tok/s, 4 s
+[strata] writing a tool call: write_file: 504 of max 247360 tokens, 127.3 tok/s, 5 s
+[strata] writing a tool call: write_file: 708 of max 247360 tokens, 142.3 tok/s, 6 s
+[strata] writing a tool call: write_file: 948 of max 247360 tokens, 158.5 tok/s, 7 s
+[strata] done: 1122 tokens in 8 s (167.5 tok/s) (stop, cancel=False), expert cache 84.0% hit (+1.8% of the routed experts over PCIe)
+[strata] thinking: 8 of budget 184875 (max 246500) tokens, 32.0 tok/s, 1 s
+[strata] writing a tool call: terminal: 143 of max 246500 tokens, 133.7 tok/s, 2 s
+[strata] writing a tool call: terminal: 285 of max 246500 tokens, 137.4 tok/s, 3 s
+[strata] done: 376 tokens in 3 s (151.4 tok/s) (stop, cancel=False), expert cache 88.3% hit (+0.7% of the routed experts over PCIe)
+[strata] thinking: 29 of budget 184272 (max 245696) tokens, 116.0 tok/s, 1 s
+[strata] thinking: 156 of budget 184272 (max 245696) tokens, 128.5 tok/s, 2 s
+[strata] answering: 301 of max 245696 tokens, 135.6 tok/s, 3 s
+[strata] answering: 459 of max 245696 tokens, 141.7 tok/s, 4 s
+[strata] done: 568 tokens in 5 s (144.4 tok/s) (stop, cancel=False), expert cache 92.4% hit (+0.3% of the routed experts over PCIe)
+[strata] thinking: 36 of budget 196115 (max 261486) tokens, 144.0 tok/s, 1 s
+[strata] thinking: 192 of budget 196115 (max 261486) tokens, 153.2 tok/s, 2 s
+[strata] done: 328 tokens in 3 s (157.4 tok/s) (stop, cancel=False), expert cache 92.4% hit (+0.3% of the routed experts over PCIe)
+[strata] reading the prompt: 5,947 of 6,308 tokens, 2 s so far
+[strata] writing a tool call: terminal: 49 of max 255828 tokens, 124.7 tok/s, 3 s
+[strata] done: 74 tokens in 3 s (134.2 tok/s) (stop, cancel=False), expert cache 85.8% hit (+1.0% of the routed experts over PCIe)
+[strata] thinking: 7 of budget 191261 (max 255014) tokens, 28.0 tok/s, 1 s
+[strata] done: 132 tokens in 2 s (181.4 tok/s) (stop, cancel=False), expert cache 79.4% hit (+2.2% of the routed experts over PCIe)
+[strata] reading the prompt: 8,597 of 8,602 tokens, 1 s so far
+[strata] thinking: 130 of budget 190151 (max 253534) tokens, 139.7 tok/s, 2 s
+[strata] thinking: 264 of budget 190151 (max 253534) tokens, 135.9 tok/s, 3 s
+[strata] thinking: 394 of budget 190151 (max 253534) tokens, 133.3 tok/s, 4 s
+[strata] writing a tool call: write_file: 554 of max 253534 tokens, 139.5 tok/s, 5 s
+[strata] writing a tool call: write_file: 769 of max 253534 tokens, 154.1 tok/s, 6 s
+[strata] writing a tool call: write_file: 1022 of max 253534 tokens, 170.1 tok/s, 7 s
+[strata] done: 1072 tokens in 7 s (172.4 tok/s) (stop, cancel=False), expert cache 90.7% hit (+0.7% of the routed experts over PCIe)
+[strata] thinking: 9 of budget 189461 (max 252614) tokens, 36.0 tok/s, 1 s
+[strata] writing a tool call: write_file: 221 of max 252614 tokens, 202.0 tok/s, 2 s
+[strata] writing a tool call: write_file: 474 of max 252614 tokens, 225.4 tok/s, 3 s
+[strata] done: 591 tokens in 3 s (229.0 tok/s) (stop, cancel=False), expert cache 92.6% hit (+0.5% of the routed experts over PCIe)
+[strata] thinking: 29 of budget 188892 (max 251856) tokens, 116.0 tok/s, 1 s
+[strata] writing a tool call: terminal: 169 of max 251856 tokens, 137.6 tok/s, 2 s
+[strata] done: 212 tokens in 2 s (145.9 tok/s) (stop, cancel=False), expert cache 80.0% hit (+1.8% of the routed experts over PCIe)
+[strata] answering: 84 of max 251714 tokens, 163.0 tok/s, 1 s
+[strata] done: 207 tokens in 2 s (170.1 tok/s) (stop, cancel=False), expert cache 87.7% hit (+0.8% of the routed experts over PCIe)
+[strata] thinking: 12 of budget 196117 (max 261489) tokens, 48.0 tok/s, 1 s
+[strata] thinking: 158 of budget 196117 (max 261489) tokens, 141.8 tok/s, 2 s
+[strata] done: 273 tokens in 3 s (147.2 tok/s) (stop, cancel=False), expert cache 89.0% hit (+0.6% of the routed experts over PCIe)
+[strata] reading the prompt: 5,948 of 6,305 tokens, 2 s so far
+[strata] writing a tool call: terminal: 68 of max 255831 tokens, 144.9 tok/s, 3 s
+[strata] done: 142 tokens in 4 s (171.3 tok/s) (stop, cancel=False), expert cache 80.4% hit (+1.7% of the routed experts over PCIe)
+[strata] writing a tool call: read_file: 66 of max 255527 tokens, 186.0 tok/s, 1 s
+[strata] done: 139 tokens in 1 s (219.0 tok/s) (stop, cancel=False), expert cache 90.6% hit (+0.6% of the routed experts over PCIe)
+[strata] thinking: 3 of budget 190710 (max 254280) tokens, 12.0 tok/s, 1 s
+[strata] thinking: 135 of budget 190710 (max 254280) tokens, 130.2 tok/s, 2 s
+[strata] thinking: 272 of budget 190710 (max 254280) tokens, 133.0 tok/s, 3 s
+[strata] thinking: 457 of budget 190710 (max 254280) tokens, 149.5 tok/s, 4 s
+[strata] thinking: 592 of budget 190710 (max 254280) tokens, 145.6 tok/s, 5 s
+[strata] thinking: 754 of budget 190710 (max 254280) tokens, 148.3 tok/s, 6 s
+[strata] thinking: 919 of budget 190710 (max 254280) tokens, 150.9 tok/s, 7 s
+[strata] thinking: 1043 of budget 190710 (max 254280) tokens, 146.9 tok/s, 8 s
+[strata] thinking: 1215 of budget 190710 (max 254280) tokens, 149.9 tok/s, 9 s
+[strata] writing a tool call: write_file: 1355 of max 254280 tokens, 148.6 tok/s, 10 s
+[strata] writing a tool call: write_file: 1604 of max 254280 tokens, 158.4 tok/s, 11 s
+[strata] done: 1704 tokens in 12 s (161.9 tok/s) (stop, cancel=False), expert cache 93.2% hit (+0.4% of the routed experts over PCIe)
+[strata] reading the prompt: 9,946 of 9,951 tokens, 1 s so far
+[strata] writing a tool call: patch: 165 of max 252185 tokens, 177.6 tok/s, 2 s
+[strata] writing a tool call: patch: 424 of max 252185 tokens, 219.5 tok/s, 3 s
+[strata] done: 534 tokens in 4 s (224.9 tok/s) (stop, cancel=False), expert cache 87.0% hit (+1.1% of the routed experts over PCIe)
+[strata] reading the prompt: 11,293 of 11,294 tokens, 1 s so far
+[strata] thinking: 109 of budget 188132 (max 250842) tokens, 109.9 tok/s, 2 s
+[strata] thinking: 243 of budget 188132 (max 250842) tokens, 121.7 tok/s, 3 s
+[strata] thinking: 387 of budget 188132 (max 250842) tokens, 128.7 tok/s, 4 s
+[strata] answering: 564 of max 250842 tokens, 140.4 tok/s, 5 s
+[strata] writing a tool call: patch: 794 of max 250842 tokens, 158.2 tok/s, 6 s
+[strata] done: 870 tokens in 6 s (160.8 tok/s) (stop, cancel=False), expert cache 90.2% hit (+0.7% of the routed experts over PCIe)
+[strata] reading the prompt: 12,859 of 12,864 tokens, 1 s so far
+[strata] thinking: 108 of budget 186954 (max 249272) tokens, 116.5 tok/s, 2 s
+[strata] writing a tool call: patch: 271 of max 249272 tokens, 140.3 tok/s, 3 s
+[strata] writing a tool call: patch: 502 of max 249272 tokens, 170.8 tok/s, 4 s
+[strata] done: 619 tokens in 5 s (176.9 tok/s) (stop, cancel=False), expert cache 89.7% hit (+0.9% of the routed experts over PCIe)
+[strata] thinking: 9 of budget 186409 (max 248545) tokens, 36.0 tok/s, 1 s
+[strata] done: 191 tokens in 2 s (196.3 tok/s) (stop, cancel=False), expert cache 91.5% hit (+0.5% of the routed experts over PCIe)
+[strata] writing a tool call: patch: 92 of max 248163 tokens, 233.9 tok/s, 1 s
+[strata] done: 169 tokens in 1 s (244.7 tok/s) (stop, cancel=False), expert cache 93.2% hit (+0.4% of the routed experts over PCIe)
+[strata] reading the prompt: 15,304 of 15,309 tokens, 1 s so far
+[strata] thinking: 120 of budget 185121 (max 246827) tokens, 128.8 tok/s, 2 s
+[strata] writing a tool call: terminal: 297 of max 246827 tokens, 152.5 tok/s, 3 s
+[strata] writing a tool call: terminal: 521 of max 246827 tokens, 176.4 tok/s, 4 s
+[strata] done: 669 tokens in 5 s (181.4 tok/s) (stop, cancel=False), expert cache 91.7% hit (+0.5% of the routed experts over PCIe)
+[strata] answering: 55 of max 246505 tokens, 135.6 tok/s, 1 s
+[strata] writing a tool call: terminal: 261 of max 246505 tokens, 185.5 tok/s, 2 s
+[strata] done: 431 tokens in 3 s (187.5 tok/s) (stop, cancel=False), expert cache 94.2% hit (+0.4% of the routed experts over PCIe)
+[strata] writing a tool call: write_file: 54 of max 246007 tokens, 154.5 tok/s, 1 s
+[strata] writing a tool call: write_file: 284 of max 246007 tokens, 208.7 tok/s, 2 s
+[strata] done: 412 tokens in 3 s (204.4 tok/s) (stop, cancel=False), expert cache 89.3% hit (+0.9% of the routed experts over PCIe)
+[strata] thinking: 15 of budget 184133 (max 245510) tokens, 60.0 tok/s, 1 s
+[strata] done: 107 tokens in 2 s (148.6 tok/s) (stop, cancel=False), expert cache 84.5% hit (+1.1% of the routed experts over PCIe)
+[strata] thinking: 65 of budget 183829 (max 245105) tokens, 157.3 tok/s, 1 s
+[strata] answering: 229 of max 245105 tokens, 161.8 tok/s, 2 s
+[strata] answering: 393 of max 245105 tokens, 161.9 tok/s, 3 s
+[strata] done: 494 tokens in 4 s (161.9 tok/s) (stop, cancel=False), expert cache 91.6% hit (+0.4% of the routed experts over PCIe)
+[strata] thinking: 21 of budget 196101 (max 261468) tokens, 84.0 tok/s, 1 s
+[strata] thinking: 168 of budget 196101 (max 261468) tokens, 139.1 tok/s, 2 s
+[strata] done: 304 tokens in 3 s (146.2 tok/s) (stop, cancel=False), expert cache 91.3% hit (+0.4% of the routed experts over PCIe)

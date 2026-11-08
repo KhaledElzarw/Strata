@@ -4,10 +4,12 @@
 
 experiment.json:
   {"name": "drafter", "rounds": 3, "src": ["runs/requests/<tag>", ...], "limit": 40, "max_tokens": null,
-   "seed": 1234, "temperature": null,
+   "seed": 1234, "temperature": null, "gap": 2.0, "gpu_gate": 5,
    "arms": [{"name": "mtp"}, {"name": "df2", "drafting": "dflash2", "set": {"--draft-conf": "0.5"}, "env": {...},
              "add": ["--adapt-async", "1"], "drop": ["--lookup-max-t"], "extra": {"strata_tune": {"pcie_frac": 0.35}}}]}
 
+"gap", "gpu_gate" and "gpu_wait" are replay.py's --gap, --gpu-gate and --gpu-wait (the machine is shared: with
+"gpu_gate" each timed request first waits while another program uses the GPU's SMs).
 Each arm gets its own run config (the base config with its changes) and engine log. Arms alternate order every round
 (A B / B A / A B ...). Each arm start: wait for /health loaded, one warm-up request, then the replay (replay.py's run),
 then the server is stopped. Results: runs/replay/<name>-<arm>-r<k>.jsonl and runs/ab/<name>.json (per round stats, the
@@ -171,6 +173,7 @@ def replay_arm(exp: dict, arm: dict, label: str) -> tuple[float, float]:
         a.temperature, a.max_tokens, a.limit, a.repeat, a.timeout = (exp.get("temperature"), exp.get("max_tokens"),
                                                                      exp.get("limit"), 1, exp.get("timeout", 600))
         a.gap = exp.get("gap", 0)
+        a.gpu_gate, a.gpu_wait = exp.get("gpu_gate", 0), exp.get("gpu_wait", 1800)   # replay.py --gpu-gate / --gpu-wait
         extra = dict(arm.get("extra", {}))
         if exp.get("seed"):
             extra["seed"] = exp["seed"]

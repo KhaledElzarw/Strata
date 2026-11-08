@@ -205,6 +205,164 @@ __global__ void route_topk(const float* __restrict__ logits, int32_t* __restrict
     const float inverse_selected_sum = 1.0f / selected_sum;
     if (lane < K) weights[lane] = selected * inverse_selected_sum;
 }
+#if !defined(__HIPCC__)
+// sm86 lab STRATA_ROUTE_BELL (#3): a window's top-10 and its doorbell in ONE launch, optionally with a shorter top-10.
+//
+// route_bell is one block of 16 warps.  Warp t < n_tok routes token t as route_multi does (the same loads, softmax, picks
+// and weights), then its lanes 0..9 publish the token's ids to the mapped buffer and look them up in the residency table.
+// After one barrier the block runs doorbell_publish_res_kernel's tail unchanged: the MoE input copied to mapped memory when
+// any id misses (as float4: the same bytes), every thread that wrote mapped memory fences at system scope, a barrier, then
+// thread 0 stores the ring.  The host sees the same bytes in the same order, one launch and one trip through L2 earlier.
+//
+// FAST (sm_80+): the ten picks with two warp REDUX instructions each instead of a 15-step scan and a 5-level butterfly of
+// value and index shuffles.  The values map to order-preserving integer keys (-0.0 and +0.0 share one, as their float
+// compare does; NaN cannot occur, the softmax maps it to -FLT_MAX).  Per rank a 4-level tree finds the lane's best (the
+// lower index on a tie, as route_multi's strict > scan), REDUX max the warp's best key and REDUX min the lowest expert index
+// holding it: route_multi's pick.  The winner's value is the lane's own register, and selected_sum, the butterflies and the
+// weights are route_multi's, so ids and weights are bitwise the same (route_bell_parity checks it).
+__device__ __forceinline__ int route_key(float v) {
+    int b = __float_as_int(v);
+    if (b == (int) 0x80000000) b = 0;
+    return b >= 0 ? b : (b ^ 0x7fffffff);
+}
+template <bool FAST>
+__device__ __forceinline__ int32_t route_warp(const float* __restrict__ logits, int32_t* __restrict__ ids,
+                                              float* __restrict__ weights, int lane) {
+    float values[16];
+#pragma unroll
+    for (int i = 0; i < 16; ++i) values[i] = logits[lane + i * 32];
+    __syncwarp();
+    float maximum = -INFINITY;
+#pragma unroll
+    for (int i = 0; i < 16; ++i) maximum = max(maximum, values[i]);
+    maximum = warp_max(maximum);
+    float sum = 0.0f;
+#pragma unroll
+    for (int i = 0; i < 16; ++i) {
+        values[i] = expf(values[i] - maximum);
+        sum += values[i];
+    }
+    const float reciprocal = 1.0f / warp_sum(sum);
+#pragma unroll
+    for (int i = 0; i < 16; ++i) {
+        values[i] *= reciprocal;
+        if (__isnanf(values[i])) values[i] = -FLT_MAX;
+    }
+    float selected = 0.0f, selected_sum = 0.0f;
+    int32_t my_id = 0;   // lane r < 10: the rank-r expert
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 800
+    if constexpr (FAST) {
+        constexpr int kTaken = (int) (0xff800000u ^ 0x7fffffffu);   // route_key(-INFINITY), below every live key
+        int key[16];
+#pragma unroll
+        for (int i = 0; i < 16; ++i) key[i] = route_key(values[i]);
+        for (int rank = 0; rank < 10; ++rank) {
+            int k8[8], i8[8];
+            float v8[8];
+#pragma unroll
+            for (int j = 0; j < 8; ++j) {
+                const bool r = key[2 * j + 1] > key[2 * j];
+                k8[j] = r ? key[2 * j + 1] : key[2 * j];
+                i8[j] = r ? 2 * j + 1 : 2 * j;
+                v8[j] = r ? values[2 * j + 1] : values[2 * j];
+            }
+            int k4[4], i4[4];
+            float v4[4];
+#pragma unroll
+            for (int j = 0; j < 4; ++j) {
+                const bool r = k8[2 * j + 1] > k8[2 * j];
+                k4[j] = r ? k8[2 * j + 1] : k8[2 * j];
+                i4[j] = r ? i8[2 * j + 1] : i8[2 * j];
+                v4[j] = r ? v8[2 * j + 1] : v8[2 * j];
+            }
+            int k2[2], i2[2];
+            float v2[2];
+#pragma unroll
+            for (int j = 0; j < 2; ++j) {
+                const bool r = k4[2 * j + 1] > k4[2 * j];
+                k2[j] = r ? k4[2 * j + 1] : k4[2 * j];
+                i2[j] = r ? i4[2 * j + 1] : i4[2 * j];
+                v2[j] = r ? v4[2 * j + 1] : v4[2 * j];
+            }
+            const bool r = k2[1] > k2[0];
+            const int lk = r ? k2[1] : k2[0], li = r ? i2[1] : i2[0];
+            const float lv = r ? v2[1] : v2[0];
+            const int top = __reduce_max_sync(0xffffffffu, lk);
+            const int expert = __reduce_min_sync(0xffffffffu, lk == top ? li * 32 + lane : 0x7fffffff);
+            const float best = __shfl_sync(0xffffffffu, lv, expert & 31, 32);
+            if ((expert & 31) == lane) {
+#pragma unroll
+                for (int i = 0; i < 16; ++i)
+                    if (i == li) { key[i] = kTaken; values[i] = -INFINITY; }
+                ids[rank] = expert;
+                selected_sum += lv;   // the winning entry's value: route_multi's best, bitwise
+            }
+            if (rank == lane) { selected = best; my_id = expert; }
+        }
+    } else
+#endif
+    {
+        for (int rank = 0; rank < 10; ++rank) {
+            float best = values[0];
+            int expert = lane;
+#pragma unroll
+            for (int i = 1; i < 16; ++i) {
+                if (values[i] > best) { best = values[i]; expert = lane + i * 32; }
+            }
+#pragma unroll
+            for (int mask = 16; mask; mask >>= 1) {
+                const float other = __shfl_xor_sync(0xffffffffu, best, mask, 32);
+                const int other_id = __shfl_xor_sync(0xffffffffu, expert, mask, 32);
+                if (other > best || (other == best && other_id < expert)) { best = other; expert = other_id; }
+            }
+            if ((expert & 31) == lane) {
+                values[expert / 32] = -INFINITY;
+                ids[rank] = expert;
+                selected_sum += best;
+            }
+            if (rank == lane) { selected = best; my_id = expert; }
+        }
+    }
+    selected_sum = max(warp_sum(selected_sum), 6.103515625e-5f);
+    const float inverse_selected_sum = 1.0f / selected_sum;
+    if (lane < 10) weights[lane] = selected * inverse_selected_sum;
+    return my_id;
+}
+template <bool FAST>
+__launch_bounds__(512, 1)
+__global__ void route_bell(const float* __restrict__ logits, int32_t* __restrict__ ids, float* __restrict__ weights,
+                           int n_tok, const float* __restrict__ x, const int32_t* __restrict__ d_res, int n_expert, int n4,
+                           float* x_out, int32_t* ids_out, uint32_t* seq, uint32_t value) {
+    const int warp = (int) threadIdx.y, lane = (int) threadIdx.x, tid = warp * 32 + lane;
+    int miss = 0;
+    if (warp < n_tok) {
+        const int32_t id = route_warp<FAST>(logits + (size_t) warp * 512, ids + (size_t) warp * 10,
+                                            weights + (size_t) warp * 10, lane);
+        if (lane < 10) {
+            ids_out[warp * 10 + lane] = id;
+            if (d_res == nullptr || id < 0 || id >= n_expert || d_res[id] < 0) miss = 1;
+        }
+    }
+    if (__syncthreads_or(miss)) {
+        const float4* src = reinterpret_cast<const float4*>(x);
+        float4* dst = reinterpret_cast<float4*>(x_out);
+        for (int i = tid; i < n4; i += 4 * 512) {
+            float4 v[4];
+#pragma unroll
+            for (int u = 0; u < 4; ++u)
+                if (i + u * 512 < n4) v[u] = src[i + u * 512];
+#pragma unroll
+            for (int u = 0; u < 4; ++u)
+                if (i + u * 512 < n4) dst[i + u * 512] = v[u];
+        }
+        __threadfence_system();
+    } else if (warp < n_tok && lane < 10) {
+        __threadfence_system();
+    }
+    __syncthreads();
+    if (tid == 0) *(volatile uint32_t*) seq = value != 0u ? value : *(volatile uint32_t*) seq + 1u;
+}
+#endif
 bool valid(const void* p, size_t bytes) {
     const auto address = reinterpret_cast<uintptr_t>(p);
     return p && address % 4 == 0 && bytes <= UINTPTR_MAX - address;
@@ -248,6 +406,32 @@ void native_router_topk(const float* logits, int32_t* ids, float* weights, int n
         logits, ids, weights, n_tok);
     const auto error = cudaGetLastError();
     if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
+}
+bool native_router_top10_bell(const float* logits, int32_t* ids, float* weights, int n_tok, const float* x,
+                              const int32_t* d_res, int n_expert, int64_t n, float* x_out, int32_t* ids_out, uint32_t* seq,
+                              uint32_t value, bool fast, void* stream) {
+#if defined(__HIPCC__)
+    (void) logits; (void) ids; (void) weights; (void) n_tok; (void) x; (void) d_res; (void) n_expert; (void) n;
+    (void) x_out; (void) ids_out; (void) seq; (void) value; (void) fast; (void) stream;
+    return false;
+#else
+    if (!stream || n_tok < 1 || n_tok > 8 || n <= 0 || (n & 3) != 0 || n / 4 > 0x7fffffff || x == nullptr ||
+        x_out == nullptr || ids_out == nullptr || seq == nullptr || (reinterpret_cast<uintptr_t>(x) & 15u) != 0 ||
+        (reinterpret_cast<uintptr_t>(x_out) & 15u) != 0 || !valid(logits, (size_t) n_tok * 512 * 4) ||
+        !valid(ids, (size_t) n_tok * 10 * 4) || !valid(weights, (size_t) n_tok * 10 * 4))
+        return false;
+    const dim3 block(32, 16);
+    const cudaStream_t st = static_cast<cudaStream_t>(stream);
+    if (fast)
+        route_bell<true><<<1, block, 0, st>>>(logits, ids, weights, n_tok, x, d_res, n_expert, (int) (n / 4), x_out,
+                                              ids_out, seq, value);
+    else
+        route_bell<false><<<1, block, 0, st>>>(logits, ids, weights, n_tok, x, d_res, n_expert, (int) (n / 4), x_out,
+                                               ids_out, seq, value);
+    const auto error = cudaGetLastError();
+    if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
+    return true;
+#endif
 }
 
 // STRATA_ROUTE_RESIDENT (EXPERIMENTAL, opt-in, changes the output): residency-biased routing for 512 x 10.

@@ -2,3 +2,5 @@
 # though the root .gitignore drops *.log files and logs/ folders.
 !logs/
 !*.log
+# ...but not the GPU temperature watchdog's own logs and samples (gpuwatch.py): machine state, not results.
+lab/runs/gpuwatch*

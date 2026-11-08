@@ -314,6 +314,12 @@ const bool g_coherent = env_on("STRATA_VERIFY_COHERENT");
 #endif
 // HIP #649: doorbell_publish_value; CUDA (sm86 lab, opt-in): doorbell_publish_res_store on the residency path
 const bool g_doorbell_store = env_on("STRATA_DOORBELL_STORE");
+// sm86 lab STRATA_ROUTE_BELL (CUDA, #3): 1 = the top-10 and the doorbell in one launch (native_router_top10_bell), 2 = the
+// same with the REDUX top-10; bitwise the two launches either way.  Anything else: off.
+const int g_route_bell = [] {
+    const char* e = std::getenv("STRATA_ROUTE_BELL");
+    return e != nullptr && (e[0] == '1' || e[0] == '2') && e[1] == 0 ? e[0] - '0' : 0;
+}();
 const bool g_trace = env_on("STRATA_VERIFY_TRACE");
 // STRATA_LAUNCH_PROBE (STRIX-TDR): process start, and the first windows' launch timing
 const Clock::time_point g_proc_t0 = Clock::now();
@@ -2227,6 +2233,21 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         // move into the combine, gate + up share one launch (all bitwise; resident combine path, 2-8 rows only)
         const WeightRef* w_sgi = lfuse_on(n) && g_lfuse_gate() ? v.get("ffn_gate_inp_shexp.weight") : nullptr;
         bool sg_ready = false;
+        // sm86 lab STRATA_ROUTE_BELL (#3): the top-10 and the doorbell below in one launch (native_router_top10_bell: the same
+        // ids, weights, mapped bytes and ring, in the same order), where that doorbell is doorbell_publish_res(_store) right
+        // after the top-10 with nothing reading ids_ in between; one token too when moe_route's GEMV is this
+        // bf16_gemv_fp32_mmvf (native BF16 projections).  belled: published here, the doorbell below is skipped.
+        const bool bell = g_route_bell != 0 && !ar_on() && !device_plan_ && !remote_opt_ && !always_publish_ &&
+                          g_route_prior() <= 0.0f && route_resident_cfg().margin <= 0.0f && !rs_on_ && dec_batch && n >= 1 && n <= 8 &&
+                          w_router != nullptr && native_router_enabled() && NE == 512 && K == 10 &&
+                          (n > 1 || layer_native_bf16());
+        bool belled = false;
+        auto top10_bell = [&]() {
+            return native_router_top10_bell(logits_ + tb * NE, ids_ + tb * K, w_ + tb * K, n, mixed_ + tb * N,
+                                            hits_.d_res != nullptr ? (hits_.d_res + l * g.n_expert) : nullptr,
+                                            (int) g.n_expert, (int64_t) n * N, m_x_ + tb * N, m_ids_ + tb * K, m_seq_,
+                                            g_doorbell_store ? (uint32_t) ((l - lb_) * G + grp + 1) : 0u, g_route_bell == 2, cs);
+        };
         if (dec_batch && n > 1 && w_router != nullptr && native_router_enabled() && NE == 512 && K == 10) {
             try {
                 if (w_sgi != nullptr)
@@ -2236,7 +2257,14 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 if (!sg_ready)
                 bf16_gemv_fp32_mmvf_multi(mixed_ + tb * N, N, (const uint16_t*) w_router->data, logits_ + tb * NE, NE, N,
                                           NE, n, cs);
-                native_router_top10_multi(logits_ + tb * NE, ids_ + tb * K, w_ + tb * K, n, cs);
+                if (bell) belled = top10_bell();
+                if (!belled) native_router_top10_multi(logits_ + tb * NE, ids_ + tb * K, w_ + tb * K, n, cs);
+            } catch (const std::exception& e) { err = "verify router: " + std::string(e.what()); return false; }
+        } else if (bell) {   // one token: moe_route's projection and top-10 (bf16_gemv_fp32_mmvf, route), then the doorbell
+            try {
+                bf16_gemv_fp32_mmvf(mixed_ + tb * N, (const uint16_t*) w_router->data, logits_ + tb * NE, N, NE, cs);
+                belled = top10_bell();
+                if (!belled) native_router_top10(logits_ + tb * NE, ids_ + tb * K, w_ + tb * K, cs);
             } catch (const std::exception& e) { err = "verify router: " + std::string(e.what()); return false; }
 #if defined(STRATA_HIP_GFX906)
         } else if (dec_batch) {
@@ -2254,6 +2282,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             if (!moe_route(wt, g, l, K, mb, mixed_ + t * N, cs, err, nullptr)) return false;
         }
         strata::dispatch::notef("router layer: batched native router=%ld, shared-expert gate in the router launch=%ld, route_prior=%ld", (long) (dec_batch && n > 1 && w_router != nullptr && native_router_enabled() && NE == 512 && K == 10), (long) sg_ready, (long) (g_route_prior() > 0.0f));
+        strata::dispatch::notef("router layer: top-10 + doorbell in one launch=%ld (STRATA_ROUTE_BELL; 2 = the REDUX top-10)", (long) (belled ? g_route_bell : 0));
         // STRATA_ROUTE_PRIOR=lambda (changes the output): the top-10 picked again with a logit bonus for the resident
         // experts; the weights stay the router's (route_prior.cu).  g_route_prior() above: off unless STRATA_ROUTE_PRIOR is set
         // (measured on an RTX 3060 12 GB at 2.0: story +37.6%, code +35.2%; on an RTX PRO 5000 72 GB -1.9% / -0.5%, on 2x RTX A4000
@@ -2292,7 +2321,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             if (remote_opt_ || always_publish_)
                 doorbell_publish(xm, ids_ + tb * K, w_ + tb * K, (int64_t) n * N, (int64_t) n * K, m_x_ + tb * N,
                                  m_ids_ + tb * K, m_w_ + tb * K, m_seq_, cs);
-            else {
+            else if (!belled) {   // belled: route_bell published it with the top-10 (STRATA_ROUTE_BELL)
                 const int32_t* layer_res = hits_.d_res != nullptr ? (hits_.d_res + l * g.n_expert) : nullptr;
 #if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906) && !defined(STRATA_GPU_METAL)   // CUDA only (elementwise.cu)
                 if (g_doorbell_store)   // sm86 lab: the step's ring (the host waits for k + 1) stored, not incremented

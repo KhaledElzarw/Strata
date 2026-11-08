@@ -1,0 +1,121 @@
+PARITY n_in 2560 n_out 512 T 1 hash 5487e2fce0e3f774
+PARITY n_in 2560 n_out 512 T 2 hash c5c215a8d4a20756
+PARITY n_in 2560 n_out 512 T 3 hash 87fe8c372cc253e2
+PARITY n_in 2560 n_out 512 T 4 hash 4bc546f99fc3865f
+PARITY n_in 2560 n_out 512 T 5 hash 5bdba7799a5ace1b
+PARITY n_in 2560 n_out 512 T 6 hash a3b3857190a3bc1b
+PARITY n_in 2560 n_out 512 T 7 hash cd63c2304154e679
+PARITY n_in 2560 n_out 512 T 8 hash 37b798e41b98fae9
+PARITY n_in 2560 n_out 256 T 1 hash 63f79f715f577e69
+PARITY n_in 2560 n_out 256 T 2 hash 4b409945e4dc0051
+PARITY n_in 2560 n_out 256 T 3 hash 95507bfb42339ba3
+PARITY n_in 2560 n_out 256 T 4 hash f93b61fe241fa759
+PARITY n_in 2560 n_out 256 T 5 hash 10099294106af3e8
+PARITY n_in 2560 n_out 256 T 6 hash cb63ec9b76cd61e6
+PARITY n_in 2560 n_out 256 T 7 hash cdb1d932fbf55557
+PARITY n_in 2560 n_out 256 T 8 hash 53fdbb7dd6cdb990
+PARITY n_in 2560 n_out 64 T 1 hash 5146a0d427ec3674
+PARITY n_in 2560 n_out 64 T 2 hash 77bde669d99ead5d
+PARITY n_in 2560 n_out 64 T 3 hash dba15733f632f35e
+PARITY n_in 2560 n_out 64 T 4 hash ad132fb3dd6a5531
+PARITY n_in 2560 n_out 64 T 5 hash 09723cef91d23e3e
+PARITY n_in 2560 n_out 64 T 6 hash 4dbc481ef806bdf0
+PARITY n_in 2560 n_out 64 T 7 hash 4f2ceccecea3f90a
+PARITY n_in 2560 n_out 64 T 8 hash c7bd1c9969f5a98c
+PARITY n_in 1280 n_out 513 T 1 hash 318bdd38581d4b71
+PARITY n_in 1280 n_out 513 T 2 hash 93e52f8273e75558
+PARITY n_in 1280 n_out 513 T 3 hash 91bc662435770db3
+PARITY n_in 1280 n_out 513 T 4 hash 250cfd4bcdafbaca
+PARITY n_in 1280 n_out 513 T 5 hash fbc6903540b78ba2
+PARITY n_in 1280 n_out 513 T 6 hash 309ffc67ff2ff843
+PARITY n_in 1280 n_out 513 T 7 hash 16fb82109205cd23
+PARITY n_in 1280 n_out 513 T 8 hash bcf99b1589513172
+PARITY n_in 640 n_out 100 T 1 hash 75cca79751865b9d
+PARITY n_in 640 n_out 100 T 2 hash ef50e2371abab458
+PARITY n_in 640 n_out 100 T 3 hash b1387faccd508836
+PARITY n_in 640 n_out 100 T 4 hash ddb633a14af0410e
+PARITY n_in 640 n_out 100 T 5 hash 7c70c489dbb85470
+PARITY n_in 640 n_out 100 T 6 hash 8556e94d924c31fd
+PARITY n_in 640 n_out 100 T 7 hash 58b474289a61d3f4
+PARITY n_in 640 n_out 100 T 8 hash 08db28b013006837
+PARITY n_in 4096 n_out 50 T 1 hash 1dc7556bf3e94c25
+PARITY n_in 4096 n_out 50 T 2 hash bff7103352304ead
+PARITY n_in 4096 n_out 50 T 3 hash bc9e7f059d3321df
+PARITY n_in 4096 n_out 50 T 4 hash df53842eda209571
+PARITY n_in 4096 n_out 50 T 5 hash 1b4d0b756ee87971
+PARITY n_in 4096 n_out 50 T 6 hash 85de287c4c4e3ef2
+PARITY n_in 4096 n_out 50 T 7 hash 5a9405af4ae47af3
+PARITY n_in 4096 n_out 50 T 8 hash dcaf561e0a92c0f6
+PARITY n_in 2048 n_out 7 T 1 hash ced74d26a0670602
+PARITY n_in 2048 n_out 7 T 2 hash 483d4bb54c61152b
+PARITY n_in 2048 n_out 7 T 3 hash 02f795475c2596cc
+PARITY n_in 2048 n_out 7 T 4 hash 6f310f0c76516ae3
+PARITY n_in 2048 n_out 7 T 5 hash 3e95b9cf2d17d362
+PARITY n_in 2048 n_out 7 T 6 hash 3d5a7b1e3a0b0524
+PARITY n_in 2048 n_out 7 T 7 hash d90d394a1bc2b8f3
+PARITY n_in 2048 n_out 7 T 8 hash 3ab7c0cfdc8c6880
+PARITY n_in 256 n_out 33 T 1 hash 4a79eb9eb6a3a605
+PARITY n_in 256 n_out 33 T 2 hash 62bd528f1da1e6ce
+PARITY n_in 256 n_out 33 T 3 hash d198e0512086a094
+PARITY n_in 256 n_out 33 T 4 hash 0cc6bf82fc74c106
+PARITY n_in 256 n_out 33 T 5 hash 3ed24a0015a0788e
+PARITY n_in 256 n_out 33 T 6 hash 3083c2ddd5322b8d
+PARITY n_in 256 n_out 33 T 7 hash d891ffda789b09b8
+PARITY n_in 256 n_out 33 T 8 hash 58843562e949553c
+PARITY n_in 8192 n_out 90 T 1 hash e2e08049d14945d3
+PARITY n_in 8192 n_out 90 T 2 hash d56ba2c6459a0f16
+PARITY n_in 8192 n_out 90 T 3 hash 882473b210300bc6
+PARITY n_in 8192 n_out 90 T 4 hash 52f5849288047874
+PARITY n_in 8192 n_out 90 T 5 hash 6edb8b3f868947e3
+PARITY n_in 8192 n_out 90 T 6 hash fdd65181d7ef6959
+PARITY n_in 8192 n_out 90 T 7 hash 8364a311af1d6e56
+PARITY n_in 8192 n_out 90 T 8 hash bfc788779c04a794
+SHAPE n_in 2560 n_out 512 T 1 :   4.64 us per call
+SHAPE n_in 2560 n_out 512 T 2 :   5.25 us per call
+SHAPE n_in 2560 n_out 512 T 3 :   6.27 us per call
+SHAPE n_in 2560 n_out 512 T 4 :   7.08 us per call
+SHAPE n_in 2560 n_out 512 T 6 :   9.13 us per call
+SHAPE n_in 2560 n_out 256 T 1 :   3.37 us per call
+SHAPE n_in 2560 n_out 256 T 2 :   3.82 us per call
+SHAPE n_in 2560 n_out 256 T 3 :   4.24 us per call
+SHAPE n_in 2560 n_out 256 T 4 :   5.18 us per call
+SHAPE n_in 2560 n_out 256 T 6 :   6.14 us per call
+SHAPE n_in 2560 n_out 128 T 1 :   3.09 us per call
+SHAPE n_in 2560 n_out 128 T 2 :   3.46 us per call
+SHAPE n_in 2560 n_out 128 T 3 :   3.75 us per call
+SHAPE n_in 2560 n_out 128 T 4 :   4.54 us per call
+SHAPE n_in 2560 n_out 128 T 6 :   5.45 us per call
+SHAPE n_in 2560 n_out  64 T 1 :   2.62 us per call
+SHAPE n_in 2560 n_out  64 T 2 :   2.97 us per call
+SHAPE n_in 2560 n_out  64 T 3 :   3.31 us per call
+SHAPE n_in 2560 n_out  64 T 4 :   3.80 us per call
+SHAPE n_in 2560 n_out  64 T 6 :   4.50 us per call
+SHAPE n_in 2560 n_out  48 T 1 :   2.30 us per call
+SHAPE n_in 2560 n_out  48 T 2 :   2.65 us per call
+SHAPE n_in 2560 n_out  48 T 3 :   3.03 us per call
+SHAPE n_in 2560 n_out  48 T 4 :   3.33 us per call
+SHAPE n_in 2560 n_out  48 T 6 :   3.93 us per call
+SHAPE n_in 2560 n_out   8 T 1 :   1.58 us per call
+SHAPE n_in 2560 n_out   8 T 2 :   1.88 us per call
+SHAPE n_in 2560 n_out   8 T 3 :   2.22 us per call
+SHAPE n_in 2560 n_out   8 T 4 :   2.36 us per call
+SHAPE n_in 2560 n_out   8 T 6 :   2.82 us per call
+SHAPE n_in 2560 n_out   1 T 1 :   1.54 us per call
+SHAPE n_in 2560 n_out   1 T 2 :   1.81 us per call
+SHAPE n_in 2560 n_out   1 T 3 :   2.15 us per call
+SHAPE n_in 2560 n_out   1 T 4 :   2.28 us per call
+SHAPE n_in 2560 n_out   1 T 6 :   2.71 us per call
+T 8 empty node           :   0.87 us per layer (median of 30 graphs of 48 layers)
+T 8 mmvf                 :  16.72 us per layer (median of 30 graphs of 48 layers)
+T 8 route                :   4.59 us per layer (median of 30 graphs of 48 layers)
+T 8 mmvf+route           :  21.33 us per layer (median of 30 graphs of 48 layers)
+T 8 doorbell             :   2.96 us per layer (median of 30 graphs of 48 layers)
+T 8 mmvf+doorbell        :  19.67 us per layer (median of 30 graphs of 48 layers)
+T 8 route+doorbell       :   7.49 us per layer (median of 30 graphs of 48 layers)
+T 8 mmvf+route+doorbell  :  24.28 us per layer (median of 30 graphs of 48 layers)
+T 8 mapped, all resident : mmvf+route+doorbell  :  23.68 us per layer
+T 8 mapped, all resident : mmvf+bell            :  22.74 us per layer
+T 8 mapped, all resident : mmvf+bell fast       :  22.68 us per layer
+T 8 mapped, misses (input copied): mmvf+route+doorbell  :  27.43 us per layer
+T 8 mapped, misses (input copied): mmvf+bell            :  26.26 us per layer
+T 8 mapped, misses (input copied): mmvf+bell fast       :  26.26 us per layer

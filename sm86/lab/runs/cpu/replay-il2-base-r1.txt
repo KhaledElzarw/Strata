@@ -1,0 +1,6 @@
+pool_replay_bench: AMD Ryzen 9 9950X 16-Core Processor, 600 windows (skipped 200), 10728 MB of blobs (128 slots a layer), gap 230 us, CPU workers on logical processors 2,4,...,30 (15 workers, one per physical core; host on 0), tasks 0
+rep 0: 20750 layer calls of 28800 layer-windows, 4.69 experts and 6.33 entries a call
+  per call: total 153.2 us = gate/up 99.3 + quantize 1.35 + down 52.5 (us)
+  gate/up 52.4 GB/s, down 56.2 GB/s; whole call 53.2 GB/s
+  per window: 5.300 ms of pool calls (34.6 calls)
+  hash fbb3a81f18e607cc

@@ -1250,9 +1250,35 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
     }
 }
 
+// sm86 lab STRATA_POOL_PF (opt-in): before a native task computes its rows, request them: 1 = every line of the task's
+// weight rows into L2 (prefetcht1), 2 = the first 4 KB of each row stream (the hardware prefetcher carries on from there).
+// A prefetch reads; it changes no value.
+static int pool_pf_mode() {
+    static const int m = [] { const char* v = std::getenv("STRATA_POOL_PF"); return v != nullptr ? std::atoi(v) : 0; }();
+    return m;
+}
+static void pool_pf_range(const uint8_t* p, size_t n, int mode) {
+#if defined(_M_X64) || defined(__x86_64__)
+    if (mode == 2) n = (std::min)(n, (size_t) 4096);
+    for (uintptr_t q = (uintptr_t) p & ~(uintptr_t) 63, end = (uintptr_t) p + n; q < end; q += 64)
+        _mm_prefetch((const char*) q, _MM_HINT_T1);
+#else
+    (void) p; (void) n; (void) mode;
+#endif
+}
+
 void ExpertPool::native_rows(int mode, int e, int r0, int r1) {
     SplitBufMulti& sb = split_multi_[(size_t) e];
     const NativeFmt* const nfmt = mjobs_[e].fmt != nullptr ? mjobs_[e].fmt : nfmt_;   // 149-cold: same types and rows
+    if (const int pf = pool_pf_mode(); pf > 0 && r1 > r0) {
+        const uint8_t* b = mjobs_[e].blob;
+        if (mode == 5) {
+            pool_pf_range(b + (size_t) r0 * nfmt->gu_row, (size_t) (r1 - r0) * nfmt->gu_row, pf);
+            pool_pf_range(b + nfmt->up_off + (size_t) r0 * nfmt->gu_row, (size_t) (r1 - r0) * nfmt->gu_row, pf);
+        } else {
+            pool_pf_range(b + nfmt->down_off + (size_t) r0 * nfmt->d_row, (size_t) (r1 - r0) * nfmt->d_row, pf);
+        }
+    }
     if (mode == 5 && q2_native_kernels(nfmt->gu_type)) {
         // a native Q2_0 pack: gate and up rows on the Q2_0 kernels, then SwiGLU
         thread_local float gbuf[MAXT][FF], ubuf[MAXT][FF];
@@ -1306,12 +1332,25 @@ void ExpertPool::dag_task(int i) {
             for (int t = 0; t < mjobs_[e].nt; ++t)
                 if (q2_native_kernels(f.d_type)) act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
                 else native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
-            dag_[e].ready.store(1u, std::memory_order_release);
+            if (dag_mode_ == 2) {   // the next down slot is this expert's (pool.hpp, STRATA_POOL_DAG=2)
+                const uint32_t s = dag_slots_.fetch_add(1, std::memory_order_relaxed);
+                dag_[s].slot_e = e;
+                dag_[s].slot_ready.store(1u, std::memory_order_release);
+            } else {
+                dag_[e].ready.store(1u, std::memory_order_release);
+            }
         }
     } else {
         const int j = i - dag_gu_tasks_;
-        const int e = j / dag_dn_per_, p = j % dag_dn_per_;
-        while (dag_[e].ready.load(std::memory_order_acquire) == 0u) strata_cpu_pause();
+        int e = j / dag_dn_per_;
+        const int p = j % dag_dn_per_;
+        if (dag_mode_ == 2) {   // slot e: the e-th expert to finish its gate/up
+            const int s = e;
+            while (dag_[s].slot_ready.load(std::memory_order_acquire) == 0u) strata_cpu_pause();
+            e = dag_[s].slot_e;
+        } else {
+            while (dag_[e].ready.load(std::memory_order_acquire) == 0u) strata_cpu_pause();
+        }
         const int n = (int) nfmt_->n_embd;
         const int r0 = cut16(n, p, dag_dn_per_), r1 = cut16(n, p + 1, dag_dn_per_);
         if (r1 > r0) native_rows(6, e, r0, r1);
@@ -1401,12 +1440,14 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
     if (n <= 0) return;
     const auto t0 = std::chrono::steady_clock::now();
     // (off under STRATA_ACT_DUMP: the dump's sums would then be taken in the workers' order, not the host's)
-    static const bool dag_env = [] {
+    // STRATA_POOL_DAG=1, or 2: the down slots in gate/up completion order (pool.hpp)
+    static const int dag_env = [] {
         const char* v = std::getenv("STRATA_POOL_DAG");
         const char* dump = std::getenv("STRATA_ACT_DUMP");
-        return v != nullptr && v[0] == '1' && (dump == nullptr || dump[0] == '\0');
+        if (v == nullptr || (v[0] != '1' && v[0] != '2') || v[1] != '\0' || (dump != nullptr && dump[0] != '\0')) return 0;
+        return v[0] - '0';
     }();
-    const bool dag = dag_env && numa_n_ == 0 && f.n_ff > 0 && f.n_embd > 0;
+    const bool dag = dag_env != 0 && numa_n_ == 0 && f.n_ff > 0 && f.n_embd > 0;
     if (dag && !dag_) dag_.reset(new DagExpert[kMaxSplitMulti]);
     // more distinct experts than buffers: run them in batches
     for (int b0 = 0; b0 < n; b0 += kMaxSplitMulti) {
@@ -1427,7 +1468,10 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
             for (int e = 0; e < nb; ++e) {
                 dag_[e].gu_left.store((uint32_t) dag_gu_per_, std::memory_order_relaxed);
                 dag_[e].ready.store(0u, std::memory_order_relaxed);
+                dag_[e].slot_ready.store(0u, std::memory_order_relaxed);
             }
+            dag_slots_.store(0u, std::memory_order_relaxed);
+            dag_mode_ = dag_env;
             const auto a = std::chrono::steady_clock::now();
             run_phase(7, dag_gu_tasks_ + nb * dag_dn_per_);
             ms_multi_dag += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - a).count();

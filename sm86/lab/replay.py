@@ -2,16 +2,22 @@
 
   python replay.py run --src runs/requests/<tag> --label <label> [--url http://127.0.0.1:19100]
                        [--temperature 0] [--max-tokens 1024] [--limit N] [--repeat 1] [--extra '{"spec_min_p": 0.7}']
+                       [--gap 2] [--gpu-gate 5] [--gpu-wait 1800]
   python replay.py summary <label | turns:<tag>> ...
   python replay.py diff <ref_label> <label>
 
 Results go to runs/replay/<label>.jsonl. Decode speed is Strata's own `predicted_per_second` (every kept token over
 first-to-last token time; prompt reading excluded). Turns with fewer than --min-tokens generated tokens are left out of
 the speed statistics (too short to time) but still count for exactness.
+
+--gpu-gate N: the machine is shared, so before each request wait until no other program has used >= N% of the GPU's
+SMs for 30 s (checks of two one-second nvidia-smi pmon samples), at most --gpu-wait seconds a request; the wait is
+recorded as gpu_wait_s.
 """
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 import time
 import urllib.request
@@ -34,6 +40,46 @@ def answer_text(r: dict) -> str:
     calls = [((c.get("function") or {}).get("name"), (c.get("function") or {}).get("arguments"))
              for c in msg.get("tool_calls") or []]
     return json.dumps({"c": msg.get("content"), "r": msg.get("reasoning_content"), "t": calls}, ensure_ascii=False)
+
+
+def gpu_others(engine: str = "strata.exe", samples: int = 2) -> list:
+    """Other programs' SM use in `samples` one-second nvidia-smi pmon samples: [(name, sm%)]; [] when pmon fails."""
+    try:
+        out = subprocess.run(["nvidia-smi", "pmon", "-c", str(samples), "-s", "u"], capture_output=True, text=True,
+                             timeout=60).stdout
+    except (OSError, subprocess.SubprocessError):
+        return []
+    busy = []
+    for line in out.splitlines():
+        f = line.split()     # gpu pid type sm mem enc dec jpg ofa command; sm is "-" when the program is idle
+        if len(f) >= 4 and not line.startswith("#") and f[3].isdigit() and not f[-1].lower().endswith(engine.lower()):
+            busy.append((f[-1], int(f[3])))
+    return busy
+
+
+_last_busy = 0.0   # when a check last saw another program on the SMs, kept across a run's requests
+
+
+def wait_gpu_free(min_sm: int, max_wait: float, label: str, quiet: float = 30.0) -> float:
+    """Wait until no other program has used >= min_sm% of the SMs for `quiet` seconds (a game idles a few seconds
+    between bursts), at most max_wait seconds; returns the seconds spent, the checks included."""
+    global _last_busy
+    t0, said = time.time(), False
+    while True:
+        busy = sorted({n for n, s in gpu_others() if s >= min_sm})
+        now = time.time()
+        if busy:
+            _last_busy = now
+        elif now - _last_busy >= quiet:
+            return now - t0
+        if now - t0 >= max_wait:
+            print(f"{label}: the GPU is still busy after {max_wait:.0f} s ({', '.join(busy) or 'recently'}), going on",
+                  flush=True)
+            return now - t0
+        if not said:
+            print(f"{label}: waiting for the GPU ({', '.join(busy) or 'busy in the last %.0f s' % quiet})", flush=True)
+            said = True
+        time.sleep(5)
 
 
 def run(a):
@@ -61,8 +107,9 @@ def run(a):
                     cur = body.pop("max_completion_tokens", None) or body.get("max_tokens")
                     body["max_tokens"] = min(a.max_tokens, cur) if cur else a.max_tokens
                 body.update(extra)
+                waited = wait_gpu_free(a.gpu_gate, a.gpu_wait, a.label) if getattr(a, "gpu_gate", 0) else None
                 if getattr(a, "gap", 0) and (rep or i):    # idle seconds before each request but the first (tool time)
-                    time.sleep(a.gap)
+                    time.sleep(max(0.0, a.gap - (waited or 0.0)))
                 t0 = time.time()
                 try:
                     r, err = post(a.url.rstrip("/") + "/v1/chat/completions", body, a.timeout), None
@@ -75,6 +122,8 @@ def run(a):
                        "wall_s": round(time.time() - t0, 2), "timings": r.get("timings"), "usage": r.get("usage"),
                        "finish": ((r.get("choices") or [{}])[0].get("finish_reason")),
                        "sha": hashlib.sha256(text.encode("utf-8")).hexdigest()[:16], "text": text, "error": err}
+                if waited is not None:
+                    rec["gpu_wait_s"] = round(waited, 1)
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 f.flush()
                 print(f"{a.label} rep{rep} {i + 1}/{len(files)} {p.name}: "
@@ -155,6 +204,8 @@ def main():
     r.add_argument("--extra")
     r.add_argument("--timeout", type=float, default=1800)
     r.add_argument("--gap", type=float, default=0.0, help="idle seconds between requests (an agent's tool time)")
+    r.add_argument("--gpu-gate", type=int, default=0, help="wait before each request while another program uses >= N%% SM")
+    r.add_argument("--gpu-wait", type=float, default=1800.0, help="at most this many seconds of --gpu-gate wait a request")
     s = sub.add_parser("summary")
     s.add_argument("labels", nargs="+")
     s.add_argument("--min-tokens", type=int, default=64)

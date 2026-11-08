@@ -1,0 +1,59 @@
+runs/nsys/q3_cuda_gpu_trace.csv
+23011 router chains
+  gap gemv -> next           n  23011  mean  -0.06  median  -0.06  p10  -0.10  p90  -0.03
+  top-10                     n  23011  mean   4.25  median   4.16  p10   4.06  p90   4.58
+  gap top-10 -> doorbell     n  23011  mean   0.06  median   0.06  p10   0.06  p90   0.06
+  doorbell (or fused)        n  23011  mean   4.24  median   4.13  p10   2.94  p90   5.70
+  gemv end -> doorbell end   n  23011  mean   8.49  median   8.26  p10   7.04  p90  10.27
+  router gemv                n  23011  mean   7.58  median   7.01  p10   5.15  p90   9.86
+
+BF16 GEMV by grid, kernel and token count (us; sum in ms over the trace)
+  grid      1 multi  T 2  n   5952  mean   3.07  median   2.75  p10   2.53  p90   4.00  sum    18.2
+  grid      1 multi  T 3  n   3648  mean   3.37  median   3.07  p10   2.75  p90   4.35  sum    12.3
+  grid      1 multi  T 4  n   2832  mean   4.43  median   4.38  p10   3.71  p90   5.31  sum    12.5
+  grid      1 multi  T 5  n   2400  mean   5.25  median   5.18  p10   4.22  p90   6.56  sum    12.6
+  grid      1 multi  T 6  n   2947  mean   5.14  median   5.15  p10   4.03  p90   6.05  sum    15.1
+  grid      1 multi  T 8  n    384  mean  13.53  median  13.02  p10  11.52  p90  16.86  sum     5.2
+  grid      1 single T 1  n   4848  mean   2.79  median   2.85  p10   2.18  p90   3.58  sum    13.5
+  grid    128 multi  T 2  n   1488  mean   4.31  median   4.07  p10   3.94  p90   4.64  sum     6.4
+  grid    128 multi  T 3  n    912  mean   4.54  median   4.35  p10   4.22  p90   4.54  sum     4.1
+  grid    128 multi  T 4  n    708  mean   7.12  median   7.10  p10   6.75  p90   7.52  sum     5.0
+  grid    128 multi  T 5  n    600  mean   7.47  median   7.52  p10   6.91  p90   7.97  sum     4.5
+  grid    128 multi  T 6  n    737  mean   7.58  median   7.62  p10   6.82  p90   8.16  sum     5.6
+  grid    128 multi  T 8  n     96  mean  12.64  median  12.58  p10  11.46  p90  13.63  sum     1.2
+  grid    128 single T 1  n   1212  mean   4.40  median   4.06  p10   3.81  p90   5.22  sum     5.3
+  grid    512 multi  T 2  n   7440  mean   6.89  median   6.53  p10   6.30  p90   8.13  sum    51.2
+  grid    512 multi  T 3  n   4560  mean   7.39  median   7.17  p10   6.98  p90   8.06  sum    33.7
+  grid    512 multi  T 4  n   3540  mean   9.51  median   9.28  p10   9.03  p90  10.46  sum    33.7
+  grid    512 multi  T 5  n   3000  mean  10.06  median   9.66  p10   9.47  p90  11.30  sum    30.2
+  grid    512 multi  T 6  n   3684  mean  10.41  median   9.92  p10   9.76  p90  11.78  sum    38.4
+  grid    512 multi  T 8  n    480  mean  18.37  median  17.12  p10  16.83  p90  22.69  sum     8.8
+  grid    512 single T 1  n   6060  mean   5.50  median   5.18  p10   5.09  p90   6.53  sum    33.3
+  grid   2560 multi  T 2  n    124  mean  18.77  median  18.69  p10  18.46  p90  19.10  sum     2.3
+  grid   2560 multi  T 3  n     76  mean  19.21  median  19.14  p10  18.98  p90  19.58  sum     1.5
+  grid   2560 multi  T 4  n     59  mean  24.23  median  24.23  p10  23.81  p90  24.67  sum     1.4
+  grid   2560 multi  T 5  n     50  mean  27.42  median  27.39  p10  27.04  p90  27.81  sum     1.4
+  grid   2560 multi  T 6  n     62  mean  29.19  median  29.22  p10  28.74  p90  29.54  sum     1.8
+  grid   2560 single T 1  n    101  mean  16.72  median  16.67  p10  16.58  p90  16.99  sum     1.7
+  grid  10240 multi  T 2  n    124  mean  63.28  median  62.88  p10  62.62  p90  64.48  sum     7.8
+  grid  10240 multi  T 3  n     76  mean  64.60  median  64.16  p10  63.84  p90  66.78  sum     4.9
+  grid  10240 multi  T 4  n     59  mean  81.89  median  81.73  p10  80.70  p90  83.58  sum     4.8
+  grid  10240 multi  T 5  n     50  mean  94.54  median  94.40  p10  93.50  p90  95.97  sum     4.7
+  grid  10240 multi  T 6  n     62  mean 103.19  median 103.17  p10 101.79  p90 104.58  sum     6.4
+  grid  10240 single T 1  n    101  mean  62.11  median  61.79  p10  61.73  p90  63.17  sum     6.3
+
+top-10 / doorbell / fused by the chain's token count (us)
+  T 1 top-10   n   4848  mean   4.09  median   4.10  p10   4.03  p90   4.16
+  T 1 doorbell n   4848  mean   3.23  median   3.01  p10   2.94  p90   3.68
+  T 2 top-10   n   5952  mean   4.13  median   4.13  p10   4.06  p90   4.22
+  T 2 doorbell n   5952  mean   3.68  median   4.06  p10   2.98  p90   4.19
+  T 3 top-10   n   3648  mean   4.18  median   4.16  p10   4.10  p90   4.26
+  T 3 doorbell n   3648  mean   4.20  median   4.67  p10   2.98  p90   4.90
+  T 4 top-10   n   2832  mean   4.21  median   4.19  p10   4.13  p90   4.32
+  T 4 doorbell n   2832  mean   4.49  median   4.77  p10   2.85  p90   4.93
+  T 5 top-10   n   2400  mean   4.51  median   4.51  p10   4.45  p90   4.58
+  T 5 doorbell n   2400  mean   5.30  median   5.54  p10   3.01  p90   5.73
+  T 6 top-10   n   2947  mean   4.61  median   4.61  p10   4.54  p90   4.70
+  T 6 doorbell n   2947  mean   5.69  median   5.66  p10   5.57  p90   5.82
+  T 8 top-10   n    384  mean   4.69  median   4.67  p10   4.64  p90   4.83
+  T 8 doorbell n    384  mean   6.30  median   6.24  p10   6.18  p90   6.43
