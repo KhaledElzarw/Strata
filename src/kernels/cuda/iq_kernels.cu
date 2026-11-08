@@ -6144,6 +6144,87 @@ __global__ void __launch_bounds__(256) native_gu_fused_kernel(const unsigned lon
     }
 }
 
+// ---- 10 (sm86 lab), down Q2_0 at n_ff 640 (20 calls a row): native_down_multi_kernel's row_dot_20_sub16 tree on 4
+// lanes instead of 16.  There lane t (of 16) sums call t (and call t + 16 for t < 4) from 0, joins the two with
+// __fadd_rn (+ 0.0f where there is no second call: -0 becomes +0), then adds lane t ^ 8, t ^ 4, t ^ 2, t ^ 1.  Here lane
+// u (of 4) holds the four values of the 16-lane lanes u, u + 4, u + 8, u + 12 (calls u, u + 4, ..., u + 16: every lane
+// busy, against 20 of 32 there), adds them in the butterfly's own first two levels ((u + (u + 8)) + ((u + 4) + (u + 12))),
+// then shuffles its last two: the same additions in the same order, so every (row, entry) sum is the same bits.
+// 64 rows a block; a call's weights are decoded once for every entry; the chunk's q8_1 blocks sit in LDS as planes.
+__global__ void __launch_bounds__(256) native_down_q2_sub4_kernel(const unsigned long long* __restrict__ grp_ptr,
+                                                                  const int32_t* __restrict__ grp_start,
+                                                                  const int32_t* __restrict__ n_groups,
+                                                                  const int32_t* __restrict__ ent_dst,
+                                                                  const block_q8_1* __restrict__ hq, NativeExpertLayout L,
+                                                                  float* __restrict__ out) {
+    using S = Split<42>;
+    static_assert(GRP_NC == 4, "the n switch below and the u == c store cover four entries a chunk");
+    const int ng = *n_groups;
+    if ((int) blockIdx.y >= ng) return;
+    __shared__ int4 s_lo[GRP_NC * 20], s_hi[GRP_NC * 20];
+    __shared__ float s_d8[GRP_NC * 20];
+    const int u = threadIdx.x & 3;
+    const int r = blockIdx.x * 64 + (threadIdx.x >> 2);
+    const bool valid_r = r < L.n_embd;
+    const size_t w_off = L.down_off + (size_t) (valid_r ? r : 0) * L.d_row;
+    for (int g = blockIdx.y; g < ng; g += gridDim.y) {
+        const uint8_t* wr = (const uint8_t*) grp_ptr[g] + w_off;
+        const float sd = L.tail_off ? ((const float*) (grp_ptr[g] + L.tail_off))[2] : 1.0f;   // NVFP4: s_down
+        const int e0 = grp_start[g], e1 = grp_start[g + 1];
+        for (int e = e0; e < e1; e += GRP_NC) {
+            const int n = min(GRP_NC, e1 - e);
+            if (g > (int) blockIdx.y || e > e0) __syncthreads();   // the previous chunk's reads are done
+            for (int i = threadIdx.x; i < n * 20; i += 256) {
+                const block_q8_1* src = hq + (size_t) e * 20 + i;   // the chunk's entries are contiguous
+                const int* w = (const int*) src->qs;
+                s_lo[i] = make_int4(w[0], w[1], w[2], w[3]);
+                s_hi[i] = make_int4(w[4], w[5], w[6], w[7]);
+                s_d8[i] = __low2float(src->ds);
+            }
+            __syncthreads();
+            // (a row past n_embd computes row 0's sums and stores nothing: every lane reaches the shuffles)
+            auto pass = [&](auto ntc) {
+                constexpr int NC = decltype(ntc)::value;
+                float v[5][NC];   // v[i]: call u + 4 i summed from 0 (v[4] = call u + 16, the 16-lane lane u's second)
+#pragma unroll
+                for (int i = 0; i < 5; ++i)
+#pragma unroll
+                    for (int c = 0; c < NC; ++c) v[i][c] = 0.0f;
+#pragma unroll
+                for (int i = 0; i < 5; ++i) {
+                    const int k = u + 4 * i;   // kbx = k / 2, iqs = k % 2 (Fmt<42>: ipb 2, step 1); its q8_1 block is k
+                    const S::W w = S::load(wr, k >> 1, k & 1);
+#pragma unroll
+                    for (int c = 0; c < NC; ++c) {
+                        const int4 p = s_lo[c * 20 + k], q = s_hi[c * 20 + k];
+                        const int uu[8] = { p.x, p.y, p.z, p.w, q.x, q.y, q.z, q.w };
+                        v[i][c] += S::apply_u(w, uu, s_d8[c * 20 + k]);
+                    }
+                }
+#pragma unroll
+                for (int c = 0; c < NC; ++c) {
+                    const float a0 = __fadd_rn(v[0][c], v[4][c]);   // 16-lane lane u: s + s16
+                    const float a4 = __fadd_rn(v[1][c], 0.0f);      // lanes u + 4, u + 8, u + 12: s + 0.0f
+                    const float a8 = __fadd_rn(v[2][c], 0.0f);
+                    const float a12 = __fadd_rn(v[3][c], 0.0f);
+                    const float b0 = a0 + a8;                       // xor 8 (own value first, as the shuffle adds)
+                    const float b4 = a4 + a12;
+                    float x = b0 + b4;                              // xor 4
+                    x += __shfl_xor_sync(0xffffffffu, x, 2);
+                    x += __shfl_xor_sync(0xffffffffu, x, 1);
+                    if (valid_r && u == c) out[(size_t) ent_dst[e + c] * L.n_embd + r] = x * sd;   // lane c stores entry c
+                }
+            };
+            switch (n) {
+                case 1: pass(std::integral_constant<int, 1>{}); break;
+                case 2: pass(std::integral_constant<int, 2>{}); break;
+                case 3: pass(std::integral_constant<int, 3>{}); break;
+                default: pass(std::integral_constant<int, 4>{}); break;
+            }
+        }
+    }
+}
+
 // dflash2-kern: Strix Halo (gfx1151) takes mode 8 (gate/up + SwiGLU + q8_1 in one launch, the group's activations in LDS) for the
 // IQ packs' gate/up: native_expert_bench on the IQ3_S pack's real rows, 45 groups of one entry (a 8-token verify window's call),
 // gate/up -25% (IQ2_S), -8% (IQ3_XXS), -6% (IQ3_S), bitwise equal to mode 0.  STRATA_GFX1151_EXP8=0 keeps the old layout.
@@ -6410,7 +6491,8 @@ void native_expert_grouped(const NativeExpertLayout& L, const unsigned long long
     // 147-verify STRATA_GU_SWIGLU=1: gate/up + SwiGLU + q8_1 in one launch where the CUDA layout's 16-lane kernel would run
     bool gs_done = false;
 #if STRATA_EXP_LAYOUTS
-    const bool gs_layout = !fused_gu && em0 == 0;
+    // sm86 lab mode 10 has no gate/up layout of its own (decision 0002): its gate/up is mode 0's (Gemini review)
+    const bool gs_layout = !fused_gu && (em0 == 0 || em0 == 10);
 #else
     const bool gs_layout = true;
 #endif
@@ -6527,6 +6609,13 @@ void native_expert_grouped(const NativeExpertLayout& L, const unsigned long long
     cudaGetDevice(&dev_d);
     // gfx1151: the LDS down kernel is slower than the CUDA layout for IQ4_NL (86 vs 63 us, 24 groups) and faster for Q2_0 (-18%)
     const bool lds_down_ok = L.d_type == 42 || (L.d_type == 20 && !gfx1151_exp8(dev_d));
+    // sm86 lab mode 10: Q2_0 down rows on 4 lanes (native_down_q2_sub4_kernel), where mode 0 takes row_dot_20_sub16
+    if (em0d == 10 && L.d_type == 42 && L.n_ff == 640 && !g_old_kernels && !g_no_sub16_gu) {
+        const dim3 gq((unsigned) ((L.n_embd + 63) / 64), (unsigned) gy);
+        native_down_q2_sub4_kernel<<<gq, 256, 0, s>>>(grp_ptr, grp_start, n_groups, ent_dst, hq, L, out);
+        check("native_expert_grouped/down q2 sub4");
+        return;
+    }
     if ((em0d == 7 || em0d == 8) && lds_down_ok) {
         const dim3 gl((unsigned) ((L.n_embd + LDS_RB - 1) / LDS_RB), (unsigned) cap_groups);
         const size_t sh = (size_t) LDS_NT * (size_t) (L.n_ff / 32) * sizeof(block_q8_1);
