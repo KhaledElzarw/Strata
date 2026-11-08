@@ -1,6 +1,6 @@
 # 0006: The router chain, top-10 and doorbell (sm86-decode, issue #3)
 
-Date: 2026-11-09. Status: draft (the chair, Claude Code); every change is an opt-in switch, pending its A/B.
+Date: 2026-11-09. Status: decided by the chair (Claude Code): not adopted; every change is an opt-in switch.
 
 ## Problem
 Every MoE layer starts with three kernels on the main stream: the router GEMV (BF16 512 x 2560, 2.62 MB), the top-10
@@ -61,9 +61,13 @@ the VRAM experts and the shared expert, so it is on the critical path of all thr
   fusing them removes only one launch's ramp and the second block, not gaps.
 
 ## Decision
-Both switches are tier A and faster in the kernel bench, but together they are below the engine A/B's resolution
-(~2%). Per the bundling rule they ride with the CPU pool change (0005) as one bundle: `POOL_DAG=2` + `SMALL_UNR=3` +
-`ROUTE_BELL=2`, measured by one confirmation A/B against q3.
+Not adopted: `ROUTE_BELL` and `SMALL_UNR` stay opt-in (off by default). Both are tier A and faster in the kernel bench,
+but together below the engine A/B's resolution (~2%), so per the bundling rule they rode with the CPU pool change
+(0005) as one bundle, `POOL_DAG=2` + `SMALL_UNR=3` + `ROUTE_BELL=2`, in one confirmation A/B against q3 (conf1, 4 x 57
+real turns, GPU-gated; 0005 has the details): clean pairs median 1.022, geo-mean 1.011 [95% 0.997-1.025] (n = 216).
+Below the bar (>= 2%, CI excluding 1). The 50-85 us a window this saves is real in the bench and under the A/B's
+noise; it can ride with a faster router GEMV (#23). Per the project's process, switches that are not adopted get no
+council code review.
 
 ## Not taken (yet)
 - The router GEMV itself: 4.7-9.2 us against a 2.8 us DRAM floor, because each of its 512 blocks reads every token's

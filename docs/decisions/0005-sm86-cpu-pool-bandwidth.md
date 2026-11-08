@@ -51,4 +51,21 @@ read ceiling of 60-64 GB/s on this machine (sm86/lab/bwbench.cpp). Hard constrai
   the one tested in the engine.
 
 ## Decision
-(pending the engine A/B)
+Not adopted: `STRATA_POOL_DAG=2` stays an opt-in switch (off by default), like DAG 1 (0003: 0.997 [95% 0.980-1.014]).
+
+- Engine A/B pool2 (3 interleaved rounds x 57 real turns: q3, q3 + `POOL_DAG=2`, q3 + `POOL_DAG=2` + `SMALL_UNR=3`;
+  sm86/lab/runs/ab/pool2.*): another session's game and editor ran on the GPU during it. Contended turns by round:
+  q3 23 / 56 / 13, DAG2 47 / 56 / 0, DAG2 + SMALL_UNR 0 / 10 / 0 of 56-57, which inflated the last arm to a paired
+  geo-mean of 1.079. On the pairs with no other GPU program listed (sm86/lab/ab_clean.py): DAG2 1.027 [0.998-1.063]
+  (n = 43), DAG2 + SMALL_UNR 1.031 [1.008-1.056] (n = 76).
+- On that result the engine part had its code review: Codex Sol (gpt-6.1-sol, xhigh) 9/10 and Gemini
+  (gemini-4-argon-high) 9/10, no findings.
+- Confirmation A/B conf1 (4 interleaved rounds x 57 turns; replay.py waits before each timed turn until no other
+  program has used >= 5% of the SMs for 30 s, and an `nvidia-smi pmon` log drops the turns still overlapped): q3
+  against `POOL_DAG=2` + `SMALL_UNR=3` + `ROUTE_BELL=2` (0006); 6 of 449 timed turns overlapped. Clean pairs:
+  median 1.022, geo-mean 1.011 [0.997-1.025] (n = 216); all pairs 1.010 [0.996-1.024] (n = 222). Round medians
+  160.0 / 163.2 / 165.4 / 160.8 -> 169.9 / 163.8 / 163.9 / 166.7 tok/s; prompt time 1.003 [0.991-1.018].
+- Below the adoption bar (>= 2%, CI excluding 1). The pool2 gain did not reproduce under the gate: its filter saw only
+  which programs held a GPU context, and nothing logged the CPU load the same programs put on the pool's cores (#24).
+  The replay bench's 0.41 ms fewer pool milliseconds a window (7.9%) would be about 2% if all of it reached the
+  window; the bundle, with all three changes, measured 1.1%.
