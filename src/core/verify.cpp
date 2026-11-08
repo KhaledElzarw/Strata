@@ -311,8 +311,9 @@ bool env_on(const char* name) {
 }
 #if defined(STRATA_USE_HIP)
 const bool g_coherent = env_on("STRATA_VERIFY_COHERENT");
-const bool g_doorbell_store = env_on("STRATA_DOORBELL_STORE");
 #endif
+// HIP #649: doorbell_publish_value; CUDA (sm86 lab, opt-in): doorbell_publish_res_store on the residency path
+const bool g_doorbell_store = env_on("STRATA_DOORBELL_STORE");
 const bool g_trace = env_on("STRATA_VERIFY_TRACE");
 // STRATA_LAUNCH_PROBE (STRIX-TDR): process start, and the first windows' launch timing
 const Clock::time_point g_proc_t0 = Clock::now();
@@ -488,7 +489,10 @@ bool fuse_hits_on() {
     }
     return per_dev[dev] == 2;
 #else
-    return false;
+    // sm86 lab STRATA_FUSE_HITS=1 (opt-in): the same fold on CUDA (combine_k10_vec4_hits: the hit added to its zeroed
+    // row with the add_hits_kernel's `+=`, then the same ordered FMAs)
+    static const bool on = [] { const char* v = std::getenv("STRATA_FUSE_HITS"); return v != nullptr && std::atoi(v) != 0; }();
+    return on;
 #endif
 }
 
@@ -2290,6 +2294,13 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                                  m_ids_ + tb * K, m_w_ + tb * K, m_seq_, cs);
             else {
                 const int32_t* layer_res = hits_.d_res != nullptr ? (hits_.d_res + l * g.n_expert) : nullptr;
+#if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906) && !defined(STRATA_GPU_METAL)   // CUDA only (elementwise.cu)
+                if (g_doorbell_store)   // sm86 lab: the step's ring (the host waits for k + 1) stored, not incremented
+                    doorbell_publish_res_store(xm, ids_ + tb * K, layer_res, (int) g.n_expert, (int64_t) n * N,
+                                               (int64_t) n * K, m_x_ + tb * N, m_ids_ + tb * K, m_seq_,
+                                               (uint32_t) ((l - lb_) * G + grp + 1), cs);
+                else
+#endif
                 doorbell_publish_res(xm, ids_ + tb * K, layer_res, (int) g.n_expert, (int64_t) n * N, (int64_t) n * K,
                                      m_x_ + tb * N, m_ids_ + tb * K, m_seq_, cs);
             }

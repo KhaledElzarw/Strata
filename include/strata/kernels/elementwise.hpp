@@ -124,6 +124,10 @@ void doorbell_publish_value(const float* x, const int32_t* ids, const float* wei
                             void* stream);
 void doorbell_publish_res(const float* x, const int32_t* ids, const int32_t* d_res, int n_expert, int64_t n, int64_t k,
                           float* x_out, int32_t* ids_out, uint32_t* d_seq, void* stream);
+/// sm86 lab STRATA_DOORBELL_STORE=1 on CUDA: doorbell_publish_res with the ring STORED as `value` (> 0, the step's
+/// number known at capture) instead of read-modify-written over PCIe.
+void doorbell_publish_res_store(const float* x, const int32_t* ids, const int32_t* d_res, int n_expert, int64_t n,
+                                int64_t k, float* x_out, int32_t* ids_out, uint32_t* d_seq, uint32_t value, void* stream);
 /// SYCL: publishes launched or recorded while `on` store the payload with plain stores instead of uncached ones, for
 /// a caller that reads the payload only after the publishing kernel has ended (the stepped verify window).
 void doorbell_plain_payload(bool on);

@@ -102,4 +102,13 @@ int fused_gr_variant();
 void fused_gr_persist_init();
 bool fused_gr_read_persist(const FusedGrArgs* a, int n_tok, void* stream);
 
+/// sm86 lab (fused_gr_bench STRATA_BENCH_BW=1): a plain read of `bytes` (a 16-byte multiple) by probe kernel `v` (0-3).
+void fused_gr_bw_probe(const void* p, size_t bytes, int v, void* stream);
+/// sm86 lab: the resident read's structure without its arithmetic (80 CTAs, W_up held in registers with `hold`,
+/// DOWN86's ring, three grid barriers), for T tokens of activations at `xn`.  false: not run (the 80 CTAs do not fit the
+/// card at once, or no device buffer).
+bool fused_gr_res_probe(const void* wd, const void* wi, const void* wu, const float* xn, int T, int hold, void* stream);
+/// sm86 lab (STRATA_GR_RES=1 + STRATA_GR_RES_PROF=1): print the resident read's phase profile for T (T < 0: only reset it).
+void fused_gr_res_prof(int T);
+
 }  // namespace strata::kernels

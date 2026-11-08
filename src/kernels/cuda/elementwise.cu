@@ -328,7 +328,7 @@ __global__ void doorbell_publish_kernel(const float* __restrict__ x, const int32
 
 __global__ void doorbell_publish_res_kernel(const float* __restrict__ x, const int32_t* __restrict__ ids,
                                             const int32_t* __restrict__ d_res, int n_expert, int n, int k,
-                                            float* x_out, int32_t* ids_out, uint32_t* seq) {
+                                            float* x_out, int32_t* ids_out, uint32_t* seq, uint32_t value) {
     int any_miss = 0;
     if ((int) threadIdx.x < k) {
         const int32_t id = ids[threadIdx.x];
@@ -343,7 +343,9 @@ __global__ void doorbell_publish_res_kernel(const float* __restrict__ x, const i
     }
     __syncthreads();
     if (threadIdx.x == 0) {
-        *(volatile uint32_t*) seq = *(volatile uint32_t*) seq + 1u;
+        // value != 0 (sm86 lab, STRATA_DOORBELL_STORE=1 on CUDA): the step's own number, known at capture, stored -
+        // one posted write instead of a read of host memory over PCIe and a write (the HIP #649 idea on this path)
+        *(volatile uint32_t*) seq = value != 0u ? value : *(volatile uint32_t*) seq + 1u;
 #if defined(__HIPCC__)  // #697: HIP only; on RDNA4 the volatile store alone can sit in L2 until the stream syncs
         __threadfence_system();
 #endif
@@ -386,8 +388,17 @@ void doorbell_publish_res(const float* x, const int32_t* ids, const int32_t* d_r
                           float* x_out, int32_t* ids_out, uint32_t* d_seq, void* stream) {
     if (k > 1024) { std::fprintf(stderr, "doorbell_publish_res: k too large\n"); std::exit(1); }
     doorbell_publish_res_kernel<<<1, 1024, 0, (cudaStream_t) stream>>>(x, ids, d_res, n_expert, (int) n, (int) k,
-                                                                        x_out, ids_out, d_seq);
+                                                                        x_out, ids_out, d_seq, 0u);
     check_launch("doorbell_publish_res");
+}
+
+void doorbell_publish_res_store(const float* x, const int32_t* ids, const int32_t* d_res, int n_expert, int64_t n,
+                                int64_t k, float* x_out, int32_t* ids_out, uint32_t* d_seq, uint32_t value, void* stream) {
+    if (k > 1024) { std::fprintf(stderr, "doorbell_publish_res: k too large\n"); std::exit(1); }
+    if (value == 0u) { std::fprintf(stderr, "doorbell_publish_res_store: the stored ring value must be > 0\n"); std::exit(1); }
+    doorbell_publish_res_kernel<<<1, 1024, 0, (cudaStream_t) stream>>>(x, ids, d_res, n_expert, (int) n, (int) k,
+                                                                        x_out, ids_out, d_seq, value);
+    check_launch("doorbell_publish_res_store");
 }
 
 __global__ void copy_i32_from_mapped_kernel(int32_t* __restrict__ dst, const volatile int32_t* src, int64_t n) {
