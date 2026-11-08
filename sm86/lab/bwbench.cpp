@@ -17,12 +17,13 @@ using clk = std::chrono::steady_clock;
 static const size_t BUF = size_t(6) << 30;   // 6 GiB: every burst reads memory no cache holds
 static char* g_buf = nullptr;
 
+// Unaligned-safe loads; every range starts on a 256-byte boundary anyway (bursts are page multiples, slices 256-byte).
 static inline __m512i read_range(const char* p, size_t n, __m512i acc) {
     for (size_t i = 0; i + 256 <= n; i += 256) {
-        acc = _mm512_xor_si512(acc, _mm512_load_si512((const void*)(p + i)));
-        acc = _mm512_xor_si512(acc, _mm512_load_si512((const void*)(p + i + 64)));
-        acc = _mm512_xor_si512(acc, _mm512_load_si512((const void*)(p + i + 128)));
-        acc = _mm512_xor_si512(acc, _mm512_load_si512((const void*)(p + i + 192)));
+        acc = _mm512_xor_si512(acc, _mm512_loadu_si512((const void*)(p + i)));
+        acc = _mm512_xor_si512(acc, _mm512_loadu_si512((const void*)(p + i + 64)));
+        acc = _mm512_xor_si512(acc, _mm512_loadu_si512((const void*)(p + i + 128)));
+        acc = _mm512_xor_si512(acc, _mm512_loadu_si512((const void*)(p + i + 192)));
     }
     return acc;
 }
@@ -117,7 +118,7 @@ int main() {
         double steady = 0; for (int r = 0; r < 2; ++r) { double g = run(c.cpus, 0, 0, 0, nullptr); if (g > steady) steady = g; }
         std::printf("%-14s %7.1f GB/s |", c.name, steady);
         for (size_t mb10 : {10, 25, 48, 70, 160}) {   // 1.0, 2.5, 4.8, 7.0, 16 MB
-            const size_t burst = mb10 * (size_t(1) << 20) / 10;
+            const size_t burst = (mb10 * (size_t(1) << 20) / 10) & ~size_t(4095);   // a page multiple: every burst starts aligned
             double us0, us1;
             double g0 = run(c.cpus, burst, 0, 400, &us0);
             double g1 = run(c.cpus, burst, 230, 200, &us1);
