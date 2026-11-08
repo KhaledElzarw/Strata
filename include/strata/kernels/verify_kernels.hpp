@@ -150,6 +150,10 @@ void fetch_blobs(const unsigned long long* src, const int32_t* n, uint8_t* dst, 
 /// (STRATA_ADAPT_FETCH: a VRAM cache slot).  A separate overload, so the SYCL copy keeps the one above.
 void fetch_blobs(const unsigned long long* src, const int32_t* n, uint8_t* dst, int64_t blob_bytes, int cap, void* stream,
                  const unsigned long long* dst2);
+/// sm86 lab (STRATA_FETCH_FORK): the same copy on `grid` blocks.  The fork runs it beside the VRAM experts, where a small
+/// grid still keeps PCIe busy (its reads wait on the bus, not on the SMs) and leaves the SMs to the expert kernel.
+void fetch_blobs_grid(const unsigned long long* src, const int32_t* n, uint8_t* dst, int64_t blob_bytes, int cap, void* stream,
+                      const unsigned long long* dst2, int grid);
 /// table[pairs[2k]] = pairs[2k + 1] for k < n, `pairs` in mapped host memory: a residency table's changed entries,
 /// stream-ordered before the window that reads it, without the copy engine (where the tier's swaps may queue).
 void res_patch(int32_t* table, const int32_t* pairs, int n, void* stream);

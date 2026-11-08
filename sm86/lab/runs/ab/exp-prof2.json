@@ -1,0 +1,28 @@
+{
+ "name": "prof2",
+ "rounds": 1,
+ "src": [
+  "runs/replayset/hermes-v1"
+ ],
+ "seed": 1234,
+ "gap": 2.0,
+ "arms": [
+  {
+   "name": "c65",
+   "drafting": "dflash2",
+   "user_args": [
+    "--draft-conf",
+    "0.65"
+   ],
+   "set": {
+    "--conversation-cache-mib": "2048",
+    "--expert-cache": "7000"
+   },
+   "env": {
+    "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+    "STRATA_DECODE_TIMING": "1",
+    "STRATA_VERIFY_PROFILE": "1"
+   }
+  }
+ ]
+}

@@ -233,6 +233,51 @@ int main(int argc, char** argv) {
         cudaMalloc((void**) &dst, (size_t) iters * 4 * 8);
         std::vector<unsigned long long> hst((size_t) iters * 4);
         std::vector<K::FusedGrArgs> as((size_t) cold_sets * 8);
+        const bool persist = std::getenv("STRATA_HC_PERSIST") != nullptr && std::atoi(std::getenv("STRATA_HC_PERSIST")) != 0;
+        if (persist) K::fused_gr_persist_init();   // its start-up check, as Verifier::init runs it
+        if (std::getenv("STRATA_BENCH_BW") != nullptr) {
+            // sm86 lab: plain cold reads of the up matrix (and down then up, two launches) - the floor for the GEMVs
+            for (int v = 0; v < 5; ++v) {
+                auto one = [&](int i) {
+                    const int c = i % cold_sets;
+                    if (v == 4) {
+                        K::fused_gr_bw_probe(cwd[c], wd.size() * 2, 0, s);
+                        K::fused_gr_bw_probe(cwu[c], wu.size() * 2, 0, s);
+                    } else K::fused_gr_bw_probe(cwu[c], wu.size() * 2, v, s);
+                };
+                for (int i = 0; i < 2 * cold_sets; ++i) one(i);
+                cudaEventRecord(e0, s);
+                for (int i = 0; i < iters; ++i) one(i);
+                cudaEventRecord(e1, s);
+                cudaEventSynchronize(e1);
+                float ms = 0;
+                cudaEventElapsedTime(&ms, e0, e1);
+                const double us = 1e3 * ms / iters, bytes = (double) (wu.size() + (v == 4 ? wd.size() : 0)) * 2;
+                std::printf("BW probe v %d | %.0f bytes cold | %6.1f us a read (events) | %5.0f GB/s\n", v, bytes, us, bytes / us / 1e3);
+            }
+            // the resident read's structure (design council round 2): held W_up + DOWN86's ring + 3 grid barriers
+            for (int T : {3, 4, 8}) for (int hold = 1; hold >= 0; --hold) {
+                bool ran = true;
+                auto one = [&](int i) {
+                    const int c = i % cold_sets;
+                    ran = K::fused_gr_res_probe(cwd[c], cwi[c], cwu[c], dxn, T, hold, s) && ran;
+                };
+                one(0);
+                if (!ran) {
+                    std::printf("RES probe T %d hold %d | skipped: the 80 CTAs do not fit this card at once\n", T, hold);
+                    continue;
+                }
+                for (int i = 0; i < 2 * cold_sets; ++i) one(i);
+                cudaEventRecord(e0, s);
+                for (int i = 0; i < iters; ++i) one(i);
+                cudaEventRecord(e1, s);
+                cudaEventSynchronize(e1);
+                float ms = 0;
+                cudaEventElapsedTime(&ms, e0, e1);
+                std::printf("RES probe T %d hold %d | %6.1f us a read (events) | %s\n", T, hold, 1e3 * ms / iters,
+                            cudaGetLastError() == cudaSuccess ? "ok" : "launch error");
+            }
+        }
         for (int T = t_lo; T <= t_hi; ++T) for (int f = 0; f < 3; ++f) {
             K::fused_gr_set_fast(f == 1);
             for (int c = 0; c < cold_sets; ++c)
@@ -255,6 +300,7 @@ int main(int argc, char** argv) {
                 }
                 cudaStreamSynchronize(s);
             }
+            K::fused_gr_res_prof(-1);   // sm86 lab: STRATA_GR_RES_PROF=1's phase profile of the timed reads only
             cudaEventRecord(e0, s);
             for (int i = 0; i < iters; ++i) K::fused_gr_read_multi(&as[(size_t) (i % cold_sets) * 8], T, dxn, s);
             cudaEventRecord(e1, s);
@@ -271,6 +317,19 @@ int main(int argc, char** argv) {
             auto med = [](std::vector<double>& v) { std::sort(v.begin(), v.end()); return v[v.size() / 2] / 1e3; };
             std::printf("COLD(%d sets) fast %d T %d | read %6.1f us (events) | stamps median: norm %5.1f down %5.1f up %5.1f us (incl. a stamp kernel each)\n",
                         cold_sets, f, T, 1e3 * ms / iters, med(n_), med(d_), med(u_));
+            if (f == 0) K::fused_gr_res_prof(T);
+            if (f == 0 && persist) {
+                // sm86 lab: the opt-in persistent read (STRATA_HC_PERSIST=1, another summation order) on the same cold sets
+                bool ran = true;
+                cudaEventRecord(e0, s);
+                for (int i = 0; i < iters; ++i) ran = K::fused_gr_read_persist(&as[(size_t) (i % cold_sets) * 8], T, s) && ran;
+                cudaEventRecord(e1, s);
+                cudaEventSynchronize(e1);
+                float pms = 0;
+                cudaEventElapsedTime(&pms, e0, e1);
+                std::printf("COLD(%d sets) persist T %d | read %6.1f us (events)%s\n", cold_sets, T, 1e3 * pms / iters,
+                            ran ? "" : " | did not run every read (refused or aborted)");
+            }
         }
     }
     std::printf("fused_gr_bench: %d differing\n", failures);

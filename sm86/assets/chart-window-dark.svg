@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="210" viewBox="0 0 860 210" role="img" aria-label="Where one decode window goes" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title>Where one decode window goes</title>
+<rect x="0.5" y="0.5" width="859" height="209" rx="12" fill="#1a1a19" stroke="rgba(255,255,255,0.10)"/>
+<text x="24" y="34" font-size="15" font-weight="600" fill="#f0efec">Where one decode window goes: 18.9 ms for 3.24 kept tokens</text>
+<text x="24" y="52" font-size="12" fill="#c3c2b7">Engine timing over 3,048 windows of real turns, as the host sees it (172 tok/s inside the windows)</text>
+<rect x="24.0" y="92" width="472.3" height="28" rx="4" fill="#3987e5"><title>Waiting for the GPU (dense chain): 11.03 ms (58%)</title></rect>
+<text x="32.0" y="111" font-size="12" font-weight="600" fill="#ffffff">11.0 ms</text>
+<rect x="498.3" y="92" width="211.0" height="28" rx="4" fill="#d95926"><title>CPU expert step: 4.95 ms (26%)</title></rect>
+<text x="506.3" y="111" font-size="12" font-weight="600" fill="#ffffff">5.0 ms</text>
+<rect x="711.4" y="92" width="62.7" height="28" rx="4" fill="#199e70"><title>Drafting (DFlash2): 1.50 ms (8%)</title></rect>
+<text x="719.4" y="111" font-size="12" font-weight="600" fill="#ffffff">1.5 ms</text>
+<rect x="776.0" y="92" width="39.4" height="28" rx="4" fill="#c98500"><title>Other verify work: 0.96 ms (5%)</title></rect>
+<rect x="817.5" y="92" width="18.5" height="28" rx="4" fill="#d55181"><title>Other host work: 0.43 ms (2%)</title></rect>
+<rect x="24" y="144" width="10" height="10" rx="2" fill="#3987e5"/>
+<text x="40" y="154" font-size="12" fill="#c3c2b7">Waiting for the GPU (dense chain)</text>
+<rect x="297.0" y="144" width="10" height="10" rx="2" fill="#d95926"/>
+<text x="313.0" y="154" font-size="12" fill="#c3c2b7">CPU expert step</text>
+<rect x="444.0" y="144" width="10" height="10" rx="2" fill="#199e70"/>
+<text x="460.0" y="154" font-size="12" fill="#c3c2b7">Drafting (DFlash2)</text>
+<rect x="612.0" y="144" width="10" height="10" rx="2" fill="#c98500"/>
+<text x="628.0" y="154" font-size="12" fill="#c3c2b7">Other verify work</text>
+<rect x="24" y="166" width="10" height="10" rx="2" fill="#d55181"/>
+<text x="40" y="176" font-size="12" fill="#c3c2b7">Other host work</text>
+</svg>

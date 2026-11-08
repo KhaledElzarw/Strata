@@ -1,0 +1,52 @@
+{
+ "name": "prof3",
+ "rounds": 1,
+ "src": [
+  "runs/replayset/hermes-v1"
+ ],
+ "limit": 16,
+ "seed": 1234,
+ "gap": 2.0,
+ "arms": [
+  {
+   "name": "base",
+   "exe": "C:/src/Strata/build-sm86/strata.exe",
+   "drafting": "dflash2",
+   "user_args": [
+    "--draft-conf",
+    "0.65"
+   ],
+   "set": {
+    "--conversation-cache-mib": "2048",
+    "--expert-cache": "7100"
+   },
+   "env": {
+    "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+    "STRATA_DECODE_TIMING": "1",
+    "STRATA_VERIFY_PROFILE": "1",
+    "STRATA_DF2_TIMING": "1"
+   }
+  },
+  {
+   "name": "k82w",
+   "exe": "C:/src/Strata/build-sm86/strata.exe",
+   "drafting": "dflash2",
+   "user_args": [
+    "--draft-conf",
+    "0.65"
+   ],
+   "set": {
+    "--conversation-cache-mib": "2048",
+    "--expert-cache": "7100"
+   },
+   "env": {
+    "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+    "STRATA_DECODE_TIMING": "1",
+    "STRATA_VERIFY_PROFILE": "1",
+    "STRATA_DF2_TIMING": "1",
+    "STRATA_GR_DOWN82": "1",
+    "STRATA_GR_UP_WIDE": "1"
+   }
+  }
+ ]
+}

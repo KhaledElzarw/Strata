@@ -5190,8 +5190,18 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     if (any_cpu) {
         // #578 --remote-expert-opt: a token whose experts all run on a GPU (CUDA0 or a helper) needs no CPU activation
         const bool ep = d.remote_count > 0 && d.remote[0]->optimized_decode();
+        // sm86 lab STRATA_ACTQ_SKIP=1 (opt-in, one GPU, no helper GPU or peer): a token with no CPU entry (-1) of its own
+        // needs no CPU activation either (its entries run in VRAM, over PCIe or are tail-skipped); off under
+        // STRATA_ACT_DUMP, which records every token's activation
+        static const bool skip_env = [] {
+            const char* v = std::getenv("STRATA_ACTQ_SKIP");
+            const char* dump = std::getenv("STRATA_ACT_DUMP");
+            return v != nullptr && v[0] == '1' && (dump == nullptr || dump[0] == '\0');
+        }();
+        const bool skip_no_cpu = skip_env && d.remote_count == 0 && d.peer == nullptr;
         for (int64_t t = 0; t < n_tok; ++t) {
             if (ep && std::all_of(kind + t * k, kind + (t + 1) * k, [](int32_t v) { return v >= 0; })) continue;
+            if (skip_no_cpu && std::none_of(kind + t * k, kind + (t + 1) * k, [](int32_t v) { return v == -1; })) continue;
             if (native && strata::kernels::cpu::q2_native_kernels(lay.fmt[(size_t) d.layers].gu_type))   // a native Q2_0 pack: the Q2_0 kernels' activations
                 act_quant_any(x_f + (size_t) t * H, H, d.act_multi[(size_t) t]);
             else if (native)

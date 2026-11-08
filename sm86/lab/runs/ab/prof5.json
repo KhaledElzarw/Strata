@@ -1,0 +1,87 @@
+{
+ "experiment": {
+  "name": "prof5",
+  "rounds": 1,
+  "src": [
+   "runs/replayset/hermes-v1"
+  ],
+  "limit": 16,
+  "seed": 1234,
+  "gap": 2.0,
+  "arms": [
+   {
+    "name": "stack",
+    "exe": "C:/src/Strata/build-sm86/strata.exe",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.65"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7100"
+    },
+    "add": [
+     "--conversation-cache-park-gain",
+     "8192",
+     "--pool-tasks",
+     "96"
+    ],
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_FETCH_FORK": "1",
+     "STRATA_GRAPH_PRIO": "1",
+     "STRATA_GR_DOWN82": "1",
+     "STRATA_GR_UP_WIDE": "1",
+     "STRATA_MMVQ_IL_3090": "1",
+     "STRATA_EXP_MODE": "9",
+     "STRATA_CKPT_ASYNC": "1",
+     "STRATA_CKPT_GATHER": "1",
+     "STRATA_CKPT_POOL": "1",
+     "STRATA_CKPT_POOL_READY": "2",
+     "STRATA_DECODE_TIMING": "1",
+     "STRATA_VERIFY_PROFILE": "1"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "round": 0,
+   "arm": "stack",
+   "label": "prof5-stack-r0",
+   "load_s": 34.4,
+   "wall_s": 89.8,
+   "turns": 16,
+   "timed": 16,
+   "median": 145.9,
+   "p10": 132.0,
+   "p90": 192.7,
+   "tok_weighted": 150.5,
+   "accept": 0.722,
+   "prompt_median": 7892.0,
+   "prompt_max": 11109,
+   "gen_tokens": 6137,
+   "errors": 0,
+   "cache_slots": 9504,
+   "vram_free_mib": 1380,
+   "temp_max": 69.0,
+   "power_max": 389.94,
+   "power_mean": 289.6,
+   "m_expert_slots": 9504,
+   "m_expert_cache_mib": 15773,
+   "m_vram_free_mib": 1380,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1380
+  }
+ ]
+}

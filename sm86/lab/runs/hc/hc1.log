@@ -1,0 +1,73 @@
+running (default)
+running STRATA_GR_DOWN_NW=4
+running STRATA_GR_DOWN_TG=2
+running STRATA_GR_UP_WIDE=1
+running STRATA_GR_NORM_FAST=1
+running STRATA_HC_UPMIX=1
+running STRATA_GR_DOWN_NW=4;STRATA_GR_UP_WIDE=1;STRATA_GR_NORM_FAST=1
+running (default)
+arm                                 T    read   norm   down     up   bits vs default
+(default)                           1    27.0    2.0   13.3   17.4   IDENTICAL
+(default)                           2    29.5    2.0   14.3   19.5   IDENTICAL
+(default)                           3    32.4    2.0   15.4   21.5   IDENTICAL
+(default)                           4    36.7    2.0   17.4   23.6   IDENTICAL
+(default)                           5    38.5    2.0   19.5   23.6   IDENTICAL
+(default)                           6    44.3    2.0   21.5   27.6   IDENTICAL
+(default)                           7    50.3    2.0   24.6   30.7   IDENTICAL
+(default)                           8    55.8    2.0   28.7   31.7   IDENTICAL
+STRATA_GR_DOWN_NW=4                 1    27.1    2.0   13.3   17.4   IDENTICAL
+STRATA_GR_DOWN_NW=4                 2    29.4    2.0   14.3   19.5   IDENTICAL
+STRATA_GR_DOWN_NW=4                 3    32.6    2.0   32.8   21.5   IDENTICAL
+STRATA_GR_DOWN_NW=4                 4    36.7    2.0   17.4   23.6   IDENTICAL
+STRATA_GR_DOWN_NW=4                 5    38.4    2.0   19.5   23.6   IDENTICAL
+STRATA_GR_DOWN_NW=4                 6    44.3    2.0   21.5   27.6   IDENTICAL
+STRATA_GR_DOWN_NW=4                 7    50.3    2.0   23.6   30.7   IDENTICAL
+STRATA_GR_DOWN_NW=4                 8    55.7    2.0   28.7   31.7   IDENTICAL
+STRATA_GR_DOWN_TG=2                 1    26.9    2.0   13.3   17.4   IDENTICAL
+STRATA_GR_DOWN_TG=2                 2    29.6    2.0   14.3   19.5   IDENTICAL
+STRATA_GR_DOWN_TG=2                 3    32.6    2.0   15.4   21.5   IDENTICAL
+STRATA_GR_DOWN_TG=2                 4    37.0    2.0   17.4   24.6   IDENTICAL
+STRATA_GR_DOWN_TG=2                 5    38.7    2.0   19.5   23.6   IDENTICAL
+STRATA_GR_DOWN_TG=2                 6    44.6    2.0   21.5   27.6   IDENTICAL
+STRATA_GR_DOWN_TG=2                 7    50.6    2.0   24.6   30.7   IDENTICAL
+STRATA_GR_DOWN_TG=2                 8    56.1    2.0   28.7   32.8   IDENTICAL
+STRATA_GR_UP_WIDE=1                 1    27.0    2.0   13.3   17.4   IDENTICAL
+STRATA_GR_UP_WIDE=1                 2    29.6    2.0   14.3   19.5   IDENTICAL
+STRATA_GR_UP_WIDE=1                 3    32.7    2.0   15.4   21.5   IDENTICAL
+STRATA_GR_UP_WIDE=1                 4    37.0    2.0   17.4   24.6   IDENTICAL
+STRATA_GR_UP_WIDE=1                 5    38.8    2.0   19.5   23.6   IDENTICAL
+STRATA_GR_UP_WIDE=1                 6    44.6    2.0   21.5   27.6   IDENTICAL
+STRATA_GR_UP_WIDE=1                 7    50.7    2.0   24.6   30.7   IDENTICAL
+STRATA_GR_UP_WIDE=1                 8    56.2    2.0   28.7   32.8   IDENTICAL
+STRATA_GR_NORM_FAST=1               1    27.0    2.0   13.3   17.4   IDENTICAL
+STRATA_GR_NORM_FAST=1               2    29.6    2.0   14.3   19.5   IDENTICAL
+STRATA_GR_NORM_FAST=1               3    32.9    2.0   15.4   21.5   IDENTICAL
+STRATA_GR_NORM_FAST=1               4    37.0    2.0   17.4   24.6   IDENTICAL
+STRATA_GR_NORM_FAST=1               5    38.8    2.0   19.5   23.6   IDENTICAL
+STRATA_GR_NORM_FAST=1               6    44.6    2.0   21.5   27.6   IDENTICAL
+STRATA_GR_NORM_FAST=1               7    50.6    2.0   24.6   30.7   IDENTICAL
+STRATA_GR_NORM_FAST=1               8    56.1    2.0   28.7   32.8   IDENTICAL
+STRATA_HC_UPMIX=1                   1    27.6    2.0   13.3   17.4   IDENTICAL
+STRATA_HC_UPMIX=1                   2    29.6    2.0   14.3   19.5   IDENTICAL
+STRATA_HC_UPMIX=1                   3    32.5    2.0   15.4   21.5   IDENTICAL
+STRATA_HC_UPMIX=1                   4    36.9    2.0   17.4   24.6   IDENTICAL
+STRATA_HC_UPMIX=1                   5    38.7    2.0   19.5   23.6   IDENTICAL
+STRATA_HC_UPMIX=1                   6    44.6    2.0   21.5   27.6   IDENTICAL
+STRATA_HC_UPMIX=1                   7    50.6    2.0   24.6   30.7   IDENTICAL
+STRATA_HC_UPMIX=1                   8    56.1    2.0   28.7   32.8   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  1    27.1    2.0   13.3   17.4   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  2    29.6    2.0   14.3   19.5   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  3    32.6    2.0   15.4   21.5   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  4    37.6    2.0   23.6   24.6   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  5    38.7    2.0   19.5   23.6   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  6    44.6    2.0   21.5   27.6   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  7    50.5    2.0   24.6   30.7   IDENTICAL
+STRATA_GR_DOWN_NW=4;STRATA_GR_UP_W  8    56.1    2.0   28.7   32.8   IDENTICAL
+(default)                           1    26.5    2.0   13.3   17.4   IDENTICAL
+(default)                           2    30.0    2.0   14.3   19.5   IDENTICAL
+(default)                           3    32.6    2.0   15.4   21.5   IDENTICAL
+(default)                           4    36.9    2.0   17.4   23.6   IDENTICAL
+(default)                           5    38.7    2.0   19.5   23.6   IDENTICAL
+(default)                           6    44.6    2.0   21.5   27.6   IDENTICAL
+(default)                           7    50.7    2.0   24.6   30.7   IDENTICAL
+(default)                           8    56.2    2.0   28.7   32.8   IDENTICAL

@@ -459,10 +459,21 @@ int check_tables() {
             std::printf("FAIL table: the sm_80 table is not the CMP 170HX's\n");
         }
     }
+    // sm86 lab: STRATA_MMVQ_IL_3090=1 gives sm_86 the 3090's tables, 5-8 columns included (kIlRows58_3090: Q4_K at 5
+    // columns, class 1 = 2); unset, sm_86 has no 5-8 column table
+    const char* il3090 = std::getenv("STRATA_MMVQ_IL_3090");
+    const bool own3090 = il3090 != nullptr && std::atoi(il3090) != 0;
     if (native_mmvq_il_rows_for(89, 99, 2, 2560) != 0 || native_mmvq_il_rows_for(89, 12, 5, 2560) != 0 ||
-        native_mmvq_il_rows_for(86, 12, 5, 2560) != 0 || native_mmvq_il_rows_for(120, 12, 9, 2560) != 0) {
+        native_mmvq_il_rows_for(86, 12, 5, 2560) != (own3090 ? 2 : 0) || native_mmvq_il_rows_for(120, 12, 9, 2560) != 0 ||
+        native_mmvq_il_rows_for(86, 99, 5, 2560) != 0 || native_mmvq_il_rows_for(86, 12, 9, 2560) != 0) {
         ++bad;
         std::printf("FAIL table: an unknown type or ncols must be 0\n");
+    }
+    if (own3090 && (native_mmvq_il_rows_for(86, 23, 6, 10240) != 2 || native_mmvq_il_rows_for(86, 14, 4, 10240) != 1 ||
+                    native_mmvq_il_rows_for(86, 12, 1, 6144) != 4 || native_mmvq_il_rows_for(86, 23, 1, 6144) != 0 ||
+                    native_mmvq_il_rows_for(86, 13, 3, 248320) != 4)) {   // spot checks read off the kIl*_3090 tables
+        ++bad;
+        std::printf("FAIL table: STRATA_MMVQ_IL_3090=1 does not answer the 3090's tables\n");
     }
     return bad;
 }

@@ -1,0 +1,6 @@
+{"name": "e2", "rounds": 3, "src": ["runs/replayset/hermes-v1"], "seed": 1234,
+ "arms": [{"name": "df2c65", "drafting": "dflash2", "user_args": ["--draft-conf", "0.65"],
+           "env": {"STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack"}},
+          {"name": "df2exact3", "drafting": "dflash2", "user_args": ["--draft-conf", "0.65"], "add": ["--host-core", "last"],
+           "env": {"STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+                   "STRATA_EXPDEC": "1", "STRATA_HC_UPMIX": "1"}}]}

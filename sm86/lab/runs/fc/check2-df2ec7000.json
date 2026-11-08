@@ -1,0 +1,28 @@
+{
+ "requests": 65,
+ "tokens_cand": 21566,
+ "tokens_stock_arms": [
+  21566,
+  21566
+ ],
+ "delta": 9.0,
+ "mismatch_rate_stock_arms_pct": [
+  4.201,
+  4.943
+ ],
+ "mismatch_rate_cand_pct": 4.804,
+ "diff_pts": 0.232,
+ "diff_ci90_pts": [
+  0.074,
+  0.387
+ ],
+ "rate_rule": "PASS",
+ "events_cand": 0,
+ "events_stock_arms": [
+  0,
+  0
+ ],
+ "events_p": 1.0,
+ "event_rule": "PASS",
+ "verdict": "PASS"
+}

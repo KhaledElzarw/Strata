@@ -1,0 +1,97 @@
+hash b41b82850de5a32b
+layer  0 iq2_xs /iq4_nl G 8 T 5 | mode 8: all    71.4 us  gu    40.5 us (187 GB/s)  down   30.0 us (246 GB/s) | mode 10: all    54.2 us  gu    41.4 us (183 GB/s)  down   22.9 us (322 GB/s) | bitwise equal
+hash d62e6bd1537a0984
+layer  1 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    62.5 us  gu    36.5 us (185 GB/s)  down   24.1 us (153 GB/s) | mode 10: all    46.7 us  gu    40.1 us (168 GB/s)  down   16.8 us (219 GB/s) | bitwise equal
+hash e8813814d013b7ab
+layer  2 iq2_xs /iq4_nl G 8 T 5 | mode 8: all    74.0 us  gu    42.0 us (181 GB/s)  down   31.0 us (238 GB/s) | mode 10: all    55.7 us  gu    42.0 us (180 GB/s)  down   22.3 us (330 GB/s) | bitwise equal
+hash 2bfbcfc477c5ec11
+layer  3 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    62.5 us  gu    36.8 us (183 GB/s)  down   24.3 us (152 GB/s) | mode 10: all    46.9 us  gu    40.3 us (168 GB/s)  down   16.7 us (221 GB/s) | bitwise equal
+hash 7f719979144622b0
+layer  4 iq2_xs /iq4_nl G 8 T 5 | mode 8: all    73.8 us  gu    41.9 us (181 GB/s)  down   31.0 us (238 GB/s) | mode 10: all    55.6 us  gu    41.9 us (181 GB/s)  down   22.3 us (331 GB/s) | bitwise equal
+hash a9b6ba39a519f421
+layer  5 iq2_xs /q2_0   G 8 T 5 | mode 8: all    68.1 us  gu    42.7 us (178 GB/s)  down   24.4 us (151 GB/s) | mode 10: all    49.5 us  gu    42.9 us (177 GB/s)  down   15.8 us (233 GB/s) | bitwise equal
+hash 04c2fb2908eead2e
+layer  6 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    61.7 us  gu    36.4 us (186 GB/s)  down   24.4 us (151 GB/s) | mode 10: all    46.7 us  gu    39.8 us (170 GB/s)  down   16.5 us (223 GB/s) | bitwise equal
+hash 888f3508a06edcc9
+layer  7 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    62.1 us  gu    36.9 us (183 GB/s)  down   24.4 us (151 GB/s) | mode 10: all    46.4 us  gu    39.8 us (170 GB/s)  down   17.0 us (216 GB/s) | bitwise equal
+hash ba64ebc56c7605af
+layer  8 iq3_s  /q2_0   G 8 T 5 | mode 8: all    69.4 us  gu    43.8 us (257 GB/s)  down   23.7 us (155 GB/s) | mode 10: all    57.5 us  gu    54.4 us (207 GB/s)  down   12.8 us (288 GB/s) | bitwise equal
+hash 044942ea75bc75e6
+layer  9 iq2_xs /q2_0   G 8 T 5 | mode 8: all    67.6 us  gu    43.4 us (174 GB/s)  down   24.7 us (149 GB/s) | mode 10: all    48.9 us  gu    42.5 us (178 GB/s)  down   13.7 us (269 GB/s) | bitwise equal
+hash 3dbfe0fe8a87c786
+layer 10 iq2_xs /q2_0   G 8 T 5 | mode 8: all    68.7 us  gu    42.0 us (180 GB/s)  down   24.0 us (154 GB/s) | mode 10: all    48.5 us  gu    42.0 us (180 GB/s)  down   17.3 us (214 GB/s) | bitwise equal
+hash 99c14cd409055802
+layer 11 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    61.6 us  gu    36.4 us (186 GB/s)  down   24.0 us (154 GB/s) | mode 10: all    47.0 us  gu    39.8 us (170 GB/s)  down   16.8 us (219 GB/s) | bitwise equal
+hash ca8e024a34fd561c
+layer 12 iq2_s  /q2_0   G 8 T 5 | mode 8: all    63.9 us  gu    39.8 us (211 GB/s)  down   24.4 us (151 GB/s) | mode 10: all    51.3 us  gu    42.9 us (196 GB/s)  down   15.8 us (234 GB/s) | bitwise equal
+hash f02674c7ccb1c392
+layer 13 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    62.5 us  gu    36.9 us (183 GB/s)  down   24.2 us (152 GB/s) | mode 10: all    46.6 us  gu    40.1 us (169 GB/s)  down   13.2 us (280 GB/s) | bitwise equal
+hash 9caa821bd87d8269
+layer 14 iq2_xs /q2_0   G 8 T 5 | mode 8: all    68.6 us  gu    42.0 us (180 GB/s)  down   24.0 us (153 GB/s) | mode 10: all    48.5 us  gu    42.0 us (180 GB/s)  down   17.1 us (215 GB/s) | bitwise equal
+hash 3220c312326e247f
+layer 15 iq2_s  /q2_0   G 8 T 5 | mode 8: all    64.5 us  gu    39.3 us (214 GB/s)  down   24.6 us (150 GB/s) | mode 10: all    52.4 us  gu    43.3 us (194 GB/s)  down   17.6 us (210 GB/s) | bitwise equal
+hash eb9d09306cc8859e
+layer 16 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    61.8 us  gu    36.8 us (183 GB/s)  down   24.0 us (154 GB/s) | mode 10: all    46.3 us  gu    39.9 us (170 GB/s)  down   16.5 us (223 GB/s) | bitwise equal
+hash 1ed7a39fef5365bc
+layer 17 iq2_s  /q2_0   G 8 T 5 | mode 8: all    65.3 us  gu    39.2 us (214 GB/s)  down   23.8 us (155 GB/s) | mode 10: all    51.0 us  gu    42.9 us (196 GB/s)  down   13.4 us (274 GB/s) | bitwise equal
+hash bcfb491a0397c296
+layer 18 iq3_s  /q2_0   G 8 T 5 | mode 8: all    69.0 us  gu    44.3 us (254 GB/s)  down   24.5 us (150 GB/s) | mode 10: all    58.9 us  gu    55.0 us (205 GB/s)  down   16.6 us (222 GB/s) | bitwise equal
+hash 297ae93ab4ee0886
+layer 19 iq2_xs /q2_0   G 8 T 5 | mode 8: all    68.1 us  gu    42.7 us (177 GB/s)  down   24.4 us (151 GB/s) | mode 10: all    49.2 us  gu    42.8 us (177 GB/s)  down   17.5 us (211 GB/s) | bitwise equal
+hash b9171c9bb5df26d2
+layer 20 iq3_s  /q2_0   G 8 T 5 | mode 8: all    69.9 us  gu    44.9 us (251 GB/s)  down   24.4 us (151 GB/s) | mode 10: all    57.9 us  gu    54.8 us (206 GB/s)  down   13.2 us (279 GB/s) | bitwise equal
+hash b2b78cfc1f9b41d5
+layer 21 iq2_s  /q2_0   G 8 T 5 | mode 8: all    64.9 us  gu    39.6 us (212 GB/s)  down   24.8 us (149 GB/s) | mode 10: all    52.5 us  gu    43.6 us (193 GB/s)  down   13.7 us (269 GB/s) | bitwise equal
+hash dfabd695d9c8882a
+layer 22 iq3_s  /q2_0   G 8 T 5 | mode 8: all    71.0 us  gu    44.0 us (256 GB/s)  down   24.0 us (154 GB/s) | mode 10: all    58.0 us  gu    54.8 us (206 GB/s)  down   15.9 us (232 GB/s) | bitwise equal
+hash 7ea7506dd1170046
+layer 23 iq3_s  /q2_0   G 8 T 5 | mode 8: all    70.9 us  gu    45.1 us (249 GB/s)  down   24.7 us (149 GB/s) | mode 10: all    57.8 us  gu    54.7 us (206 GB/s)  down   16.6 us (222 GB/s) | bitwise equal
+hash d6a942d28c3f8425
+layer 24 iq3_s  /q2_0   G 8 T 5 | mode 8: all    70.5 us  gu    45.0 us (250 GB/s)  down   24.0 us (154 GB/s) | mode 10: all    58.0 us  gu    54.8 us (205 GB/s)  down   17.1 us (215 GB/s) | bitwise equal
+hash 63b75b567de8f9bf
+layer 25 iq2_xs /q2_0   G 8 T 5 | mode 8: all    67.6 us  gu    43.1 us (176 GB/s)  down   24.6 us (150 GB/s) | mode 10: all    48.9 us  gu    42.5 us (178 GB/s)  down   17.5 us (211 GB/s) | bitwise equal
+hash cc80e01cb5800370
+layer 26 iq2_s  /q2_0   G 8 T 5 | mode 8: all    66.3 us  gu    39.6 us (212 GB/s)  down   24.0 us (153 GB/s) | mode 10: all    51.5 us  gu    43.3 us (194 GB/s)  down   17.2 us (214 GB/s) | bitwise equal
+hash c48431cb4ea668fa
+layer 27 iq2_xxs/q2_0   G 8 T 5 | mode 8: all    61.6 us  gu    36.3 us (186 GB/s)  down   24.0 us (153 GB/s) | mode 10: all    46.9 us  gu    39.8 us (170 GB/s)  down   16.5 us (224 GB/s) | bitwise equal
+hash 01e00409c6695316
+layer 28 iq3_s  /iq4_nl G 8 T 5 | mode 8: all    76.7 us  gu    44.5 us (253 GB/s)  down   30.8 us (240 GB/s) | mode 10: all    64.3 us  gu    54.5 us (207 GB/s)  down   22.1 us (334 GB/s) | bitwise equal
+hash 1e8b4b4516c7182b
+layer 29 iq2_s  /iq4_nl G 8 T 5 | mode 8: all    74.0 us  gu    39.8 us (211 GB/s)  down   31.5 us (234 GB/s) | mode 10: all    59.2 us  gu    44.2 us (190 GB/s)  down   22.8 us (323 GB/s) | bitwise equal
+hash 2da48f08c530ac24
+layer 30 iq3_s  /iq4_nl G 8 T 5 | mode 8: all    76.9 us  gu    44.0 us (256 GB/s)  down   31.2 us (236 GB/s) | mode 10: all    65.1 us  gu    56.1 us (201 GB/s)  down   22.7 us (325 GB/s) | bitwise equal
+hash afd5121dcc5ef76e
+layer 31 iq2_xxs/iq4_nl G 8 T 5 | mode 8: all    69.6 us  gu    38.0 us (178 GB/s)  down   32.3 us (228 GB/s) | mode 10: all    53.7 us  gu    40.3 us (168 GB/s)  down   22.3 us (331 GB/s) | bitwise equal
+hash 657486727a8ad47e
+layer 32 iq3_s  /iq4_nl G 8 T 5 | mode 8: all    75.6 us  gu    44.3 us (254 GB/s)  down   31.5 us (234 GB/s) | mode 10: all    65.5 us  gu    55.3 us (204 GB/s)  down   22.3 us (330 GB/s) | bitwise equal
+hash cbc8b035458d5bd9
+layer 33 iq3_s  /q2_0   G 8 T 5 | mode 8: all    70.7 us  gu    45.1 us (250 GB/s)  down   24.5 us (151 GB/s) | mode 10: all    58.7 us  gu    55.3 us (204 GB/s)  down   16.6 us (222 GB/s) | bitwise equal
+hash eed9ebbf0c610341
+layer 34 iq3_s  /iq4_nl G 8 T 5 | mode 8: all    77.7 us  gu    45.1 us (250 GB/s)  down   30.9 us (239 GB/s) | mode 10: all    64.6 us  gu    54.8 us (205 GB/s)  down   22.1 us (334 GB/s) | bitwise equal
+hash ec8ee705b26e30ff
+layer 35 iq3_xxs/iq4_nl G 8 T 5 | mode 8: all    75.7 us  gu    42.9 us (234 GB/s)  down   31.4 us (235 GB/s) | mode 10: all    61.8 us  gu    45.4 us (221 GB/s)  down   22.6 us (326 GB/s) | bitwise equal
+hash 55f7b7a02e220a64
+layer 36 iq3_xxs/q2_0   G 8 T 5 | mode 8: all    68.4 us  gu    42.8 us (235 GB/s)  down   24.8 us (149 GB/s) | mode 10: all    55.1 us  gu    45.2 us (222 GB/s)  down   15.1 us (244 GB/s) | bitwise equal
+hash fa9e1521c1472ef4
+layer 37 iq3_s  /iq4_nl G 8 T 5 | mode 8: all    77.4 us  gu    43.8 us (257 GB/s)  down   31.0 us (238 GB/s) | mode 10: all    64.6 us  gu    56.0 us (201 GB/s)  down   23.1 us (320 GB/s) | bitwise equal
+hash 88c7e77aeb8a515b
+layer 38 iq2_s  /iq4_nl G 8 T 5 | mode 8: all    71.9 us  gu    41.1 us (204 GB/s)  down   32.5 us (227 GB/s) | mode 10: all    59.4 us  gu    43.5 us (193 GB/s)  down   22.4 us (330 GB/s) | bitwise equal
+hash 75daced08a58e960
+layer 39 iq2_xs /iq4_nl G 8 T 5 | mode 8: all    74.5 us  gu    44.0 us (172 GB/s)  down   32.4 us (228 GB/s) | mode 10: all    56.4 us  gu    42.3 us (179 GB/s)  down   22.5 us (328 GB/s) | bitwise equal
+hash a9165eb6eb6ec90d
+layer 40 iq2_s  /q2_0   G 8 T 5 | mode 8: all    65.0 us  gu    39.6 us (212 GB/s)  down   24.5 us (150 GB/s) | mode 10: all    52.8 us  gu    43.6 us (193 GB/s)  down   17.5 us (211 GB/s) | bitwise equal
+hash fc43a47122e2611d
+layer 41 iq3_xxs/q2_0   G 8 T 5 | mode 8: all    69.1 us  gu    43.0 us (233 GB/s)  down   24.0 us (153 GB/s) | mode 10: all    53.6 us  gu    44.6 us (225 GB/s)  down   17.0 us (217 GB/s) | bitwise equal
+hash 1ab4f77f67e822a9
+layer 42 iq2_s  /iq4_nl G 8 T 5 | mode 8: all    71.6 us  gu    40.8 us (206 GB/s)  down   32.3 us (228 GB/s) | mode 10: all    59.0 us  gu    43.1 us (195 GB/s)  down   22.3 us (331 GB/s) | bitwise equal
+hash ca33286ac1de45a8
+layer 43 iq3_s  /iq4_nl G 8 T 5 | mode 8: all    78.0 us  gu    45.7 us (247 GB/s)  down   32.4 us (228 GB/s) | mode 10: all    65.4 us  gu    55.6 us (203 GB/s)  down   22.4 us (330 GB/s) | bitwise equal
+hash 1e96b643e9b314e7
+layer 44 iq3_xxs/iq4_nl G 8 T 5 | mode 8: all    77.3 us  gu    42.8 us (234 GB/s)  down   31.3 us (235 GB/s) | mode 10: all    61.7 us  gu    45.6 us (220 GB/s)  down   23.0 us (321 GB/s) | bitwise equal
+hash 65d47dd92211b52d
+layer 45 iq3_xxs/q2_0   G 8 T 5 | mode 8: all    68.8 us  gu    43.1 us (233 GB/s)  down   24.6 us (150 GB/s) | mode 10: all    54.7 us  gu    45.5 us (220 GB/s)  down   14.8 us (249 GB/s) | bitwise equal
+hash 8314c3145fd7315a
+layer 46 iq2_s  /iq4_nl G 8 T 5 | mode 8: all    74.2 us  gu    40.4 us (208 GB/s)  down   31.0 us (237 GB/s) | mode 10: all    58.6 us  gu    43.2 us (195 GB/s)  down   22.3 us (331 GB/s) | bitwise equal
+hash 684fa51bb1f332a3
+layer 47 iq3_xxs/iq4_nl G 8 T 5 | mode 8: all    77.2 us  gu    43.1 us (233 GB/s)  down   31.1 us (237 GB/s) | mode 10: all    61.4 us  gu    44.7 us (224 GB/s)  down   22.5 us (328 GB/s) | bitwise equal
+native_expert_bench: 0 differing

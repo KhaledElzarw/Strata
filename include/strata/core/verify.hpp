@@ -652,6 +652,11 @@ private:
     cudaStream_t df_side_[2] = {};
     cudaEvent_t df_fork_ = nullptr;
     cudaEvent_t df_join_[2] = {};
+    // sm86 lab STRATA_FETCH_FORK=1: the PCIe share's copy kernel on its own graph branch beside the VRAM experts (post)
+    bool fetch_fork_on_ = false;
+    int fetch_fork_grid_ = 48;
+    cudaStream_t fetch_cs_ = nullptr;
+    cudaEvent_t fetch_fork_[2] = {}, fetch_join_[2] = {};
     // [sel_long_][T]: 1 is the long-context QSA select (STRATA_SELECT_LONG=1: multi-CTA top-k, shuffle-free decode
     // scores; see run()); without it only [0] is ever captured
     // (per window size T = 1..kVerifyLongT: a solo window is at most 8 rows (16 with --lookup-max-t), but a merge window of a wide batch is not)

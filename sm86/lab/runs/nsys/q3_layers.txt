@@ -1,0 +1,8 @@
+main: work 9.84 ms/win, spin 0.00, idle 14.18
+(1041 more streams, 20.48 ms/win of ops, not listed)
+layers: 23011 expert regions, 22531 GPU chains (us a layer, mean)
+  GPU chain (combine .. doorbell): 181.0 us, main idle in it 32.0; total 8.50 ms/win
+    top: ::gr_down87_kernel 28.6, ::native_mmvq_multi_kernel 18.6, ::gr_up75_kernel 14.3, ::bf16_f32_mmvf_multi_kernel 11.5, ::gr_up_wide_kernel 10.3, ::attn_chunk_kernel_pre75 7.8, ::gdn_step_norm_multi_kernel 7.3, ::gr_norm_split_fast_kernel 6.9, ::block_topk_wide_kernel 6.7, ::gdn_ab_multi_kernel 5.6, ::native_small_mmvq_kernel 5.1, doorbell_publish_res_kernel 4.2
+  expert region (doorbell .. combine): 110.3 us = main work 37.4 + spin 0.0 + idle 72.9; other streams' work in it 85.2; total 5.29 ms/win
+    top: ::native_mmvq_multi_kernel 10.9, ::mmvq_multi_kernel 7.3, ::b6_mmvq_rows_kernel 4.9, ::bf16_f32_mmvf_multi_kernel 3.3, ::native_small_mmvq_kernel 2.9, ::native_swiglu_quantize_q8_1_kernel 2.9, ::sigmoid_scale_rows_vec4_kernel 2.1, ::native_quantize_q8_1_kernel 1.5
+  in 23011 regions with a spin: last spin ends at 105.2 us, the GPU work started before it ends at 88.1; GPU idle waiting on the flag 17.1 us; flag -> combine 5.1 us

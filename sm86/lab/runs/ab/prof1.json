@@ -1,0 +1,64 @@
+{
+ "experiment": {
+  "name": "prof1",
+  "rounds": 1,
+  "src": [
+   "runs/replayset/hermes-v1"
+  ],
+  "seed": 1234,
+  "arms": [
+   {
+    "name": "df2c65",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.65"
+    ],
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_DECODE_TIMING": "1",
+     "STRATA_VERIFY_PROFILE": "1"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "round": 0,
+   "arm": "df2c65",
+   "label": "prof1-df2c65-r0",
+   "load_s": 54.9,
+   "wall_s": 267.8,
+   "turns": 57,
+   "timed": 57,
+   "median": 124.9,
+   "p10": 105.8,
+   "p90": 163.5,
+   "tok_weighted": 131.0,
+   "accept": 0.756,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 26643,
+   "errors": 0,
+   "cache_slots": 6490,
+   "vram_free_mib": 6402,
+   "temp_max": 76.0,
+   "power_max": 389.83,
+   "power_mean": 360.2,
+   "m_expert_slots": 6490,
+   "m_expert_cache_mib": 10751,
+   "m_vram_free_mib": 6402,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 8192,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 6402
+  }
+ ]
+}

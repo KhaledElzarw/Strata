@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="424" viewBox="0 0 860 424" role="img" aria-label="Decode gain of each adopted step" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title>Decode gain of each adopted step</title>
+<rect x="0.5" y="0.5" width="859" height="423" rx="12" fill="#fcfcfb" stroke="rgba(11,11,11,0.10)"/>
+<text x="24" y="34" font-size="15" font-weight="600" fill="#0b0b0b">Decode gain of each adopted step</text>
+<text x="24" y="52" font-size="12" fill="#52514e">Paired A/B on 57 recorded agent turns: geometric mean of per-turn ratios, 95% bootstrap CI</text>
+<line x1="300.0" y1="58" x2="300.0" y2="354" stroke="#e1e0d9" stroke-width="1"/>
+<text x="300.0" y="372" font-size="11" text-anchor="middle" fill="#898781" style="font-variant-numeric: tabular-nums">0%</text>
+<line x1="382.0" y1="58" x2="382.0" y2="354" stroke="#e1e0d9" stroke-width="1"/>
+<text x="382.0" y="372" font-size="11" text-anchor="middle" fill="#898781" style="font-variant-numeric: tabular-nums">2%</text>
+<line x1="464.0" y1="58" x2="464.0" y2="354" stroke="#e1e0d9" stroke-width="1"/>
+<text x="464.0" y="372" font-size="11" text-anchor="middle" fill="#898781" style="font-variant-numeric: tabular-nums">4%</text>
+<line x1="546.0" y1="58" x2="546.0" y2="354" stroke="#e1e0d9" stroke-width="1"/>
+<text x="546.0" y="372" font-size="11" text-anchor="middle" fill="#898781" style="font-variant-numeric: tabular-nums">6%</text>
+<line x1="628.0" y1="58" x2="628.0" y2="354" stroke="#e1e0d9" stroke-width="1"/>
+<text x="628.0" y="372" font-size="11" text-anchor="middle" fill="#898781" style="font-variant-numeric: tabular-nums">8%</text>
+<line x1="710.0" y1="58" x2="710.0" y2="354" stroke="#e1e0d9" stroke-width="1"/>
+<text x="710.0" y="372" font-size="11" text-anchor="middle" fill="#898781" style="font-variant-numeric: tabular-nums">10%</text>
+<line x1="300.0" y1="58" x2="300.0" y2="354" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24" y="83" font-size="13" font-weight="600" fill="#0b0b0b">Phase 1 config vs stock</text>
+<text x="24" y="100" font-size="11" fill="#898781">DFlash2 pack, explicit expert cache</text>
+<path d="M300.0,74.0 H385.6 Q389.6,74.0 389.6,78.0 V90.0 Q389.6,94.0 385.6,94.0 H300.0 Z" fill="#898781"><title>Phase 1 config vs stock: +2.2% (95% CI +0.3 to +4.1%, n=57 turn pairs)</title></path>
+<line x1="311.7" y1="84" x2="469.9" y2="84" stroke="#52514e" stroke-width="1.5"/>
+<line x1="311.7" y1="78" x2="311.7" y2="90" stroke="#52514e" stroke-width="1.5"/>
+<line x1="469.9" y1="78" x2="469.9" y2="90" stroke="#52514e" stroke-width="1.5"/>
+<text x="479.9" y="88" font-size="13" font-weight="600" fill="#0b0b0b" style="font-variant-numeric: tabular-nums">+2.2%<tspan font-weight="400" fill="#52514e" font-size="11"> (+0.3 to +4.1)</tspan></text>
+<text x="24" y="141" font-size="13" font-weight="600" fill="#0b0b0b">Phase 2 switches</text>
+<text x="24" y="158" font-size="11" fill="#898781">HC down, PCIe copy, GEMV tables, expert layout</text>
+<path d="M300.0,132.0 H542.3 Q546.3,132.0 546.3,136.0 V148.0 Q546.3,152.0 542.3,152.0 H300.0 Z" fill="#2a78d6"><title>Phase 2 switches: +6.0% (95% CI +3.9 to +8.1%, n=164 turn pairs)</title></path>
+<line x1="459.1" y1="142" x2="633.2" y2="142" stroke="#52514e" stroke-width="1.5"/>
+<line x1="459.1" y1="136" x2="459.1" y2="148" stroke="#52514e" stroke-width="1.5"/>
+<line x1="633.2" y1="136" x2="633.2" y2="148" stroke="#52514e" stroke-width="1.5"/>
+<text x="643.2" y="146" font-size="13" font-weight="600" fill="#0b0b0b" style="font-variant-numeric: tabular-nums">+6.0%<tspan font-weight="400" fill="#52514e" font-size="11"> (+3.9 to +8.1)</tspan></text>
+<text x="24" y="199" font-size="13" font-weight="600" fill="#0b0b0b">HC read kernels</text>
+<text x="24" y="216" font-size="11" fill="#898781">DOWN86 ring, up T-hybrid, computed xn</text>
+<path d="M300.0,190.0 H448.4 Q452.4,190.0 452.4,194.0 V206.0 Q452.4,210.0 448.4,210.0 H300.0 Z" fill="#2a78d6"><title>HC read kernels: +3.7% (95% CI +2.1 to +5.5%, n=165 turn pairs)</title></path>
+<line x1="386.9" y1="200" x2="523.7" y2="200" stroke="#52514e" stroke-width="1.5"/>
+<line x1="386.9" y1="194" x2="386.9" y2="206" stroke="#52514e" stroke-width="1.5"/>
+<line x1="523.7" y1="194" x2="523.7" y2="206" stroke="#52514e" stroke-width="1.5"/>
+<text x="533.7" y="204" font-size="13" font-weight="600" fill="#0b0b0b" style="font-variant-numeric: tabular-nums">+3.7%<tspan font-weight="400" fill="#52514e" font-size="11"> (+2.1 to +5.5)</tspan></text>
+<text x="24" y="257" font-size="13" font-weight="600" fill="#0b0b0b">Q2_0 expert down rows</text>
+<text x="24" y="274" font-size="11" fill="#898781">4 lanes a row, measured on the POOL_DAG arm</text>
+<path d="M300.0,248.0 H376.2 Q380.2,248.0 380.2,252.0 V264.0 Q380.2,268.0 376.2,268.0 H300.0 Z" fill="#2a78d6"><title>Q2_0 expert down rows: +2.0% (95% CI +0.4 to +3.6%, n=166 turn pairs)</title></path>
+<line x1="318.0" y1="258" x2="448.7" y2="258" stroke="#52514e" stroke-width="1.5"/>
+<line x1="318.0" y1="252" x2="318.0" y2="264" stroke="#52514e" stroke-width="1.5"/>
+<line x1="448.7" y1="252" x2="448.7" y2="264" stroke="#52514e" stroke-width="1.5"/>
+<text x="458.7" y="262" font-size="13" font-weight="600" fill="#0b0b0b" style="font-variant-numeric: tabular-nums">+2.0%<tspan font-weight="400" fill="#52514e" font-size="11"> (+0.4 to +3.6)</tspan></text>
+<text x="24" y="315" font-size="13" font-weight="600" fill="#0b0b0b">Tier 5</text>
+<text x="24" y="332" font-size="11" fill="#898781">doorbell, fused hits, CPU-free tokens, DOWN87</text>
+<path d="M300.0,306.0 H487.2 Q491.2,306.0 491.2,310.0 V322.0 Q491.2,326.0 487.2,326.0 H300.0 Z" fill="#2a78d6"><title>Tier 5: +4.7% (95% CI +2.6 to +6.9%, n=167 turn pairs)</title></path>
+<line x1="407.8" y1="316" x2="581.1" y2="316" stroke="#52514e" stroke-width="1.5"/>
+<line x1="407.8" y1="310" x2="407.8" y2="322" stroke="#52514e" stroke-width="1.5"/>
+<line x1="581.1" y1="310" x2="581.1" y2="322" stroke="#52514e" stroke-width="1.5"/>
+<text x="591.1" y="320" font-size="13" font-weight="600" fill="#0b0b0b" style="font-variant-numeric: tabular-nums">+4.7%<tspan font-weight="400" fill="#52514e" font-size="11"> (+2.6 to +6.9)</tspan></text>
+<text x="24" y="406" font-size="11" fill="#898781">Gray row: same evening, rounds run one after the other (not interleaved). Blue rows: interleaved arms, fresh engine per arm.</text>
+</svg>

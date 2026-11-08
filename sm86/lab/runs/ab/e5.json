@@ -1,0 +1,270 @@
+{
+ "experiment": {
+  "name": "e5",
+  "rounds": 3,
+  "src": [
+   "runs/replayset/hermes-v1"
+  ],
+  "seed": 1234,
+  "arms": [
+   {
+    "name": "c65",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.65"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7000"
+    },
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack"
+    }
+   },
+   {
+    "name": "c50",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.5"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7000"
+    },
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack"
+    }
+   },
+   {
+    "name": "c50x",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.5"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7000"
+    },
+    "add": [
+     "--host-core",
+     "last"
+    ],
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_EXPDEC": "1"
+    }
+   },
+   {
+    "name": "c50xp",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.5"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7000",
+     "--expert-profile": "D:/Projects/local_ai/strata-lab/runs/prof/chatos-learned.bin"
+    },
+    "add": [
+     "--host-core",
+     "last"
+    ],
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_EXPDEC": "1"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "round": 0,
+   "arm": "c65",
+   "label": "e5-c65-r0",
+   "load_s": 38.0,
+   "wall_s": 248.9,
+   "turns": 57,
+   "timed": 57,
+   "median": 150.5,
+   "p10": 128.8,
+   "p90": 196.2,
+   "tok_weighted": 150.5,
+   "accept": 0.737,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 28628,
+   "errors": 0,
+   "cache_slots": 9371,
+   "vram_free_mib": 1331,
+   "temp_max": 77.0,
+   "power_max": 390.59,
+   "power_mean": 373.9,
+   "m_expert_slots": 9371,
+   "m_expert_cache_mib": 15550,
+   "m_vram_free_mib": 1331,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1331
+  },
+  {
+   "round": 0,
+   "arm": "c50",
+   "label": "e5-c50-r0",
+   "load_s": 37.0,
+   "wall_s": 213.5,
+   "turns": 57,
+   "timed": 57,
+   "median": 152.7,
+   "p10": 128.3,
+   "p90": 193.0,
+   "tok_weighted": 155.1,
+   "accept": 0.695,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 24049,
+   "errors": 0,
+   "cache_slots": 9371,
+   "vram_free_mib": 1333,
+   "temp_max": 77.0,
+   "power_max": 390.08,
+   "power_mean": 372.6,
+   "m_expert_slots": 9371,
+   "m_expert_cache_mib": 15550,
+   "m_vram_free_mib": 1333,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1333
+  },
+  {
+   "round": 0,
+   "arm": "c50x",
+   "label": "e5-c50x-r0",
+   "load_s": 37.5,
+   "wall_s": 274.1,
+   "turns": 57,
+   "timed": 57,
+   "median": 149.8,
+   "p10": 126.8,
+   "p90": 201.0,
+   "tok_weighted": 145.1,
+   "accept": 0.658,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 31180,
+   "errors": 0,
+   "cache_slots": 9371,
+   "vram_free_mib": 1331,
+   "temp_max": 77.0,
+   "power_max": 389.96,
+   "power_mean": 375.3,
+   "m_expert_slots": 9371,
+   "m_expert_cache_mib": 15550,
+   "m_vram_free_mib": 1331,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1331
+  },
+  {
+   "round": 0,
+   "arm": "c50xp",
+   "label": "e5-c50xp-r0",
+   "load_s": 37.5,
+   "wall_s": 227.1,
+   "turns": 57,
+   "timed": 56,
+   "median": 146.6,
+   "p10": 126.9,
+   "p90": 198.9,
+   "tok_weighted": 151.3,
+   "accept": 0.689,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 25294,
+   "errors": 0,
+   "cache_slots": 9371,
+   "vram_free_mib": 1331,
+   "temp_max": 77.0,
+   "power_max": 390.03,
+   "power_mean": 372.0,
+   "m_expert_slots": 9371,
+   "m_expert_cache_mib": 15550,
+   "m_vram_free_mib": 1331,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1331
+  },
+  {
+   "round": 1,
+   "arm": "c50xp",
+   "label": "e5-c50xp-r1",
+   "load_s": 37.5,
+   "wall_s": 201.3,
+   "turns": 57,
+   "timed": 57,
+   "median": 151.7,
+   "p10": 124.1,
+   "p90": 190.4,
+   "tok_weighted": 150.5,
+   "accept": 0.675,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 21400,
+   "errors": 0,
+   "cache_slots": 9371,
+   "vram_free_mib": 1333,
+   "temp_max": 76.0,
+   "power_max": 390.29,
+   "power_mean": 371.1,
+   "m_expert_slots": 9371,
+   "m_expert_cache_mib": 15550,
+   "m_vram_free_mib": 1333,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1333
+  }
+ ]
+}

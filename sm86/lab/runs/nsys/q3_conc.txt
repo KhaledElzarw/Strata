@@ -1,0 +1,18 @@
+decode stretches: 3, 11515 ms; 1026360 GPU ops
+main stream 19: 46502 HC reads, ~479 windows, 24.02 ms/window
+GPU: any op 16.13 ms/win, real work (no spin) 15.29, nothing 7.89
+main: work 9.84 ms/win, spin 0.00, idle 14.18
+(1037 more streams, 9.55 ms/win of ops, not listed)
+stream 19 (main): 572470 ops, busy 9.84 ms/win (work 9.84, spin 0.00)
+    top: ::native_mmvq_multi_kernel 1.41, ::gr_down87_kernel 1.39, ::bf16_f32_mmvf_multi_kernel 0.70, ::gr_up75_kernel 0.69, ::gr_up_wide_kernel 0.50, ::native_mmvq_il_kernel 0.47, ::native_small_mmvq_kernel 0.39, ::attn_chunk_kernel_pre75 0.37
+stream 14: 19726 ops, busy 0.44 ms/win (work 0.44, spin 0.00); its work while main works 0.14, while main spins 0.00, while main idle 0.30
+    top: ::gemm4_rows_kernel 0.24, ::attn_part_kernel 0.05, ::rms_quant_kernel 0.04, ::kv_ring_kernel 0.02, ::quant_rows_kernel 0.01, ::select_kernel 0.01, copy_i32_from_mapped_kernel 0.01, ::conv_rms_quant_kernel 0.01
+stream 792: 7440 ops, busy 0.31 ms/win (work 0.31, spin 0.00); its work while main works 0.10, while main spins 0.00, while main idle 0.22
+    top: ::native_mmvq_il_kernel 0.21, ::mmvq_multi_kernel 0.06, ::b6_mmvq_rows_kernel 0.03, ::norm_rope_kernel 0.01
+stream 25: 11200 ops, busy 0.29 ms/win (work 0.29, spin 0.00); its work while main works 0.00, while main spins 0.00, while main idle 0.29
+    top: ::gemm4_rows_kernel 0.15, ::attn_part_kernel 0.10, ::conv_rms_quant_kernel 0.02, ::attn_merge_kernel 0.01, ::conv_quant_kernel 0.01, ::swiglu_quant_kernel 0.00, ::norm_rope_qk_kernel 0.00
+layers: 23011 expert regions, 22531 GPU chains (us a layer, mean)
+  GPU chain (combine .. doorbell): 181.0 us, main idle in it 32.0; total 8.50 ms/win
+    top: ::gr_down87_kernel 28.6, ::native_mmvq_multi_kernel 18.6, ::gr_up75_kernel 14.3, ::bf16_f32_mmvf_multi_kernel 11.5, ::gr_up_wide_kernel 10.3, ::attn_chunk_kernel_pre75 7.8, ::gdn_step_norm_multi_kernel 7.3, ::gr_norm_split_fast_kernel 6.9, ::block_topk_wide_kernel 6.7, ::gdn_ab_multi_kernel 5.6, ::native_small_mmvq_kernel 5.1, doorbell_publish_res_kernel 4.2
+  expert region (doorbell .. combine): 110.3 us = main work 37.4 + spin 0.0 + idle 72.9; other streams' work in it 85.2; total 5.29 ms/win
+    top: ::native_mmvq_multi_kernel 10.9, ::mmvq_multi_kernel 7.3, ::b6_mmvq_rows_kernel 4.9, ::bf16_f32_mmvf_multi_kernel 3.3, ::native_small_mmvq_kernel 2.9, ::native_swiglu_quantize_q8_1_kernel 2.9, ::sigmoid_scale_rows_vec4_kernel 2.1, ::native_quantize_q8_1_kernel 1.5

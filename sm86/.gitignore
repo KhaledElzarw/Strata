@@ -1,0 +1,4 @@
+# The lab's logs are its results (HC parity, engine timing, A/B progress): keep them,
+# though the root .gitignore drops *.log files and logs/ folders.
+!logs/
+!*.log

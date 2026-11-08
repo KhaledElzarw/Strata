@@ -1,0 +1,16 @@
+  in 23011 regions with a spin: last spin ends at 105.2 us, the GPU work started before it ends at 88.1; GPU idle waiting on the flag 17.1 us; flag -> combine 5.1 us
+GPU idle gaps >= 3 us by size (from): >=3us 0.00, >=10us 0.10, >=30us 0.14, >=100us 0.15, >=300us 0.01, >=1000us 10.19 ms/win
+    5.07 ms/win       4 gaps  after memcpy kind 2  ->  before copy_i32_from_mapped_kernel
+    2.22 ms/win       7 gaps  after memcpy kind 2  ->  before memcpy kind 8
+    1.76 ms/win     378 gaps  after ::select_kernel  ->  before copy_i32_from_mapped_kernel
+    0.61 ms/win      96 gaps  after ::res_patch_kernel  ->  before copy_i32_from_mapped_kernel
+    0.53 ms/win     128 gaps  after memcpy kind 2  ->  before memcpy kind 2
+    0.10 ms/win     476 gaps  after ::logits_nonfinite_kernel  ->  before ::sampler_split_part_kernel
+    0.08 ms/win     476 gaps  after ::sampler_split_merge_kernel  ->  before copy_i32_from_mapped_kernel
+    0.05 ms/win     291 gaps  after ::kv_ring_kernel  ->  before copy_i32_from_mapped_kernel
+    0.04 ms/win      96 gaps  after ::select_kernel  ->  before ::res_patch_kernel
+    0.03 ms/win     717 gaps  after ::kv_ring_kernel  ->  before ::gemm4_rows_kernel
+    0.03 ms/win     425 gaps  after memcpy kind 2  ->  before ::gemm4_rows_kernel
+    0.02 ms/win     370 gaps  after ::gemm4_rows_kernel  ->  before ::kv_ring_kernel
+    0.01 ms/win     289 gaps  after ::rope_table_inv_kernel  ->  before ::quant_rows_kernel
+    0.01 ms/win     291 gaps  after ::rms_quant_kernel  ->  before memcpy kind 2

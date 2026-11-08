@@ -1,0 +1,7 @@
+A/B hc86 (2026-11-08 13:00-13:38), 3 rounds x 57 replayed real turns (runs/replayset/hermes-v1), arms alternating.
+runs/ab/hc86.json was overwritten 13:38 by an accidental rerun (ab.py called as "<exp.json> --summary", which runs
+the A/B again; the right call is "ab.py --summary <results.json>"); these numbers come from runs/ab/hc86.log.
+AB lines (timed turns): r0 cur 156.6 / hc86 166.1; r1 hc86 166.2 / cur 158.9; r2 cur 158.8 / hc86 161.3.
+All 57 turns per arm-round: round medians cur 156.6 161.0 158.8, hc86 165.5 166.0 164.1; ratios 1.057 1.031 1.033
+(mean 1.040). Paired turns (same round, same turn): n 171, median ratio 1.0228, bootstrap 95% CI [1.0147, 1.0422].
+Verdict: adopt (CI excludes 0, >= 2%).

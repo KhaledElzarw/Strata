@@ -1,0 +1,7 @@
+T 4 apply 0 inject 0 | old   42.0 us  fast   42.0 us | bitwise equal | hash 05a2e0f4e2bd09b0
+T 4 apply 0 inject 1 | old   42.0 us  fast   42.0 us | bitwise equal | hash bd12c293cf180e78
+T 4 apply 1 inject 0 | old   44.0 us  fast   44.0 us | bitwise equal | hash 458262cbeb48fe95
+T 4 apply 1 inject 1 | old   44.0 us  fast   44.0 us | bitwise equal | hash 320297f9e5943262
+Q8 vs bf16 T 4 apply 0 | rel rms lo 0.0000 mixed 0.0010 | max |dR,dinject| 8.34e-07 | q8_1 image vs mixed rel rms 0.0055 | hash b6ffae32fe26599f
+Q8 vs bf16 T 4 apply 1 | rel rms lo 0.0000 mixed 0.0008 | max |dR,dinject| 7.15e-07 | q8_1 image vs mixed rel rms 0.0054 | hash e3fba03c88ec93c3
+fused_gr_bench: 0 differing

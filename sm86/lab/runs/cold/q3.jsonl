@@ -1,0 +1,8 @@
+{"label": "q3", "rep": 0, "size": 4096, "prompt_n": 3994, "cache_n": 0, "prompt_ms": 1799.6, "prompt_tps": 2219.4, "wall_s": 1.92}
+{"label": "q3", "rep": 0, "size": 16384, "prompt_n": 16844, "cache_n": 0, "prompt_ms": 5747.0, "prompt_tps": 2930.9, "wall_s": 5.84}
+{"label": "q3", "rep": 0, "size": 32768, "prompt_n": 33833, "cache_n": 0, "prompt_ms": 11486.0, "prompt_tps": 2945.6, "wall_s": 11.61}
+{"label": "q3", "rep": 0, "size": 65536, "prompt_n": 65585, "cache_n": 0, "prompt_ms": 20989.5, "prompt_tps": 3124.7, "wall_s": 21.15}
+{"label": "q3", "rep": 1, "size": 65536, "prompt_n": 65418, "cache_n": 0, "prompt_ms": 20976.5, "prompt_tps": 3118.6, "wall_s": 21.13}
+{"label": "q3", "rep": 1, "size": 32768, "prompt_n": 33569, "cache_n": 0, "prompt_ms": 11665.4, "prompt_tps": 2877.7, "wall_s": 11.77}
+{"label": "q3", "rep": 1, "size": 16384, "prompt_n": 16927, "cache_n": 0, "prompt_ms": 5874.0, "prompt_tps": 2881.7, "wall_s": 6.0}
+{"label": "q3", "rep": 1, "size": 4096, "prompt_n": 4130, "cache_n": 0, "prompt_ms": 2111.3, "prompt_tps": 1956.1, "wall_s": 2.2}
