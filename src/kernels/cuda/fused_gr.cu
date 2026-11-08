@@ -495,7 +495,9 @@ bool gr_up_wide_on() {
 #endif
 }
 
-template <int MAX_T = kFusedGrMaxT, bool EXACT_T = false>
+// XN (sm86 lab, STRATA_GR_XN=1): the epilogue's x is read from the norm's xn (which also wrote R_out); see
+// gr_norm_split_fast_kernel<true>.  Same value bitwise, one coalesced load instead of R, w_norm, rs, bo_prev, inj_prev.
+template <int MAX_T = kFusedGrMaxT, bool EXACT_T = false, bool XN = false>
 __global__ void __launch_bounds__(THREADS) gr_up_wide_kernel(GrMulti m) {
     __shared__ __align__(16) float lo[MAX_T][LR];
     __shared__ float g[MAX_T][HC][UPW_COLS];
@@ -503,6 +505,12 @@ __global__ void __launch_bounds__(THREADS) gr_up_wide_kernel(GrMulti m) {
     const int T = EXACT_T ? MAX_T : m.T;
     const int d0 = blockIdx.x * UPW_COLS;
     for (int i = t; i < T * LR; i += THREADS) lo[i / LR][i % LR] = m.a[i / LR].lo[i % LR];
+    if (XN) {
+        for (int i = t; i < T * HC * UPW_COLS; i += THREADS) {
+            const int k = i / (HC * UPW_COLS), r = i - k * (HC * UPW_COLS), c = r / UPW_COLS, col = r - c * UPW_COLS;
+            g[k][c][col] = m.xn[(size_t) k * D + (size_t) c * N + d0 + col];
+        }
+    }
     __syncthreads();
     if (warp < HC * UPW_COLS) {
         const int c = warp / UPW_COLS, dd = warp - c * UPW_COLS, i = c * N + d0 + dd;
@@ -511,7 +519,7 @@ __global__ void __launch_bounds__(THREADS) gr_up_wide_kernel(GrMulti m) {
         const Bf16x8 wb = unpack8(lane < LR / 8 - 32 ? __ldg(w4 + 32 + lane) : make_uint4(0, 0, 0, 0));
         float rv = 0.0f, wn = 0.0f, rsc = 0.0f, bo = 0.0f, ip = 0.0f;
         bool apply = false;
-        if (lane < T) {
+        if (!XN && lane < T) {
             const FusedGrArgs& a = m.a[lane];
             rv = a.R[i];
             wn = a.w_norm[i];
@@ -528,7 +536,9 @@ __global__ void __launch_bounds__(THREADS) gr_up_wide_kernel(GrMulti m) {
             acc = warp_sum(acc);
             if (lane == k) mine = acc;
         }
-        if (lane < T) {
+        if (XN && lane < T) {
+            g[lane][c][dd] = g[lane][c][dd] * sigmoidf_(mine);   // g holds xn here (staged above)
+        } else if (lane < T) {
             if (apply) {
                 rv = fmaf(bo, 2.0f * sigmoidf_(ip / (float) HC), rv);
                 m.a[lane].R_out[i] = rv;
@@ -555,12 +565,13 @@ __global__ void __launch_bounds__(THREADS) gr_up_wide_kernel(GrMulti m) {
 // uint4 - lane 8 i + j holds chunk 32 + j of row i - and their dot is shuffled to lane j before it is added, so lane j
 // still sums its two dots in gr_up_multi_kernel's order.  Every row's lane sums, xor tree and epilogue are
 // gr_up_multi_kernel's: the same bits.  STRATA_GR_UP75=0 keeps gr_up_multi_kernel.
-template <int MAX_T = kFusedGrMaxT, bool EXACT_T = false>
+// XN: as gr_up_wide_kernel's (sm86 lab, STRATA_GR_XN=1): g starts as the norm's xn, staged with float4 loads.
+template <int MAX_T = kFusedGrMaxT, bool EXACT_T = false, bool XN = false>
 __global__ void __launch_bounds__(THREADS, 4) gr_up75_kernel(GrMulti m) {
     constexpr int RPW = HC * UPM_COLS / WARPS;    // 8 rows per warp: row r = warp + WARPS i -> stream i / 2
     static_assert(RPW == 8 && UPM_COLS == 2 * WARPS && HC == 4 && LR / 8 - 32 == 8, "geometry");
     __shared__ __align__(16) float lo[MAX_T][LR];
-    __shared__ float g[MAX_T][HC][UPM_COLS];
+    __shared__ __align__(16) float g[MAX_T][HC][UPM_COLS];
     const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
     const int T = EXACT_T ? MAX_T : m.T;
     const int d0 = blockIdx.x * UPM_COLS;
@@ -582,6 +593,14 @@ __global__ void __launch_bounds__(THREADS, 4) gr_up75_kernel(GrMulti m) {
         }
         if (bt == 0) {
             for (int i = t; i < T * LR; i += THREADS) lo[i / LR][i % LR] = m.a[i / LR].lo[i % LR];
+            if (XN) {
+                for (int i = t; i < T * HC * (UPM_COLS / 4); i += THREADS) {   // float4 j of stream c's 16 columns, token k
+                    const int k = i / (HC * (UPM_COLS / 4)), r = i - k * (HC * (UPM_COLS / 4)), c = r / (UPM_COLS / 4);
+                    const int j = r - c * (UPM_COLS / 4);
+                    *reinterpret_cast<float4*>(&g[k][c][4 * j]) =
+                        *reinterpret_cast<const float4*>(m.xn + (size_t) k * D + (size_t) c * N + d0 + 4 * j);
+                }
+            }
             __syncthreads();
         }
 #pragma unroll 1
@@ -609,7 +628,13 @@ __global__ void __launch_bounds__(THREADS, 4) gr_up75_kernel(GrMulti m) {
             }
         }
     }
-    if (lane < T) {
+    if (XN && lane < T) {
+#pragma unroll
+        for (int i = 0; i < RPW; ++i) {
+            const int c = i >> 1, dd = warp + WARPS * (i & 1);
+            g[lane][c][dd] = g[lane][c][dd] * sigmoidf_(mine[i]);   // g holds xn here (staged above)
+        }
+    } else if (lane < T) {
         const FusedGrArgs& a = m.a[lane];
         const bool apply = a.apply;
         float rv[RPW], wn[RPW], bo[RPW];
@@ -1307,6 +1332,10 @@ __global__ void __launch_bounds__(THREADS) gr_norm_split_kernel(GrMulti m) {
 // thread's own sum of squares ascends in k; the warp sum, part[] sum and rsqrt are the kernel's), so rs and xn are
 // bitwise the same; what goes is the loop's one-iteration-at-a-time loads and the second pass that read xn back from
 // global memory (a write, a barrier, a read: two memory latencies).
+// WR (sm86 lab, STRATA_GR_XN=1): also store R' = R + bo_prev * gw to R_out here, from the register that feeds xn, so the
+// up kernel reads xn instead of rebuilding R', xn and the R_out write per token (gr_up_*_kernel<..., XN = true>).  The up
+// kernels compute R' with the same fmaf and x = (R' * w_norm) * rs with the same two products, so nothing changes bitwise.
+template <bool WR = false>
 __global__ void __launch_bounds__(THREADS) gr_norm_split_fast_kernel(GrMulti m) {
     __shared__ float part[WARPS];
     __shared__ float s_rs;
@@ -1332,6 +1361,7 @@ __global__ void __launch_bounds__(THREADS) gr_norm_split_fast_kernel(GrMulti m) 
                 const float4 b = *reinterpret_cast<const float4*>(a.bo_prev + (i - c * N));
                 r[j].x = fmaf(b.x, gw, r[j].x); r[j].y = fmaf(b.y, gw, r[j].y);
                 r[j].z = fmaf(b.z, gw, r[j].z); r[j].w = fmaf(b.w, gw, r[j].w);
+                if (WR) *reinterpret_cast<float4*>(a.R_out + i) = r[j];
             }
         }
     }
@@ -1608,6 +1638,177 @@ __global__ void __launch_bounds__(D82_THREADS) gr_down82_kernel(GrMulti m) {
     if (t == 0) g_d82_cnt[g] = 0u;
 }
 
+// sm86 lab (STRATA_GR_DOWN86=1, opt-in): gr_down82_kernel's blocks, rows, lanes, chunk order, partial buffer and last-block
+// epilogue, with a block's work spread over more warps.  DOWN82 holds all T tokens of a (row, lane) chain in one thread:
+// ~4 warps per SM, latency-bound on the RTX 3090 (ncu at T = 4: 10.9% achieved occupancy, ~10 cycles per issued
+// instruction, 44% of DRAM).  Here thread (slot, u, kk) runs lane 8 Q + u's chain of row `slot` for tokens
+// kk * TPT .. kk * TPT + TPT - 1 only: the same chunks in the same order through the same dot8u, so every (row, lane,
+// token) sum is DOWN82's, and the last block's warp_sum and silu are its too.  A tile's weights (shared by a chain's TT
+// token threads) and activations go through a cp.async ring of S tile
+// stages in shared memory, so the first FMA waits for one tile (DOWN82 waits for every tile's activations) and the
+// weights in flight do not cost registers.  Not reentrant, as DOWN82 (same scratch): gr_down86_on() has DOWN82's limits.
+constexpr int D86_SLOTS = 17;                      // 16 rows + the inject row (live in groups 0 .. HC - 1)
+constexpr int D86_WCH = D86_SLOTS * 8 * HQ;        // 16-byte weight chunks a tile stage holds: [slot][q][u], 680
+template <int MAX_T, int TPT> __host__ __device__ constexpr int d86_tt() { return (MAX_T + TPT - 1) / TPT; }
+template <int MAX_T, int TPT> __host__ __device__ constexpr int d86_threads() { return D86_SLOTS * 8 * d86_tt<MAX_T, TPT>(); }
+__host__ __device__ constexpr int d86_stage16_n(int max_t) { return D86_WCH + max_t * 2 * 40; }   // + activations [k][plane][40]
+template <int MAX_T> __host__ __device__ constexpr int d86_stage16() { return d86_stage16_n(MAX_T); }
+template <int N_PENDING> __device__ __forceinline__ void cp_async_wait_n() {
+#if defined(STRATA_GR_CP_ASYNC)
+    asm volatile("cp.async.wait_group %0;\n" ::"n"(N_PENDING) : "memory");
+#endif
+}
+
+template <int MAX_T, bool EXACT_T, int TPT, int S>
+__global__ void __launch_bounds__(d86_threads<MAX_T, TPT>()) gr_down86_kernel(GrMulti m) {
+    constexpr int TT = d86_tt<MAX_T, TPT>(), NTHR = d86_threads<MAX_T, TPT>(), STAGE = d86_stage16<MAX_T>();
+    static_assert(S >= 2 && S <= N_HTILES, "ring");
+    extern __shared__ __align__(16) uint4 d86s[];     // S x { weights [17][HQ][8] uint4, activations [T][2][40] float4 }
+    const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
+    const int T = EXACT_T ? MAX_T : m.T;
+    const int g = (int) blockIdx.x >> 2, Q = (int) blockIdx.x & 3;
+    const bool has_inj = g < HC && m.a[0].w_inject != nullptr;
+    // token-major: a warp is 32 (slot, u) chains of one token group, so its activation reads are 8 addresses (rows
+    // broadcast) and its weight reads 32 consecutive 16-byte chunks, both conflict-free (token-fastest put a lane's 4
+    // token threads on the same banks: hcbench T = 4 23.6 us against DOWN82's 20.5)
+    const int pu = t % (D86_SLOTS * 8), kk = t / (D86_SLOTS * 8), u = pu & 7, slot = pu >> 3;
+    const int l = 8 * Q + u;                           // DOWN82's (and the staged kernel's) lane
+    const bool active = slot < 16 || has_inj;
+    const int prow = slot < 16 ? 16 * g + slot : LR + g;
+    const uint16_t* const wd = m.a[0].w_down + (size_t) (16 * g) * D;
+    const uint16_t* const wi = has_inj ? m.a[0].w_inject + (size_t) g * D : nullptr;
+    auto stage = [&](int h, int st) {
+        uint4* ws = d86s + (size_t) st * STAGE;
+        float4* as = reinterpret_cast<float4*>(ws + D86_WCH);
+        const int nw = has_inj ? D86_WCH : D86_WCH - 8 * HQ;
+        for (int i = t; i < nw; i += NTHR) {           // chunk 32 q + 8 Q + uu of tile h, row s: 8 x 16 contiguous bytes
+            const int s = i / (8 * HQ), r = i - s * (8 * HQ), q = r >> 3, uu = r & 7;
+            const uint16_t* row = s < 16 ? wd + (size_t) s * D : wi;
+            cp_async16(ws + i, reinterpret_cast<const uint4*>(row) + h * (H_TILE / 8) + 32 * q + 8 * Q + uu);
+        }
+        for (int i = t; i < T * 80; i += NTHR) {       // DOWN82's staging of tile h: token, chunk c (= 8 q + uu), plane
+            const int k = i / 80, r = i - k * 80, c = r >> 1, plane = r & 1;
+            const int j = 8 * Q + (c & 7) + 32 * (c >> 3);
+            cp_async16(as + (k * 2 + plane) * 40 + c, m.xn + (size_t) k * D + (size_t) h * H_TILE + (size_t) j * 8 + plane * 4);
+        }
+    };
+    float acc[TPT];
+#pragma unroll
+    for (int j = 0; j < TPT; ++j) acc[j] = 0.0f;
+#pragma unroll
+    for (int s = 0; s < S - 1; ++s) {
+        stage(s, s);
+        cp_async_commit();
+    }
+#pragma unroll 1
+    for (int h = 0; h < N_HTILES; ++h) {
+        cp_async_wait_n<S - 2>();                      // tile h landed (S - 1 + h groups committed, tile h is group h)
+        __syncthreads();                               // ... for every thread; and stage (h - 1) % S is free again
+        if (h + S - 1 < N_HTILES) stage(h + S - 1, (h + S - 1) % S);
+        cp_async_commit();                             // (an empty group past the last tile keeps the count uniform)
+        const uint4* ws = d86s + (size_t) (h % S) * STAGE;
+        const float4* as = reinterpret_cast<const float4*>(ws + D86_WCH);
+        if (active) {
+#pragma unroll
+            for (int q = 0; q < HQ; ++q) {
+                const Bf16x8 wv = unpack8(ws[slot * (8 * HQ) + q * 8 + u]);
+#pragma unroll
+                for (int j = 0; j < TPT; ++j) {
+                    const int k = kk * TPT + j;
+                    if (k < T) acc[j] += dot8u(wv, as[(k * 2) * 40 + q * 8 + u], as[(k * 2 + 1) * 40 + q * 8 + u]);
+                }
+            }
+        }
+    }
+    if (active) {
+#pragma unroll
+        for (int j = 0; j < TPT; ++j) {
+            const int k = kk * TPT + j;
+            if (k < T) g_d82_part[((size_t) k * D82_ROWS + prow) * 32 + l] = acc[j];
+        }
+    }
+    __threadfence();
+    __syncthreads();
+    __shared__ unsigned d86_last;
+    if (t == 0) d86_last = atomicAdd(&g_d82_cnt[g], 1u) == 3u ? 1u : 0u;
+    __syncthreads();
+    if (d86_last == 0u) return;
+    __threadfence();
+    constexpr int NFULL = NTHR / 32;                   // whole warps only: warp_sum takes all 32 lanes
+    if (warp < NFULL) {
+        for (int r = warp; r < D86_SLOTS; r += NFULL) {   // the last block: a warp per row, DOWN82's sums and epilogue
+            if (r == 16 && !has_inj) break;
+            const int pr = r < 16 ? 16 * g + r : LR + g;
+            float s[MAX_T];
+#pragma unroll
+            for (int k = 0; k < MAX_T; ++k)
+                s[k] = (EXACT_T || k < T) ? warp_sum(__ldcg(g_d82_part + ((size_t) k * D82_ROWS + pr) * 32 + lane)) : 0.0f;
+#pragma unroll
+            for (int k = 0; k < MAX_T; ++k) {
+                if ((!EXACT_T && k >= T) || lane != k) continue;
+                if (r < 16) {
+                    const float x = s[k] / (float) HC;
+                    m.a[k].lo[pr] = x / (1.0f + __expf(-x));
+                } else {
+                    m.a[k].inject_out[g] = s[k];
+                }
+            }
+        }
+    }
+    __syncthreads();                                   // every read of the partials is done before the counter resets
+    if (t == 0) g_d82_cnt[g] = 0u;
+}
+template <int MAX_T> constexpr size_t d86_bytes(int s) { return (size_t) s * d86_stage16<MAX_T>() * 16; }
+// the ring a launch of the max_t instantiation allocates at s stages (the launcher's own size)
+constexpr size_t d86_need(int max_t, int s) { return (size_t) s * d86_stage16_n(max_t) * 16; }
+template <int MAX_T, bool EXACT_T, int TPT>
+void launch_d86(const GrMulti& c, int s, cudaStream_t st) {
+    if (s == 4) gr_down86_kernel<MAX_T, EXACT_T, TPT, 4><<<D82_BLOCKS, d86_threads<MAX_T, TPT>(), d86_bytes<MAX_T>(4), st>>>(c);
+    else gr_down86_kernel<MAX_T, EXACT_T, TPT, 3><<<D82_BLOCKS, d86_threads<MAX_T, TPT>(), d86_bytes<MAX_T>(3), st>>>(c);
+}
+// the stages' shared memory (opt-in above 48 KB) and a carveout that holds just them (a percentage of the SM's 100 KB,
+// with the 1 KB per-block reserve), so the rest stays L1
+template <int MAX_T, bool EXACT_T, int TPT>
+void d86_attr(int optin) {
+    auto one = [&](auto kernel, size_t bytes) {
+        int b = (int) bytes;
+        if (optin > 0 && b > optin) b = optin;
+        if (b > 48 * 1024) cudaFuncSetAttribute(kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, b);
+        int pct = (int) ((bytes + 1024) * 100 / (100 * 1024)) + 1;
+        if (pct > 100) pct = 100;
+        cudaFuncSetAttribute(kernel, cudaFuncAttributePreferredSharedMemoryCarveout, pct);
+    };
+    one(gr_down86_kernel<MAX_T, EXACT_T, TPT, 3>, d86_bytes<MAX_T>(3));
+    one(gr_down86_kernel<MAX_T, EXACT_T, TPT, 4>, d86_bytes<MAX_T>(4));
+}
+// the up kernels the sm86 lab switches launch (STRATA_GR_UP_HYB, STRATA_GR_XN)
+template <bool XN>
+void launch_up75_t(const GrMulti& m, int n, cudaStream_t st) {
+    switch (n) {
+        case 1: gr_up75_kernel<1, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 2: gr_up75_kernel<2, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 3: gr_up75_kernel<3, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 4: gr_up75_kernel<4, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 5: gr_up75_kernel<5, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 6: gr_up75_kernel<6, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 7: gr_up75_kernel<7, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 8: gr_up75_kernel<8, true, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        default: gr_up75_kernel<kFusedGrMaxT, false, XN><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+    }
+}
+template <bool XN>
+void launch_up_wide_t(const GrMulti& m, int n, cudaStream_t st) {
+    switch (n) {
+        case 1: gr_up_wide_kernel<1, true, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 2: gr_up_wide_kernel<2, true, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 3: gr_up_wide_kernel<3, true, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 4: gr_up_wide_kernel<4, true, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 5: gr_up_wide_kernel<5, true, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+        case 6: gr_up_wide_kernel<6, true, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+        default: gr_up_wide_kernel<kFusedGrMaxT, false, XN><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
+    }
+}
+
 // the current device is Volta (sm_70): the fast norm/up is its default
 bool cur_dev_volta() {
 #if defined(__HIPCC__)
@@ -1629,15 +1830,17 @@ bool cur_dev_volta() {
 // The tokens a down kernel may carry in one launch on the current card, and the plain read's tile: the plain read
 // stages n_tok * TILEV floats (1280 on sm_75, 2560 elsewhere), staged two tiles of n_tok * H_TILE.  The shared-memory
 // opt-in is set here once per device (a per-DEVICE setting: a layer split runs these kernels on two cards).
-int down_chunk(bool staged, int* tile_out) {
+int down_chunk(bool staged, int* tile_out, int* usable_out = nullptr) {
     static bool attr[64] = {};
     static int chunk[64] = {};   // tokens the plain down kernel may carry in one launch on this card
     static int chunk_staged[64] = {};  // the same for staged
     static int tile[64] = {};    // the plain down kernel's TILEV on this card (1280 on sm_75, 2560 elsewhere)
+    static int usable_of[64] = {};  // the dynamic shared memory a launch may take on this card
     int dev = 0;
     cudaGetDevice(&dev);
     if (dev < 0 || dev >= 64) {
         *tile_out = 2560;
+        if (usable_out != nullptr) *usable_out = 48 * 1024;
         return kFusedGrMaxT;
     }
     if (!attr[dev]) {
@@ -1707,6 +1910,15 @@ int down_chunk(bool staged, int* tile_out) {
         set_staged_attr(gr_down82_kernel<7, true>, 7);
         set_staged_attr(gr_down82_kernel<8, true>, 8);
         set_staged_attr(gr_down82_kernel<kFusedGrMaxT, false>, kFusedGrMaxT);
+        d86_attr<1, true, 1>(optin);
+        d86_attr<2, true, 1>(optin);
+        d86_attr<3, true, 1>(optin);
+        d86_attr<4, true, 1>(optin);
+        d86_attr<5, true, 2>(optin);
+        d86_attr<6, true, 2>(optin);
+        d86_attr<7, true, 2>(optin);
+        d86_attr<8, true, 2>(optin);
+        d86_attr<kFusedGrMaxT, false, 2>(optin);
         cudaGetLastError();      // drop any error the attempt left behind
         // The opt-in is a promise a pre-Volta card does not keep: an sm_60 answers 65536 and accepts the
         // cudaFuncSetAttribute for 61440 B, then fails the LAUNCH with "invalid argument".  What such a card
@@ -1725,8 +1937,10 @@ int down_chunk(bool staged, int* tile_out) {
         chunk[dev] = capacity < 1 ? 1 : (capacity > kFusedGrMaxT ? kFusedGrMaxT : capacity);
         const int capacity_staged = usable / (int) (2 * H_TILE * sizeof(float));
         chunk_staged[dev] = capacity_staged < 1 ? 1 : (capacity_staged > kFusedGrMaxT ? kFusedGrMaxT : capacity_staged);
+        usable_of[dev] = usable;
         attr[dev] = true;
     }
+    if (usable_out != nullptr) *usable_out = usable_of[dev];
     *tile_out = tile[dev] ? tile[dev] : 2560;
     return staged ? chunk_staged[dev] : chunk[dev];
 }
@@ -1763,6 +1977,31 @@ bool gr_down82_on() {
         }
         return true;
     }();
+    return on;
+}
+
+// sm86 lab STRATA_GR_DOWN86=1 (opt-in): gr_down86_kernel for the staged bf16 down projection, with DOWN82's limits (the
+// same one-per-device scratch).  STRATA_GR_D86_S=3 / 4: the tile ring's stages (default 3).
+bool gr_down86_on() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_GR_DOWN86");
+        if (v == nullptr || std::atoi(v) == 0) return false;
+        for (const char* k : {"STRATA_PIPED_CONCURRENT", "STRATA_PIPED_MTP"}) {
+            const char* p = std::getenv(k);
+            if (p != nullptr && std::atoi(p) != 0) return false;
+        }
+        return true;
+    }();
+    return on;
+}
+int gr_d86_stages() {
+    static const int s = [] { const char* v = std::getenv("STRATA_GR_D86_S"); return v != nullptr && std::atoi(v) == 4 ? 4 : 3; }();
+    return s;
+}
+// sm86 lab STRATA_GR_XN=1 (opt-in): the split norm stores R' and the wide / UP_HYB up kernel reads the norm's xn
+// (gr_norm_split_fast_kernel<true>, gr_up_*_kernel<..., true>): the same values, fewer loads.
+bool gr_xn_on() {
+    static const bool on = [] { const char* v = std::getenv("STRATA_GR_XN"); return v != nullptr && std::atoi(v) != 0; }();
     return on;
 }
 
@@ -1827,6 +2066,14 @@ bool up75_on() {
     return per_dev[dev] == 2;
 #endif
 }
+// sm86 lab, STRATA_GR_UP_HYB=n (opt-in, with STRATA_GR_UP_WIDE=1): reads of n or more tokens take gr_up75_kernel instead
+// of the wide kernel.  launch_multi tests the wide kernel first, so with it on gr_up75 never ran; on the RTX 3090
+// (fused_gr_bench, cold weights, bits identical in every arm) gr_up75 is 4-6 us a read faster from T = 4, the wide one
+// at T <= 2.  The two are bitwise the same read, so this is only speed.  0 / unset = off.
+int gr_up_hyb() {
+    static const int n = [] { const char* v = std::getenv("STRATA_GR_UP_HYB"); return v != nullptr ? std::atoi(v) : 0; }();
+    return n > 0 ? n : 0;
+}
 // sm_75 / a 12.0 card: the staged down kernel's tokens per block (gridDim.y = ct / tg), 0 = one block row for all of them.
 // STRATA_GR_DOWN_TG=n forces n where it divides the launch (0 = off).
 int down_tg(int ct) {
@@ -1866,26 +2113,33 @@ static int gr_r2() {
 void launch_multi(const GrMulti& m, int variant, cudaStream_t st, unsigned long long* stamp_buf, int stamp_i0) {
     const int n_tok = m.T;
     const bool q8w = m.a[0].s_down != nullptr;   // STRATA_HC_REQ8: w_down / w_up hold int8 codes
+    // sm86 lab: the wide up path, STRATA_GR_UP_HYB's gr_up75 windows on it, and STRATA_GR_XN (the norm stores R', the up
+    // kernel reads xn; split/staged reads only, where the norm is the split one)
+    const bool wide_path = !q8w && m.a[0].q8_mixed == nullptr && gr_up_wide_on();
+    const bool up_hyb = wide_path && !gr_up8_on() && gr_up_hyb() > 0 && n_tok >= gr_up_hyb();
+    const bool xn_up = wide_path && gr_xn_on() && variant >= kHcSplit;
 #if STRATA_GR_FAST_BUILD
     // gfx906: the latency-hidden norm/up (STRATA_GR_FAST=0: off) - the same sums in the same order as the kernels
     // they replace (gr_parity checks the multi-token read against single-token calls bitwise)
     const bool fast = gr_fast();
     if (variant >= kHcSplit) {
-        if (norm_fast_on()) gr_norm_split_fast_kernel<<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
+        if (xn_up) gr_norm_split_fast_kernel<true><<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
+        else if (norm_fast_on()) gr_norm_split_fast_kernel<false><<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
         else gr_norm_split_kernel<<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
     } else if (fast) gr_norm_fast_kernel<<<n_tok, THREADS, 0, st>>>(m);
     else gr_norm_multi_kernel<<<n_tok, THREADS, 0, st>>>(m);
 #else
     if (variant >= kHcSplit) {
-        if (norm_fast_on()) gr_norm_split_fast_kernel<<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
+        if (xn_up) gr_norm_split_fast_kernel<true><<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
+        else if (norm_fast_on()) gr_norm_split_fast_kernel<false><<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
         else gr_norm_split_kernel<<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
     } else gr_norm_multi_kernel<<<n_tok, THREADS, 0, st>>>(m);
 #endif
     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0, (void*) st);
     // STRATA_HC_Q8: the staged down kernel reads bf16 only, so Q8 weights take split's down kernel (the plain one)
     const bool staged = variant >= kHcStaged && m.a[0].s_down == nullptr;
-    int tv = 2560;
-    const int chunk_tok = down_chunk(staged, &tv);
+    int tv = 2560, usable = 0;
+    const int chunk_tok = down_chunk(staged, &tv, &usable);
     // BW-MEASURE: the hyper-connection read's form: var = layout variant (0 plain, 1 split, 2 staged), type = 1 for Q8 weights, n_in = down tile,
     // n_out = tokens a down launch, ncols = tokens
     strata::dispatch::kernel(strata::dispatch::kHc, variant, m.a[0].s_down != nullptr ? 1 : 0, tv, chunk_tok, n_tok);
@@ -1914,6 +2168,27 @@ void launch_multi(const GrMulti& m, int variant, cudaStream_t st, unsigned long 
             // #783 PR-g (stuchapin909): a launch of exactly ct <= 6 tokens is its own instantiation, the loop bounds
             // are compile-time (the same sums in the same order); STRATA_NO_MULTI_GR=1 keeps the generic kernels
             const int tg = down_tg(ct);
+            // DOWN86's ring at the launch's instantiation: four stages only where they fit the card, else three,
+            // else the next path: DOWN82 when it is on, else the staged kernel (Codex review: a 64 KiB card cannot hold
+            // four stages from T = 5)
+            // (+ 256: the kernel's static shared memory, d86_last, counts against the same per-block limit - Gemini)
+            const int t86 = exact_t && ct >= 1 && ct <= 8 ? ct : kFusedGrMaxT;
+            int s86 = gr_d86_stages();
+            if (s86 == 4 && d86_need(t86, 4) + 256 > (size_t) usable) s86 = 3;
+            const bool d86_fit = d86_need(t86, s86) + 256 <= (size_t) usable;
+            if (gr_down86_on() && d86_fit && !(exact_t && tg > 0 && tg < ct)) {
+                switch (exact_t ? ct : 0) {
+                    case 1: launch_d86<1, true, 1>(c, s86, st); break;
+                    case 2: launch_d86<2, true, 1>(c, s86, st); break;
+                    case 3: launch_d86<3, true, 1>(c, s86, st); break;
+                    case 4: launch_d86<4, true, 1>(c, s86, st); break;
+                    case 5: launch_d86<5, true, 2>(c, s86, st); break;
+                    case 6: launch_d86<6, true, 2>(c, s86, st); break;
+                    case 7: launch_d86<7, true, 2>(c, s86, st); break;
+                    case 8: launch_d86<8, true, 2>(c, s86, st); break;
+                    default: launch_d86<kFusedGrMaxT, false, 2>(c, s86, st); break;
+                }
+            } else
             if (gr_down82_on() && !(exact_t && tg > 0 && tg < ct)) {
                 constexpr int B82 = D82_BLOCKS, N82 = D82_THREADS;
                 switch (exact_t ? ct : 0) {
@@ -1969,18 +2244,19 @@ void launch_multi(const GrMulti& m, int variant, cudaStream_t st, unsigned long 
         }
     }
     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0 + 1, (void*) st);
+    // sm86 lab STRATA_GR_UP_HYB=n: windows of n+ tokens leave the wide kernel for gr_up75 (gr_up_hyb above); with
+    // STRATA_GR_XN both read the norm's xn
+    // (0 selects the generic instantiation: these launchers have an exact case for T = kFusedGrMaxT, so the older
+    // switches' kFusedGrMaxT sentinel would pick it - Codex review)
+    if (up_hyb) {
+        if (xn_up) launch_up75_t<true>(m, no_multi_gr ? 0 : n_tok, st);
+        else launch_up75_t<false>(m, no_multi_gr ? 0 : n_tok, st);
+    } else
     // 149-cuda: the wide up read (test arm; STRATA_GR_UP_WIDE=1).  The q8_1 tail of S26 needs the 16-column
     // blocks, so the wide kernel is only used when no q8_1 image is written.
-    if (!q8w && m.a[0].q8_mixed == nullptr && gr_up_wide_on()) {
-        switch (no_multi_gr ? kFusedGrMaxT : n_tok) {
-            case 1: gr_up_wide_kernel<1, true><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-            case 2: gr_up_wide_kernel<2, true><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-            case 3: gr_up_wide_kernel<3, true><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-            case 4: gr_up_wide_kernel<4, true><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-            case 5: gr_up_wide_kernel<5, true><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-            case 6: gr_up_wide_kernel<6, true><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-            default: gr_up_wide_kernel<kFusedGrMaxT, false><<<UPW_BLOCKS, THREADS, 0, st>>>(m); break;
-        }
+    if (wide_path) {
+        if (xn_up) launch_up_wide_t<true>(m, no_multi_gr ? 0 : n_tok, st);
+        else launch_up_wide_t<false>(m, no_multi_gr ? 0 : n_tok, st);
     } else
 #if STRATA_GR_FAST_BUILD
     if (fast && !q8w) gr_up_fast_kernel<<<UPM_BLOCKS, THREADS, 0, st>>>(m);
