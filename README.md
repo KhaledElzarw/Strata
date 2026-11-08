@@ -12,7 +12,7 @@
 
 <p align="center">
   <b>A fork of <a href="https://github.com/Niko1221/Strata">Strata</a> that makes one RTX 3090 decode faster without changing a single output bit.</b><br>
-  <sub>Every change is an opt-in switch. With none set, the engine runs upstream's code paths.</sub>
+  <sub>Every change is an opt-in switch. With none set, the engine runs upstream's code paths. Bit-identical means identical to upstream, which ships two defaults that change output slightly: see the <a href="#disclaimer">disclaimer</a>.</sub>
 </p>
 
 <p align="center">
@@ -74,7 +74,7 @@ steps. Every number here comes from [`sm86/assets/results.json`](sm86/assets/res
 > about 4–5%. The same phase-2 configuration ran at 163.6–165.3 tok/s per round in its own A/B, then at 156.6–158.9
 > as the baseline of the next one. Stock Strata measured 150.0–151.2 on 2026-11-07, and the final stack 162.2–169.4
 > on 2026-11-08. Paired, interleaved A/Bs cancel that drift for each step, and their product is the best estimate of
-> the whole, but it is an estimate, not one measurement. A same-session stock-vs-fork run has not been done yet.
+> the whole, but it is an estimate, not one measurement. No same-session stock-vs-fork run was made.
 
 **Tried and kept off** (all measured on the same turns):
 
@@ -143,7 +143,8 @@ sm86\lab\build-engine.bat
 
 **2. Use the config.** [`sm86/configs/strata-iq3_xxs-q3.json`](sm86/configs/strata-iq3_xxs-q3.json) is the exact
 configuration behind the numbers above: the switches in its `env` block, DFlash2 at confidence 0.65 with the tuned
-pack, a 2 GiB conversation cache re-parked after 8,192 new tokens, and the 262,144-token context. Edit its paths
+pack, a 2 GiB conversation cache re-parked after 8,192 new tokens, and the 262,144-token context. It keeps two
+upstream defaults that are not bit-exact (see the [disclaimer](#disclaimer)). Edit its paths
 (`exe`, `--pack`, `--native`, `--ple-gguf`, `--expert-profile`, `--mtp`, `cwd`, `tokenizer`, `log`, `lib_dirs`,
 `draft_pack`) to match your install, then save it as `strata-iq3_xxs-tuned2.json` in the checkout, or pass it with
 `-Config`.
@@ -192,8 +193,23 @@ Arguments in the config: `--expert-cache` (sized by the launcher), `--conversati
   `mmvq_il_parity` every GEMV table entry.
 - **The whole engine.** A forced decode replays 1,363 scored tokens with the expert placement pinned, so every arm
   rounds the same way. The final stack gives identical FP32 log-probabilities at all 1,363 positions.
-- **Upstream defaults, unchanged.** Two of upstream's defaults are not bit-exact against older Strata versions, and
-  this fork leaves both as they are: the route-tail skip and the prefill CPU share (documented KL 0.004–0.011).
+
+### Disclaimer
+
+> [!IMPORTANT]
+> **Bit-identical here means identical to upstream Strata with the same settings.** Upstream ships two defaults that
+> trade a little exactness for speed, and the shipped config keeps both as upstream ships them:
+> - **The prefill CPU share.** On one CUDA GPU, prompt chunks of up to 3,072 tokens hand the CPU pool the experts that
+>   few of their tokens route to, while the GPU computes the rest. Upstream measured a mean KL of about 0.004 (max
+>   0.025) against the share off for chunks under 1,024 tokens, and a first-token mean KL of 0.011, with the same top
+>   token every time, after 1.1–2.8K-token prompts. `STRATA_PREFILL_CPU_SHARE=0` turns it off.
+> - **The route-tail skip.** In decode, a missed expert that every token of a verify window routes at rank 7 or lower
+>   is neither copied nor computed (not applied once 90% of the experts are cached; this card caches about 39%).
+>   Upstream measured a KL of 0.003–0.006 against running without it, with the same top token 97.5–98.2% of the
+>   time. `STRATA_ROUTE_TAIL_SKIP=0` turns it off.
+>
+> Neither was measured on against off on this card. Upstream's notes: [`docs/DETAILS.md`](docs/DETAILS.md) and
+> [`include/strata/prefill/share_rules.hpp`](include/strata/prefill/share_rules.hpp).
 
 ## Reproduce it
 
@@ -227,7 +243,8 @@ measurements.**
 The exact savings identified so far are estimated at about 2.4–3.9 ms a window: the CPU pool's bandwidth (0.7–1.4
 ms), the HC and dense projections (1–2 ms), one kernel for router, top-k and doorbell (about 0.5 ms), fusing the small
 linear-attention kernels (about 0.5 ms) and the drafter (about 0.4 ms). The full answers are in
-[`sm86/lab/council/ceiling`](sm86/lab/council/ceiling).
+[`sm86/lab/council/ceiling`](sm86/lab/council/ceiling). Each idea is an [issue](https://github.com/KhaledElzarw/Strata/issues)
+with its evidence and estimate.
 
 ## License and credits
 
