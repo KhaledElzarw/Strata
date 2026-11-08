@@ -99,8 +99,8 @@ attention, projections, router) is on the critical path; in the Nsight timeline 
 **Prefill.** Cold prompts: 4K about 2,100 tok/s, 16K and 32K about 2,900, 64K about 3,100 (21 s). Real agent turns:
 median 0.87 s, a fixed ~0.49 s plus ~0.42 ms per new token. At 32K the GPU time splits into experts 24%, HC 18%,
 attention 17%, linear attention 14.5% and PCIe waits 4%: prefill is bound by compute and kernel efficiency, not by
-the bus. Upstream's prefill CPU share (prompt chunks up to 3,072 tokens) is left as upstream ships it; its documented
-KL against GPU-only is 0.004-0.011.
+the bus. Upstream's prefill CPU share (prompt chunks up to 3,072 tokens) is left as upstream ships it, with a
+disclaimer in the README; its documented KL against GPU-only is 0.004-0.011.
 
 ## What is next
 
@@ -110,5 +110,5 @@ for router, top-k and doorbell (about 0.5 ms), fusing the small linear-attention
 drafter (about 0.4 ms). More tokens a window would raise every number one for one, but that needs a different draft
 model. The outside estimates are in [`lab/council/ceiling`](lab/council/ceiling).
 
-Also open: a same-session stock-vs-fork measurement, and the route-tail skip (upstream's default, slightly lossy,
-KL 0.003-0.006), which has not been measured on against off here.
+Also open: the route-tail skip (upstream's default, slightly lossy, KL 0.003-0.006), which has not been measured on
+against off here. Every open idea is an [issue](https://github.com/KhaledElzarw/Strata/issues).
