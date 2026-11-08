@@ -94,7 +94,9 @@ waits 11.0 ms for the GPU's dense chain to reach each layer's expert step, spend
 1.5 ms drafting, and about 1.4 ms on everything else. Per layer the dense GPU chain (HC reads, attention or linear
 attention, projections, router) is on the critical path; in the Nsight timeline the GPU's expert work ends at about
 88 us into the expert step and the CPU pool's at about 105 us (both inflated by the trace). The CPU pool reads about
-232 MB of experts per window at about 47 GB/s, of the 75-80 GB/s that DDR5-5600 delivers.
+232 MB of experts per window at about 47 GB/s. Reads on this machine top out at 60-64 GB/s, not the 89.6 GB/s
+DDR5-5600 peak ([`lab/bwbench.cpp`](lab/bwbench.cpp), [`lab/runs/bw`](lab/runs/bw)): one core alone pulls 57-58 GB/s,
+and bursts of 1-16 MB, with or without a 230 us idle gap before them, lose almost nothing.
 
 **Prefill.** Cold prompts: 4K about 2,100 tok/s, 16K and 32K about 2,900, 64K about 3,100 (21 s). Real agent turns:
 median 0.87 s, a fixed ~0.49 s plus ~0.42 ms per new token. At 32K the GPU time splits into experts 24%, HC 18%,

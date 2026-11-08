@@ -122,7 +122,8 @@ flowchart LR
 ```
 
 Each layer runs a dense GPU chain, then an expert step that the CPU pool bounds: the pool reads about 232 MB of
-expert weights per window at about 47 GB/s, of the 75–80 GB/s that dual-channel DDR5-5600 delivers. Faster GPU
+expert weights per window at about 47 GB/s, where this machine's reads top out at 60–64 GB/s (measured with
+[`bwbench.cpp`](sm86/lab/bwbench.cpp); 89.6 GB/s is the dual-channel DDR5-5600 peak). Faster GPU
 expert kernels gain little while the CPU sets the pace (the Q2_0 rows gained 1.6–2.0%), so most of the adopted work
 targets the dense chain.
 

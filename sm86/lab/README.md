@@ -29,6 +29,7 @@ Strata's setup (`<checkout>/strata-iq3_xxs.json`, the base every A/B arm starts 
 | `make_run_config.py`, `launch-strata.ps1` | Write the run config with the expert cache sized to the free VRAM, and start the server. |
 | `train_profile.py`, `xstest.py`, `dl_sc117.py` | An expert-profile trainer (no gain), the abliteration spot check (10 XSTest-style prompts), and the model download with `sc117-expected-sha256.txt`. |
 | `build-engine.bat` | Builds `strata.exe` and the parity and bench tools for sm_86 only. |
+| `bwbench.cpp` | DRAM read bandwidth, steady and in per-layer bursts like the CPU expert pool's, on pinned threads (`runs/bw`). |
 
 The shell scripts (`hc*.sh`, `sweep*.sh`, `fc*.sh`, `expbench10*.sh`, `chain1.sh`, `hcfix.sh`) are the exact
 experiment drivers as they ran, so they name the original machine's paths (`/c/src/Strata` and
@@ -46,6 +47,7 @@ experiment drivers as they ran, so they name the original machine's paths (`/c/s
 | `runs/fc` | Phase 1's token-forcing results. |
 | `runs/nsys` | The Nsight analyses (`*_an.txt`, `q3_conc.txt`, `q3_layers.txt`, `q3_gaps.txt`) and kernel summaries. |
 | `runs/exp` | Expert-kernel bench logs. |
+| `runs/bw` | DRAM read bandwidth from `bwbench.cpp`. |
 | `council/ceiling` | The question put to three outside models about the speed ceiling, and their answers. |
 
 The experiments, in order: `e1`-`e8` (phase 1: drafter, expert cache, prefill chunk, draft confidence, stock
