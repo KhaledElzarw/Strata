@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/KhaledElzarw/Strata/releases/tag/v0.1.58-sm86.1"><img alt="Release v0.1.58-sm86.1" src="https://img.shields.io/badge/release-v0.1.58--sm86.1-2a78d6"></a>
-  <img alt="GPU: RTX 3090, sm_86" src="https://img.shields.io/badge/GPU-RTX%203090%20%C2%B7%20sm__86-52514e">
-  <img alt="CUDA 13" src="https://img.shields.io/badge/CUDA-13.0-52514e">
-  <img alt="Output: bit-identical" src="https://img.shields.io/badge/output-bit--identical-1baf7a">
-  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-52514e"></a>
+  <a href="https://github.com/KhaledElzarw/Strata/releases/tag/v0.1.58-sm86.1"><img alt="Release v0.1.58-sm86.1" src="sm86/assets/badges/release.svg"></a>
+  <img alt="GPU: RTX 3090, sm_86" src="sm86/assets/badges/gpu.svg">
+  <img alt="CUDA 13" src="sm86/assets/badges/cuda.svg">
+  <img alt="Output: bit-identical" src="sm86/assets/badges/output.svg">
+  <a href="LICENSE"><img alt="MIT license" src="sm86/assets/badges/license.svg"></a>
 </p>
 
 <p align="center">
