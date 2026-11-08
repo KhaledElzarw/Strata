@@ -20,6 +20,13 @@ void native_router_top10_multi(const float* logits, int32_t* ids, float* weights
 /// 256 / 8 (Qwen3.6-35B-A3B).  logits [n_tok, n_expert], ids / weights [n_tok, k].  CUDA / HIP.
 bool native_router_topk_supported(int n_expert, int k);
 void native_router_topk(const float* logits, int32_t* ids, float* weights, int n_expert, int k, int n_tok, void* stream);
+/// sm86 lab STRATA_ROUTE_BELL (CUDA only): native_router_top10(_multi) followed by doorbell_publish_res(_store) in ONE launch,
+/// bitwise the same ids / weights, mapped ids / MoE input and ring value (value 0: the ring incremented, else stored).
+/// fast: the REDUX top-10 (sm_80+; the same picks and weights).  1..8 tokens, n = n_tok * n_embd floats (a multiple of 4,
+/// x and x_out 16-byte aligned).  Returns false, launching nothing, when it does not apply (the caller takes the two calls).
+bool native_router_top10_bell(const float* logits, int32_t* ids, float* weights, int n_tok, const float* x,
+                              const int32_t* d_res, int n_expert, int64_t n, float* x_out, int32_t* ids_out, uint32_t* seq,
+                              uint32_t value, bool fast, void* stream);
 /// STRATA_ROUTE_RESIDENT: swap non-resident tail-rank experts for resident ones within `margin` logits (see the .cu).
 /// `stats` is nullptr or 4 device uint64 counters: tail entries seen, swaps, non-resident before, non-resident after.
 void native_route_resident(const float* logits, int32_t* ids, float* weights, const int32_t* res_layer, int n_tok, float margin,

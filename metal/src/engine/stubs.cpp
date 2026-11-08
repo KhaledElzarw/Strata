@@ -284,6 +284,7 @@ namespace strata::kernels { void native_rope_apply(const float * p0, float * p1,
 namespace strata::kernels { void native_route_resident(const float * p0, int32_t * p1, float * p2, const int32_t * p3, int p4, float p5, int p6, int p7, unsigned long long * p8, void * p9) { strata::metal_engine::missing("strata::kernels::native_route_resident"); } }
 namespace strata::kernels { void native_router_top10(const float * p0, int32_t * p1, float * p2, void * p3) { strata::metal_engine::missing("strata::kernels::native_router_top10"); } }
 namespace strata::kernels { void native_router_top10_multi(const float * p0, int32_t * p1, float * p2, int p3, void * p4) { strata::metal_engine::missing("strata::kernels::native_router_top10_multi"); } }
+namespace strata::kernels { bool native_router_top10_bell(const float * p0, int32_t * p1, float * p2, int p3, const float * p4, const int32_t * p5, int p6, int64_t p7, float * p8, int32_t * p9, uint32_t * p10, uint32_t p11, bool p12, void * p13) { strata::metal_engine::missing("strata::kernels::native_router_top10_bell"); return {}; } }
 // programmatic dependent launch is a CUDA sm_90 feature: Metal never has it (hand-edited; the batch window asks this first, #3981)
 namespace strata::kernels { bool & pdl_scope() { static bool s = false; return s; } }
 namespace strata::kernels { bool pdl_supported() { return false; } }

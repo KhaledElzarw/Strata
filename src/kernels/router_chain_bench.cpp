@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     cudaStream_t s;
     CK(cudaStreamCreate(&s));
     {   // outputs of the router GEMV for several shapes and token counts as FNV hashes: compare across STRATA_MMVF_PF=0/1
-        const int shapes[][2] = {{2560, 512}, {2560, 256}, {2560, 64}, {1280, 513}, {640, 100}, {4096, 50}, {2048, 7}, {256, 33}, {8192, 90}};
+        const int shapes[][2] = {{2560, 512}, {2560, 256}, {2560, 64}, {2560, 128}, {2560, 2560}, {2560, 10240}, {2560, 66}, {1280, 513}, {640, 100}, {4096, 50}, {2048, 7}, {256, 33}, {8192, 90}};
         for (const auto& sh : shapes) {
             const int ni = sh[0], no = sh[1];
             std::vector<uint16_t> wh((size_t) no * ni);
@@ -104,9 +104,9 @@ int main(int argc, char** argv) {
     CK(cudaEventCreate(&e0));
     CK(cudaEventCreate(&e1));
     {   // the BF16 GEMV by shape and token count, 48 distinct weight copies in one graph: us per call (STRATA_MMVF_PF=0 / 1 to compare)
-        const int outs[] = {512, 256, 128, 64, 48, 8, 1};
-        const int ins[] = {2560, 2560, 2560, 2560, 2560, 2560, 2560};
-        for (int si = 0; si < 7; ++si) {
+        const int outs[] = {512, 256, 128, 64, 48, 8, 1, 2560, 10240};   // (the last two: the 2560-input dense shapes, #3)
+        const int ins[] = {2560, 2560, 2560, 2560, 2560, 2560, 2560, 2560, 2560};
+        for (int si = 0; si < 9; ++si) {
             const int no = outs[si], ni = ins[si];
             std::vector<uint16_t*> dws(L);
             for (int l = 0; l < L; ++l) {
@@ -170,6 +170,63 @@ int main(int argc, char** argv) {
         std::printf("T %d %-20s : %6.2f us per layer (median of %d graphs of %d layers)\n", T, names[mode], 1e3 * ms[ms.size() / 2] / L, reps, L);
         cudaGraphExecDestroy(ge);
         cudaGraphDestroy(g);
+    }
+    {   // sm86 lab (#3): the chain as the engine publishes it - mapped ids / MoE input, the ring stored - with every routed expert
+        // resident (no copy) or a residency table that misses (the input copied over PCIe), the two launches against
+        // STRATA_ROUTE_BELL's one (native_router_top10_bell; exact and REDUX top-10)
+        float* hxo;
+        int32_t* hio;
+        CK(cudaHostAlloc((void**) &hxo, xh.size() * 4, cudaHostAllocMapped | cudaHostAllocPortable));
+        CK(cudaHostAlloc((void**) &hio, (size_t) T * KK * 4, cudaHostAllocMapped | cudaHostAllocPortable));
+        float* mxo;
+        int32_t* mio;
+        CK(cudaHostGetDevicePointer((void**) &mxo, hxo, 0));
+        CK(cudaHostGetDevicePointer((void**) &mio, hio, 0));
+        int32_t* dmiss;
+        CK(cudaMalloc((void**) &dmiss, NE * 4));
+        std::vector<int32_t> rm(NE);
+        for (int i = 0; i < NE; ++i) rm[i] = (i % 3 == 0) ? -1 : i;   // a third of the experts on the CPU
+        CK(cudaMemcpy(dmiss, rm.data(), NE * 4, cudaMemcpyHostToDevice));
+        const char* bnames[] = {"route+doorbell", "bell", "bell fast"};
+        for (int miss = 0; miss < 2; ++miss)
+            for (int b = 0; b < 3; ++b) {
+                cudaGraph_t g;
+                cudaGraphExec_t ge;
+                CK(cudaStreamBeginCapture(s, cudaStreamCaptureModeThreadLocal));
+                for (int l = 0; l < L; ++l) {
+                    const int32_t* r = miss ? dmiss : dres;
+                    K::bf16_gemv_fp32_mmvf_multi(dx, N, dw[l], dlog, NE, N, NE, T, s);
+                    bool done = false;
+                    if (b > 0) done = K::native_router_top10_bell(dlog, dids, dwt, T, dx, r, NE, (int64_t) T * N, mxo, mio, dseq,
+                                                                  (uint32_t) (l + 1), b == 2, s);
+                    if (!done) {
+                        if (b > 0) { std::fprintf(stderr, "native_router_top10_bell refused T %d\n", T); return 1; }
+                        if (T == 1) K::native_router_top10(dlog, dids, dwt, s);
+                        else K::native_router_top10_multi(dlog, dids, dwt, T, s);
+                        K::doorbell_publish_res_store(dx, dids, r, NE, (int64_t) T * N, (int64_t) T * KK, mxo, mio, dseq,
+                                                      (uint32_t) (l + 1), s);
+                    }
+                }
+                CK(cudaStreamEndCapture(s, &g));
+                CK(cudaGraphInstantiate(&ge, g, nullptr, nullptr, 0));
+                for (int i = 0; i < 5; ++i) CK(cudaGraphLaunch(ge, s));
+                CK(cudaStreamSynchronize(s));
+                std::vector<float> ms;
+                for (int rr = 0; rr < reps; ++rr) {
+                    CK(cudaEventRecord(e0, s));
+                    CK(cudaGraphLaunch(ge, s));
+                    CK(cudaEventRecord(e1, s));
+                    CK(cudaEventSynchronize(e1));
+                    float m = 0;
+                    CK(cudaEventElapsedTime(&m, e0, e1));
+                    ms.push_back(m);
+                }
+                std::sort(ms.begin(), ms.end());
+                std::printf("T %d mapped, %s: mmvf+%-15s : %6.2f us per layer\n", T, miss ? "misses (input copied)" : "all resident ",
+                            bnames[b], 1e3 * ms[ms.size() / 2] / L);
+                cudaGraphExecDestroy(ge);
+                cudaGraphDestroy(g);
+            }
     }
     return 0;
 }
