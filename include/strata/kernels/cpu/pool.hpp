@@ -379,11 +379,18 @@ private:
     // intermediate with the host loop's own calls, then release-stores 1 in `ready` (cleared before the batch); a down task acquires
     // it (pausing until then: every gate/up id is below every down id, so the expert's gate/up tasks are all claimed by
     // threads that never wait).  Rows are cut on multiples of 16 (64 B of fp32 outputs).  Off: none of this is touched.
+    // STRATA_POOL_DAG=2: the down tasks go to the experts in the order their gate/up finished (slot s = the s-th to finish:
+    // its last gate/up finisher takes the slot from `dag_slots_`, writes `slot_e` and release-stores `slot_ready`), so a
+    // free worker never waits on an expert whose gate/up is still running while another one's down rows are ready.
     struct alignas(64) DagExpert {
         std::atomic<uint32_t> gu_left{0};
         alignas(64) std::atomic<uint32_t> ready{0};
+        alignas(64) std::atomic<uint32_t> slot_ready{0};
+        int slot_e = 0;
     };
     std::unique_ptr<DagExpert[]> dag_;
+    alignas(64) std::atomic<uint32_t> dag_slots_{0};
+    int dag_mode_ = 0;
     int dag_gu_tasks_ = 0;
     int dag_gu_per_ = 1, dag_dn_per_ = 1;
     void dag_task(int i);

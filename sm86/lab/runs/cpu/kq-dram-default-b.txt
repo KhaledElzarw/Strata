@@ -1,0 +1,21 @@
+kq_cpu_bench: AMD Ryzen 9 9950X 16-Core Processor (avx2 1, avx512 1), 2048 MB of blobs per format
+
+iq2_xxs/q2_0: 1644 experts of 1.306 MB (2146 MB), Q2_0 down on Strata's rows (the pool's path)
+  nt 1 threads 15:   56.4 GB/s of weights (0.225 ms per expert per thread) = 91% of RAM
+  nt 2 threads 15:   53.6 GB/s of weights (0.236 ms per expert per thread) = 86% of RAM
+
+iq2_xs/q2_0: 1525 experts of 1.408 MB (2147 MB), Q2_0 down on Strata's rows (the pool's path)
+  nt 1 threads 15:   56.9 GB/s of weights (0.250 ms per expert per thread) = 92% of RAM
+  nt 2 threads 15:   54.6 GB/s of weights (0.260 ms per expert per thread) = 88% of RAM
+
+iq2_s/q2_0: 1421 experts of 1.510 MB (2146 MB), Q2_0 down on Strata's rows (the pool's path)
+  nt 1 threads 15:   58.6 GB/s of weights (0.269 ms per expert per thread) = 94% of RAM
+  nt 2 threads 15:   57.0 GB/s of weights (0.276 ms per expert per thread) = 92% of RAM
+
+iq3_xxs/iq4_nl: 986 experts of 2.176 MB (2146 MB)
+  nt 1 threads 15:   58.0 GB/s of weights (0.325 ms per expert per thread) = 94% of RAM
+  nt 2 threads 15:   55.7 GB/s of weights (0.338 ms per expert per thread) = 90% of RAM
+
+iq3_s/iq4_nl: 921 experts of 2.330 MB (2146 MB)
+  nt 1 threads 15:   58.3 GB/s of weights (0.362 ms per expert per thread) = 94% of RAM
+  nt 2 threads 15:   55.8 GB/s of weights (0.379 ms per expert per thread) = 90% of RAM
