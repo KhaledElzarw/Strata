@@ -1,0 +1,6 @@
+{"name": "e4", "rounds": 3, "src": ["runs/replayset/hermes-v1"], "seed": 1234, "same_server": true,
+ "server": {"drafting": "dflash2", "user_args": ["--draft-conf", "0.65"],
+            "env": {"STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack"}},
+ "arms": [{"name": "pf20", "extra": {"strata_tune": {"pcie_frac": 0.20}}},
+          {"name": "pf32", "extra": {"strata_tune": {"pcie_frac": 0.32}}},
+          {"name": "pf12", "extra": {"strata_tune": {"pcie_frac": 0.12}}}]}

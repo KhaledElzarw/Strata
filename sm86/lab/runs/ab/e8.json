@@ -1,0 +1,92 @@
+{
+ "experiment": {
+  "name": "e8",
+  "rounds": 2,
+  "src": [
+   "runs/replayset/hermes-v1"
+  ],
+  "seed": 1234,
+  "gap": 2.0,
+  "arms": [
+   {
+    "name": "stock"
+   }
+  ]
+ },
+ "results": [
+  {
+   "round": 0,
+   "arm": "stock",
+   "label": "e8-stock-r0",
+   "load_s": 37.5,
+   "wall_s": 346.9,
+   "turns": 57,
+   "timed": 57,
+   "median": 151.2,
+   "p10": 131.1,
+   "p90": 188.2,
+   "tok_weighted": 151.9,
+   "accept": 0.733,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 25617,
+   "errors": 0,
+   "cache_slots": 9724,
+   "vram_free_mib": 421,
+   "temp_max": 73.0,
+   "power_max": 390.1,
+   "power_mean": 293.2,
+   "m_expert_slots": 9724,
+   "m_expert_cache_mib": 16135,
+   "m_vram_free_mib": 421,
+   "m_spec": 12,
+   "m_mtp_max": 4,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.50",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "mtp",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 421
+  },
+  {
+   "round": 1,
+   "arm": "stock",
+   "label": "e8-stock-r1",
+   "load_s": 38.0,
+   "wall_s": 356.2,
+   "turns": 57,
+   "timed": 57,
+   "median": 150.0,
+   "p10": 127.9,
+   "p90": 190.5,
+   "tok_weighted": 151.7,
+   "accept": 0.737,
+   "prompt_median": 10064.0,
+   "prompt_max": 17032,
+   "gen_tokens": 27012,
+   "errors": 0,
+   "cache_slots": 9724,
+   "vram_free_mib": 421,
+   "temp_max": 76.0,
+   "power_max": 390.14,
+   "power_mean": 295.9,
+   "m_expert_slots": 9724,
+   "m_expert_cache_mib": 16135,
+   "m_vram_free_mib": 421,
+   "m_spec": 12,
+   "m_mtp_max": 4,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.50",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "mtp",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 421
+  }
+ ]
+}

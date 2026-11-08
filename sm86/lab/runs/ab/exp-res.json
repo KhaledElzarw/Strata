@@ -1,0 +1,89 @@
+{
+ "name": "res",
+ "rounds": 3,
+ "src": [
+  "runs/replayset/hermes-v1"
+ ],
+ "limit": 57,
+ "seed": 1234,
+ "gap": 2.0,
+ "arms": [
+  {
+   "name": "q3",
+   "exe": "C:/src/Strata/build-sm86/strata.exe",
+   "drafting": "dflash2",
+   "user_args": [
+    "--draft-conf",
+    "0.65"
+   ],
+   "set": {
+    "--conversation-cache-mib": "2048",
+    "--expert-cache": "7100"
+   },
+   "add": [
+    "--conversation-cache-park-gain",
+    "8192"
+   ],
+   "env": {
+    "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+    "STRATA_FETCH_FORK": "1",
+    "STRATA_GRAPH_PRIO": "1",
+    "STRATA_GR_UP_WIDE": "1",
+    "STRATA_MMVQ_IL_3090": "1",
+    "STRATA_EXP_MODE": "9",
+    "STRATA_CKPT_ASYNC": "1",
+    "STRATA_CKPT_GATHER": "1",
+    "STRATA_CKPT_POOL": "1",
+    "STRATA_CKPT_POOL_READY": "2",
+    "STRATA_GR_DOWN86": "1",
+    "STRATA_GR_UP_HYB": "3",
+    "STRATA_GR_XN": "1",
+    "STRATA_EXP9_DOWN": "42:10",
+    "STRATA_DOORBELL_STORE": "1",
+    "STRATA_FUSE_HITS": "1",
+    "STRATA_ACTQ_SKIP": "1",
+    "STRATA_GR_UP_PL": "1",
+    "STRATA_GR_D87": "8"
+   }
+  },
+  {
+   "name": "q3res",
+   "exe": "C:/src/Strata/build-sm86/strata.exe",
+   "drafting": "dflash2",
+   "user_args": [
+    "--draft-conf",
+    "0.65"
+   ],
+   "set": {
+    "--conversation-cache-mib": "2048",
+    "--expert-cache": "7100"
+   },
+   "add": [
+    "--conversation-cache-park-gain",
+    "8192"
+   ],
+   "env": {
+    "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+    "STRATA_FETCH_FORK": "1",
+    "STRATA_GRAPH_PRIO": "1",
+    "STRATA_GR_UP_WIDE": "1",
+    "STRATA_MMVQ_IL_3090": "1",
+    "STRATA_EXP_MODE": "9",
+    "STRATA_CKPT_ASYNC": "1",
+    "STRATA_CKPT_GATHER": "1",
+    "STRATA_CKPT_POOL": "1",
+    "STRATA_CKPT_POOL_READY": "2",
+    "STRATA_GR_DOWN86": "1",
+    "STRATA_GR_UP_HYB": "3",
+    "STRATA_GR_XN": "1",
+    "STRATA_EXP9_DOWN": "42:10",
+    "STRATA_DOORBELL_STORE": "1",
+    "STRATA_FUSE_HITS": "1",
+    "STRATA_ACTQ_SKIP": "1",
+    "STRATA_GR_UP_PL": "1",
+    "STRATA_GR_D87": "8",
+    "STRATA_GR_RES": "1"
+   }
+  }
+ ]
+}

@@ -1,0 +1,2 @@
+{"label": "q3pt", "rep": 0, "size": 4096, "prompt_n": 3997, "cache_n": 0, "prompt_ms": 1865.4, "prompt_tps": 2142.7, "wall_s": 1.98}
+{"label": "q3pt", "rep": 0, "size": 32768, "prompt_n": 33834, "cache_n": 0, "prompt_ms": 11519.2, "prompt_tps": 2937.2, "wall_s": 11.66}

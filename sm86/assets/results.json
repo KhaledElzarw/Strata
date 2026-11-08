@@ -1,0 +1,291 @@
+{
+ "steps": [
+  {
+   "n": 57,
+   "geo_mean": 1.0218648111502846,
+   "ci95": [
+    1.0028489979242283,
+    1.0414455392302144
+   ],
+   "median": 1.0158330702948208,
+   "base_round_medians": [
+    151.2,
+    150.0
+   ],
+   "cand_round_medians": [
+    155.3,
+    150.7,
+    154.1,
+    157.3,
+    157.0
+   ],
+   "key": "phase1",
+   "label": "Phase 1 config vs stock",
+   "sub": "DFlash2 pack, explicit expert cache",
+   "weak": true
+  },
+  {
+   "n": 164,
+   "geo_mean": 1.060077102737224,
+   "ci95": [
+    1.038816947694549,
+    1.0812725956199125
+   ],
+   "median": 1.0580689420342106,
+   "base_round_medians": [
+    149.8,
+    155.8,
+    152.3
+   ],
+   "cand_round_medians": [
+    165.3,
+    163.6,
+    163.6
+   ],
+   "key": "phase2",
+   "label": "Phase 2 switches",
+   "sub": "HC down, PCIe copy, GEMV tables, expert layout"
+  },
+  {
+   "n": 165,
+   "geo_mean": 1.0371807678368714,
+   "ci95": [
+    1.021205632800044,
+    1.0545726608811128
+   ],
+   "median": 1.0227571115973741,
+   "base_round_medians": [
+    156.6,
+    158.9,
+    158.8
+   ],
+   "cand_round_medians": [
+    166.1,
+    166.2,
+    161.3
+   ],
+   "key": "hc",
+   "label": "HC read kernels",
+   "sub": "DOWN86 ring, up T-hybrid, computed xn"
+  },
+  {
+   "n": 166,
+   "geo_mean": 1.0195581573643309,
+   "ci95": [
+    1.0043891899239215,
+    1.036260409053473
+   ],
+   "median": 1.0153050552924376,
+   "base_round_medians": [
+    169.6,
+    159.8,
+    165.6
+   ],
+   "cand_round_medians": [
+    171.4,
+    163.5,
+    168.5
+   ],
+   "key": "q2",
+   "label": "Q2_0 expert down rows",
+   "sub": "4 lanes a row, measured on the POOL_DAG arm"
+  },
+  {
+   "n": 167,
+   "geo_mean": 1.0466385460303713,
+   "ci95": [
+    1.0262820383219884,
+    1.068550320546487
+   ],
+   "median": 1.0399999999999998,
+   "base_round_medians": [
+    158.9,
+    163.4,
+    152.6
+   ],
+   "cand_round_medians": [
+    162.8,
+    167.7,
+    162.2
+   ],
+   "key": "tier5",
+   "label": "Tier 5",
+   "sub": "doorbell, fused hits, CPU-free tokens, DOWN87"
+  }
+ ],
+ "not_adopted": [
+  {
+   "n": 168,
+   "geo_mean": 1.0055675183918482,
+   "ci95": [
+    0.9888562581159791,
+    1.0223741968069782
+   ],
+   "median": 1.0046607781548862,
+   "base_round_medians": [
+    164.5,
+    165.1,
+    169.4
+   ],
+   "cand_round_medians": [
+    160.5,
+    167.5,
+    166.4
+   ],
+   "key": "res",
+   "label": "Resident HC read (STRATA_GR_RES)"
+  },
+  {
+   "n": 168,
+   "geo_mean": 0.9974547145595937,
+   "ci95": [
+    0.9805333375259087,
+    1.015055181843992
+   ],
+   "median": 1.0069514284895216,
+   "base_round_medians": [
+    167.4,
+    165.1,
+    161.9
+   ],
+   "cand_round_medians": [
+    169.6,
+    159.8,
+    165.6
+   ],
+   "key": "dag",
+   "label": "CPU pool as one batch per layer (STRATA_POOL_DAG)"
+  },
+  {
+   "n": 165,
+   "geo_mean": 1.0164124101659273,
+   "ci95": [
+    0.9993733702444983,
+    1.0327885872540794
+   ],
+   "median": 1.0221662468513855,
+   "base_round_medians": [
+    167.4,
+    165.1,
+    161.9
+   ],
+   "cand_round_medians": [
+    171.4,
+    163.5,
+    168.5
+   ],
+   "key": "q2_over_base",
+   "label": "Q2_0 down rows over the plain base (no POOL_DAG)"
+  }
+ ],
+ "compounded_over_phase1": 1.1732772182788844,
+ "compounded_over_stock": 1.1989307030834835,
+ "q3_round_medians": [
+  162.8,
+  167.7,
+  162.2,
+  164.5,
+  165.1,
+  169.4
+ ],
+ "prefill": [
+  {
+   "size": 4096,
+   "tok_s": [
+    2219.4,
+    1956.1
+   ],
+   "median": 2087.75,
+   "seconds": [
+    1.7995999999999999,
+    2.1113000000000004
+   ]
+  },
+  {
+   "size": 16384,
+   "tok_s": [
+    2930.9,
+    2881.7
+   ],
+   "median": 2906.3,
+   "seconds": [
+    5.747,
+    5.874
+   ]
+  },
+  {
+   "size": 32768,
+   "tok_s": [
+    2945.6,
+    2877.7
+   ],
+   "median": 2911.6499999999996,
+   "seconds": [
+    11.486,
+    11.6654
+   ]
+  },
+  {
+   "size": 65536,
+   "tok_s": [
+    3124.7,
+    3118.6
+   ],
+   "median": 3121.6499999999996,
+   "seconds": [
+    20.9895,
+    20.9765
+   ]
+  }
+ ],
+ "window": {
+  "windows": 3048,
+  "avg_T": 3.9245538057742784,
+  "tokens_per_window": 3.243179133858268,
+  "ms_per_window": 18.878425196850394,
+  "tok_s_in_windows": 171.79288526668782,
+  "parts_ms": [
+   [
+    "Waiting for the GPU (dense chain)",
+    11.025731627296588
+   ],
+   [
+    "CPU expert step",
+    4.952365485564306
+   ],
+   [
+    "Drafting (DFlash2)",
+    1.5035236220472443
+   ],
+   [
+    "Other verify work",
+    0.963090551181101
+   ],
+   [
+    "Other host work",
+    0.4305807086614173
+   ]
+  ]
+ },
+ "phase2_prompt_time_ratio": {
+  "n": 171,
+  "geo_mean": 0.8653576605399314,
+  "ci95": [
+   0.8477276523539505,
+   0.8822092522594326
+  ],
+  "median": 0.8769150599270453
+ },
+ "q3_warm_prompt": {
+  "turns": 342,
+  "median_prompt_ms": 867.95,
+  "warm_turns": 270,
+  "fixed_ms": 488.6626657061422,
+  "ms_per_new_token": 0.4191420975057586
+ },
+ "q3_decode_hit_rate": {
+  "hits": 40098901,
+  "lookups": 44014135,
+  "rate": 0.9110459855680454
+ }
+}

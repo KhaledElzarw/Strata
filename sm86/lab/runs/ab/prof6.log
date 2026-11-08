@@ -1,0 +1,39 @@
+prof6-q2prof-r0 rep0 1/16 000-lru_ttl-000047.json: 53 tok @ 150.7 tok/s, prompt 6311
+prof6-q2prof-r0 rep0 2/16 001-lru_ttl-000048.json: 81 tok @ 187.8 tok/s, prompt 6894
+prof6-q2prof-r0 rep0 3/16 002-lru_ttl-000049.json: 1247 tok @ 144.2 tok/s, prompt 8286
+prof6-q2prof-r0 rep0 4/16 003-lru_ttl-000050.json: 89 tok @ 132.4 tok/s, prompt 9824
+prof6-q2prof-r0 rep0 5/16 004-lru_ttl-000051.json: 204 tok @ 179.1 tok/s, prompt 10064
+prof6-q2prof-r0 rep0 6/16 005-lru_ttl-000052.json: 312 tok @ 126.7 tok/s, prompt 10768
+prof6-q2prof-r0 rep0 7/16 006-lru_ttl-000053.json: 240 tok @ 142.9 tok/s, prompt 11109
+prof6-q2prof-r0 rep0 8/16 007-lru_ttl-000054.json: 226 tok @ 130.6 tok/s, prompt 654
+prof6-q2prof-r0 rep0 9/16 008-csv_line-000058.json: 140 tok @ 161.4 tok/s, prompt 6083
+prof6-q2prof-r0 rep0 10/16 009-csv_line-000059.json: 138 tok @ 201.1 tok/s, prompt 6637
+prof6-q2prof-r0 rep0 11/16 010-csv_line-000060.json: 1163 tok @ 137.5 tok/s, prompt 7498
+prof6-q2prof-r0 rep0 12/16 011-csv_line-000061.json: 402 tok @ 198.7 tok/s, prompt 9288
+prof6-q2prof-r0 rep0 13/16 012-csv_line-000062.json: 115 tok @ 141.3 tok/s, prompt 10231
+prof6-q2prof-r0 rep0 14/16 013-csv_line-000063.json: 210 tok @ 134.0 tok/s, prompt 10353
+prof6-q2prof-r0 rep0 15/16 014-csv_line-000064.json: 195 tok @ 145.0 tok/s, prompt 496
+prof6-q2prof-r0 rep0 16/16 015-intervals-000068.json: 156 tok @ 153.8 tok/s, prompt 6078
+AB {"round": 0, "arm": "q2prof", "median": 144.2, "p10": 131.3, "p90": 194.3, "tok_weighted": 146.7, "accept": 0.734, "timed": 15, "m_expert_slots": 9504, "m_vram_free_mib": 1386, "m_vram_free_after": 1386, "m_drafting": "dflash2", "temp_max": 68.0, "power_max": 388.88, "errors": 0, "load_s": 35.0, "wall_s": 83.3}
+prof6-q2tim-r0 rep0 1/16 000-lru_ttl-000047.json: 60 tok @ 166.4 tok/s, prompt 6311
+prof6-q2tim-r0 rep0 2/16 001-lru_ttl-000048.json: 82 tok @ 196.1 tok/s, prompt 6894
+prof6-q2tim-r0 rep0 3/16 002-lru_ttl-000049.json: 1773 tok @ 148.7 tok/s, prompt 8286
+prof6-q2tim-r0 rep0 4/16 003-lru_ttl-000050.json: 87 tok @ 152.6 tok/s, prompt 9824
+prof6-q2tim-r0 rep0 5/16 004-lru_ttl-000051.json: 565 tok @ 271.8 tok/s, prompt 10064
+prof6-q2tim-r0 rep0 6/16 005-lru_ttl-000052.json: 303 tok @ 128.1 tok/s, prompt 10768
+prof6-q2tim-r0 rep0 7/16 006-lru_ttl-000053.json: 223 tok @ 161.4 tok/s, prompt 11109
+prof6-q2tim-r0 rep0 8/16 007-lru_ttl-000054.json: 197 tok @ 136.9 tok/s, prompt 654
+prof6-q2tim-r0 rep0 9/16 008-csv_line-000058.json: 139 tok @ 183.8 tok/s, prompt 6083
+prof6-q2tim-r0 rep0 10/16 009-csv_line-000059.json: 138 tok @ 227.9 tok/s, prompt 6637
+prof6-q2tim-r0 rep0 11/16 010-csv_line-000060.json: 1102 tok @ 162.1 tok/s, prompt 7498
+prof6-q2tim-r0 rep0 12/16 011-csv_line-000061.json: 404 tok @ 217.7 tok/s, prompt 9288
+prof6-q2tim-r0 rep0 13/16 012-csv_line-000062.json: 90 tok @ 178.4 tok/s, prompt 10231
+prof6-q2tim-r0 rep0 14/16 013-csv_line-000063.json: 210 tok @ 155.5 tok/s, prompt 10353
+prof6-q2tim-r0 rep0 15/16 014-csv_line-000064.json: 175 tok @ 133.6 tok/s, prompt 496
+prof6-q2tim-r0 rep0 16/16 015-intervals-000068.json: 142 tok @ 166.8 tok/s, prompt 6078
+AB {"round": 0, "arm": "q2tim", "median": 162.1, "p10": 134.9, "p90": 223.8, "tok_weighted": 164.6, "accept": 0.746, "timed": 15, "m_expert_slots": 9504, "m_vram_free_mib": 1380, "m_vram_free_after": 1380, "m_drafting": "dflash2", "temp_max": 69.0, "power_max": 390.26, "errors": 0, "load_s": 35.0, "wall_s": 83.8}
+== prof6: per-round median decode (tok/s), ratio vs q2prof
+  q2prof           medians [144.2]  tok-weighted [146.7]  ratio [1.0]  paired-turn median ratio 1.000, geo-mean 1.000 [95% 1.000-1.000] (n=15)  slots [9504]  accept [0.734]
+                   prefill: median prompt 852 ms (n=16), warm fit 468 ms + 0.445 ms/token (n=11)
+  q2tim            medians [162.1]  tok-weighted [164.6]  ratio [1.124]  paired-turn median ratio 1.129, geo-mean 1.120 [95% 1.062-1.189] (n=15)  slots [9504]  accept [0.746]
+                   prefill: median prompt 849 ms (n=16), warm fit 466 ms + 0.427 ms/token (n=11); paired prompt-time ratio 0.980, geo-mean 0.984 [95% 0.959-1.006] (n=16)

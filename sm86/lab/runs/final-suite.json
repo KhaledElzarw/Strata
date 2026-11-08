@@ -1,0 +1,53 @@
+{
+ "run1": {
+  "tasks": 6,
+  "passed": 6,
+  "turns": 52,
+  "timed": 49,
+  "median": 148.5,
+  "p10": 128.0,
+  "p90": 186.1,
+  "tok_weighted": 138.3,
+  "accept": 0.683,
+  "prompt_median": 9192.0,
+  "prompt_max": 30040,
+  "gen_tokens": 31150,
+  "errors": 0
+ },
+ "runs2+3": {
+  "tasks": 12,
+  "passed": 12,
+  "turns": 95,
+  "timed": 91,
+  "median": 149.0,
+  "p10": 127.6,
+  "p90": 188.0,
+  "tok_weighted": 149.2,
+  "accept": 0.726,
+  "prompt_median": 8638.0,
+  "prompt_max": 18743,
+  "gen_tokens": 42267,
+  "errors": 0
+ },
+ "all 3 runs": {
+  "tasks": 18,
+  "passed": 18,
+  "turns": 147,
+  "timed": 140,
+  "median": 148.9,
+  "p10": 127.5,
+  "p90": 187.0,
+  "tok_weighted": 144.3,
+  "accept": 0.708,
+  "prompt_median": 8770.0,
+  "prompt_max": 30040,
+  "gen_tokens": 73417,
+  "errors": 0
+ },
+ "prompt_mix": {
+  "<8K": 63,
+  "8-16K": 69,
+  "16-32K": 15,
+  ">=32K": 0
+ }
+}

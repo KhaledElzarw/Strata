@@ -1,0 +1,58 @@
+tim1-base-r0 rep0 1/16 000-lru_ttl-000047.json: 93 tok @ 153.6 tok/s, prompt 6311
+tim1-base-r0 rep0 2/16 001-lru_ttl-000048.json: 83 tok @ 177.5 tok/s, prompt 6894
+tim1-base-r0 rep0 3/16 002-lru_ttl-000049.json: 1820 tok @ 146.4 tok/s, prompt 8286
+tim1-base-r0 rep0 4/16 003-lru_ttl-000050.json: 101 tok @ 147.5 tok/s, prompt 9824
+tim1-base-r0 rep0 5/16 004-lru_ttl-000051.json: 565 tok @ 224.1 tok/s, prompt 10064
+tim1-base-r0 rep0 6/16 005-lru_ttl-000052.json: 84 tok @ 187.2 tok/s, prompt 10768
+tim1-base-r0 rep0 7/16 006-lru_ttl-000053.json: 250 tok @ 148.5 tok/s, prompt 11109
+tim1-base-r0 rep0 8/16 007-lru_ttl-000054.json: 232 tok @ 141.6 tok/s, prompt 654
+tim1-base-r0 rep0 9/16 008-csv_line-000058.json: 142 tok @ 174.1 tok/s, prompt 6083
+tim1-base-r0 rep0 10/16 009-csv_line-000059.json: 141 tok @ 203.1 tok/s, prompt 6637
+tim1-base-r0 rep0 11/16 010-csv_line-000060.json: 906 tok @ 162.9 tok/s, prompt 7498
+tim1-base-r0 rep0 12/16 011-csv_line-000061.json: 391 tok @ 212.2 tok/s, prompt 9288
+tim1-base-r0 rep0 13/16 012-csv_line-000062.json: 131 tok @ 143.0 tok/s, prompt 10231
+tim1-base-r0 rep0 14/16 013-csv_line-000063.json: 155 tok @ 134.9 tok/s, prompt 10353
+tim1-base-r0 rep0 15/16 014-csv_line-000064.json: 136 tok @ 146.7 tok/s, prompt 496
+tim1-base-r0 rep0 16/16 015-intervals-000068.json: 142 tok @ 168.6 tok/s, prompt 6078
+AB {"round": 0, "arm": "base", "median": 158.2, "p10": 142.3, "p90": 207.6, "tok_weighted": 161.6, "accept": 0.765, "timed": 16, "m_expert_slots": 9504, "m_vram_free_mib": 1380, "m_vram_free_after": 1380, "m_drafting": "dflash2", "temp_max": 67.0, "power_max": 389.15, "errors": 0, "load_s": 37.1, "wall_s": 83.9}
+tim1-ff-r0 rep0 1/16 000-lru_ttl-000047.json: 181 tok @ 159.7 tok/s, prompt 6311
+tim1-ff-r0 rep0 2/16 001-lru_ttl-000048.json: 82 tok @ 227.0 tok/s, prompt 6894
+tim1-ff-r0 rep0 3/16 002-lru_ttl-000049.json: 975 tok @ 161.1 tok/s, prompt 8286
+tim1-ff-r0 rep0 4/16 003-lru_ttl-000050.json: 96 tok @ 141.0 tok/s, prompt 9824
+tim1-ff-r0 rep0 5/16 004-lru_ttl-000051.json: 565 tok @ 233.1 tok/s, prompt 10064
+tim1-ff-r0 rep0 6/16 005-lru_ttl-000052.json: 231 tok @ 140.9 tok/s, prompt 10768
+tim1-ff-r0 rep0 7/16 006-lru_ttl-000053.json: 295 tok @ 150.4 tok/s, prompt 11109
+tim1-ff-r0 rep0 8/16 007-lru_ttl-000054.json: 167 tok @ 143.9 tok/s, prompt 654
+tim1-ff-r0 rep0 9/16 008-csv_line-000058.json: 132 tok @ 166.9 tok/s, prompt 6083
+tim1-ff-r0 rep0 10/16 009-csv_line-000059.json: 328 tok @ 157.2 tok/s, prompt 6637
+tim1-ff-r0 rep0 11/16 010-csv_line-000060.json: 1165 tok @ 159.0 tok/s, prompt 7498
+tim1-ff-r0 rep0 12/16 011-csv_line-000061.json: 396 tok @ 207.9 tok/s, prompt 9288
+tim1-ff-r0 rep0 13/16 012-csv_line-000062.json: 94 tok @ 151.7 tok/s, prompt 10231
+tim1-ff-r0 rep0 14/16 013-csv_line-000063.json: 180 tok @ 135.6 tok/s, prompt 10353
+tim1-ff-r0 rep0 15/16 014-csv_line-000064.json: 466 tok @ 137.0 tok/s, prompt 496
+tim1-ff-r0 rep0 16/16 015-intervals-000068.json: 132 tok @ 158.6 tok/s, prompt 6078
+AB {"round": 0, "arm": "ff", "median": 157.9, "p10": 138.9, "p90": 217.4, "tok_weighted": 162.7, "accept": 0.765, "timed": 16, "m_expert_slots": 9504, "m_vram_free_mib": 1380, "m_vram_free_after": 1380, "m_drafting": "dflash2", "temp_max": 68.0, "power_max": 388.82, "errors": 0, "load_s": 37.0, "wall_s": 84.3}
+tim1-ffk-r0 rep0 1/16 000-lru_ttl-000047.json: 102 tok @ 161.8 tok/s, prompt 6311
+tim1-ffk-r0 rep0 2/16 001-lru_ttl-000048.json: 82 tok @ 184.0 tok/s, prompt 6894
+tim1-ffk-r0 rep0 3/16 002-lru_ttl-000049.json: 707 tok @ 171.1 tok/s, prompt 8286
+tim1-ffk-r0 rep0 4/16 003-lru_ttl-000050.json: 96 tok @ 153.6 tok/s, prompt 9824
+tim1-ffk-r0 rep0 5/16 004-lru_ttl-000051.json: 90 tok @ 151.4 tok/s, prompt 10064
+tim1-ffk-r0 rep0 6/16 005-lru_ttl-000052.json: 194 tok @ 150.4 tok/s, prompt 10768
+tim1-ffk-r0 rep0 7/16 006-lru_ttl-000053.json: 244 tok @ 155.9 tok/s, prompt 11109
+tim1-ffk-r0 rep0 8/16 007-lru_ttl-000054.json: 171 tok @ 124.9 tok/s, prompt 654
+tim1-ffk-r0 rep0 9/16 008-csv_line-000058.json: 68 tok @ 135.4 tok/s, prompt 6083
+tim1-ffk-r0 rep0 10/16 009-csv_line-000059.json: 156 tok @ 189.3 tok/s, prompt 6637
+tim1-ffk-r0 rep0 11/16 010-csv_line-000060.json: 1276 tok @ 152.8 tok/s, prompt 7498
+tim1-ffk-r0 rep0 12/16 011-csv_line-000061.json: 418 tok @ 203.9 tok/s, prompt 9288
+tim1-ffk-r0 rep0 13/16 012-csv_line-000062.json: 242 tok @ 131.7 tok/s, prompt 10231
+tim1-ffk-r0 rep0 14/16 013-csv_line-000063.json: 160 tok @ 149.7 tok/s, prompt 10353
+tim1-ffk-r0 rep0 15/16 014-csv_line-000064.json: 186 tok @ 137.6 tok/s, prompt 496
+tim1-ffk-r0 rep0 16/16 015-intervals-000068.json: 142 tok @ 164.4 tok/s, prompt 6078
+AB {"round": 0, "arm": "ffk", "median": 153.2, "p10": 133.6, "p90": 186.7, "tok_weighted": 157.6, "accept": 0.746, "timed": 16, "m_expert_slots": 9504, "m_vram_free_mib": 1380, "m_vram_free_after": 1380, "m_drafting": "dflash2", "temp_max": 68.0, "power_max": 389.89, "errors": 0, "load_s": 37.0, "wall_s": 77.8}
+== tim1: per-round median decode (tok/s), ratio vs base
+  base             medians [158.2]  tok-weighted [161.6]  ratio [1.0]  paired-turn median ratio 1.000, geo-mean 1.000 [95% 1.000-1.000] (n=16)  slots [9504]  accept [0.765]
+                   prefill: median prompt 936 ms (n=16), warm fit 574 ms + 0.414 ms/token (n=11)
+  ff               medians [157.9]  tok-weighted [162.7]  ratio [0.998]  paired-turn median ratio 1.005, geo-mean 0.982 [95% 0.926-1.038] (n=16)  slots [9504]  accept [0.765]
+                   prefill: median prompt 980 ms (n=16), warm fit 603 ms + 0.386 ms/token (n=11); paired prompt-time ratio 1.008, geo-mean 1.010 [95% 0.991-1.031] (n=16)
+  ffk              medians [153.2]  tok-weighted [157.6]  ratio [0.968]  paired-turn median ratio 0.961, geo-mean 0.946 [95% 0.882-1.007] (n=16)  slots [9504]  accept [0.746]
+                   prefill: median prompt 985 ms (n=16), warm fit 576 ms + 0.419 ms/token (n=11); paired prompt-time ratio 0.994, geo-mean 0.997 [95% 0.977-1.017] (n=16)

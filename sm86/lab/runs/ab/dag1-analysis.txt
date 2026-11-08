@@ -1,0 +1,10 @@
+A/B dag1 (2026-11-08 13:57-14:58), 3 rounds x 57 replayed real turns (runs/replayset/hermes-v1), arms alternating
+(A B C / C B A / A B C). Arms: hc86 = the adopted HC stack (base); dag = + STRATA_POOL_DAG=1; dagq2 = + STRATA_POOL_DAG=1
++ STRATA_EXP9_DOWN=42:10 (Q2_0 down kernel, mode 10). Binary: build of 13:51 (before the L1 review fixes).
+Round medians (tok/s): hc86 167.4 165.1 161.9; dag 169.6 159.8 165.6; dagq2 171.4 163.5 168.5. Temp max 76 C.
+Paired turns (ab.py --summary, and a seeded rerun of its bootstrap):
+  dag   vs hc86: median 1.007, geo-mean 0.997 [95% 0.980-1.014] (n 168) -> neutral, not adopted (stays opt-in)
+  dagq2 vs hc86: median 1.022, geo-mean 1.016 [95% 1.000-1.033] (n 165)
+  dagq2 vs dag : median 1.016, geo-mean 1.020 [95% 1.004-1.036] (n 166) -> the Q2_0 kernel: adopted
+Prefill: paired prompt-time ratio 0.992-0.996 (n 171), neutral.
+Draft acceptance: hc86 0.752/0.746/0.744, dag 0.742/0.733/0.735, dagq2 0.744/0.744/0.735 (timing-based draft policy).

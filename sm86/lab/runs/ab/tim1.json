@@ -1,0 +1,185 @@
+{
+ "experiment": {
+  "name": "tim1",
+  "rounds": 1,
+  "src": [
+   "runs/replayset/hermes-v1"
+  ],
+  "limit": 16,
+  "seed": 1234,
+  "gap": 2.0,
+  "arms": [
+   {
+    "name": "base",
+    "exe": "C:/src/Strata/build-sm86/strata.exe",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.65"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7100"
+    },
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_DECODE_TIMING": "1",
+     "STRATA_DF2_TIMING": "1"
+    }
+   },
+   {
+    "name": "ff",
+    "exe": "C:/src/Strata/build-sm86/strata.exe",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.65"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7100"
+    },
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_DECODE_TIMING": "1",
+     "STRATA_DF2_TIMING": "1",
+     "STRATA_FETCH_FORK": "1"
+    }
+   },
+   {
+    "name": "ffk",
+    "exe": "C:/src/Strata/build-sm86/strata.exe",
+    "drafting": "dflash2",
+    "user_args": [
+     "--draft-conf",
+     "0.65"
+    ],
+    "set": {
+     "--conversation-cache-mib": "2048",
+     "--expert-cache": "7100"
+    },
+    "env": {
+     "STRATA_DRAFT_PACK": "C:/src/Strata/dflash2/qwen3.8-flash-next-dflash2.strata1.q4_0-selq4.pack",
+     "STRATA_DECODE_TIMING": "1",
+     "STRATA_DF2_TIMING": "1",
+     "STRATA_FETCH_FORK": "1",
+     "STRATA_GR_DOWN82": "1",
+     "STRATA_GR_UP_WIDE": "1"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "round": 0,
+   "arm": "base",
+   "label": "tim1-base-r0",
+   "load_s": 37.1,
+   "wall_s": 83.9,
+   "turns": 16,
+   "timed": 16,
+   "median": 158.2,
+   "p10": 142.3,
+   "p90": 207.6,
+   "tok_weighted": 161.6,
+   "accept": 0.765,
+   "prompt_median": 7892.0,
+   "prompt_max": 11109,
+   "gen_tokens": 5372,
+   "errors": 0,
+   "cache_slots": 9504,
+   "vram_free_mib": 1380,
+   "temp_max": 67.0,
+   "power_max": 389.15,
+   "power_mean": 278.9,
+   "m_expert_slots": 9504,
+   "m_expert_cache_mib": 15773,
+   "m_vram_free_mib": 1380,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1380
+  },
+  {
+   "round": 0,
+   "arm": "ff",
+   "label": "tim1-ff-r0",
+   "load_s": 37.0,
+   "wall_s": 84.3,
+   "turns": 16,
+   "timed": 16,
+   "median": 157.9,
+   "p10": 138.9,
+   "p90": 217.4,
+   "tok_weighted": 162.7,
+   "accept": 0.765,
+   "prompt_median": 7892.0,
+   "prompt_max": 11109,
+   "gen_tokens": 5485,
+   "errors": 0,
+   "cache_slots": 9504,
+   "vram_free_mib": 1380,
+   "temp_max": 68.0,
+   "power_max": 388.82,
+   "power_mean": 278.6,
+   "m_expert_slots": 9504,
+   "m_expert_cache_mib": 15773,
+   "m_vram_free_mib": 1380,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1380
+  },
+  {
+   "round": 0,
+   "arm": "ffk",
+   "label": "tim1-ffk-r0",
+   "load_s": 37.0,
+   "wall_s": 77.8,
+   "turns": 16,
+   "timed": 16,
+   "median": 153.2,
+   "p10": 133.6,
+   "p90": 186.7,
+   "tok_weighted": 157.6,
+   "accept": 0.746,
+   "prompt_median": 7892.0,
+   "prompt_max": 11109,
+   "gen_tokens": 4334,
+   "errors": 0,
+   "cache_slots": 9504,
+   "vram_free_mib": 1380,
+   "temp_max": 68.0,
+   "power_max": 389.89,
+   "power_mean": 272.0,
+   "m_expert_slots": 9504,
+   "m_expert_cache_mib": 15773,
+   "m_vram_free_mib": 1380,
+   "m_spec": 8,
+   "m_mtp_max": 6,
+   "m_lookup": 3,
+   "m_pcie_frac": "0.20",
+   "m_spec_min_p": "0.00",
+   "m_pool_workers": 15,
+   "m_prefill_cap": 32768,
+   "m_drafting": "dflash2",
+   "m_drafting_note": "",
+   "m_kv_resident": 32768,
+   "m_vram_free_after": 1380
+  }
+ ]
+}

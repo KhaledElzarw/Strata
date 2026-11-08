@@ -1,0 +1,20 @@
+{
+ "requests": 65,
+ "rates_pct": {
+  "stock scorer / stock text": 3.896,
+  "stock scorer / DF2 text": 4.117,
+  "df2 scorer / stock text": 4.085,
+  "df2 scorer / DF2 text": 4.002
+ },
+ "text_effect_pts": 0.069,
+ "text_effect_ci90": [
+  -0.239,
+  0.37
+ ],
+ "own_path_effect_pts": 0.152,
+ "own_path_effect_ci90": [
+  0.018,
+  0.292
+ ],
+ "rate_rule_text_effect": "PASS"
+}

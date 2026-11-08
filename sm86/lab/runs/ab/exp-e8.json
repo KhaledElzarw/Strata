@@ -1,0 +1,14 @@
+{
+ "name": "e8",
+ "rounds": 2,
+ "src": [
+  "runs/replayset/hermes-v1"
+ ],
+ "seed": 1234,
+ "gap": 2.0,
+ "arms": [
+  {
+   "name": "stock"
+  }
+ ]
+}
